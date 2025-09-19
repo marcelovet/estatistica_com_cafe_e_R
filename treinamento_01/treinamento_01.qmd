@@ -1,0 +1,517 @@
+---
+title: "Café com estatística e R"
+subtitle: "Treinamento 1 - Tipos de variáveis, escalas e uma introdução ao R"
+date: last-modified
+author:
+  - name: Marcelo Teixeira Paiva
+    orcid: 0000-0001-6334-073X
+    email: marcelo_thelin@hotmail.com
+    affiliation: 
+      - name: CRMV-MG
+        city: Belo Horizonte
+        state: MG
+        country: Brazil
+        url: portal.crmvmg.gov.br
+abstract: > 
+  Relatório do primeiro treinamento onde foi apresentado uma introdução ao R e os conceitos de tipos de variáveis e escalas.
+keywords:
+  - statistical analysis
+license: "CC BY"
+copyright: 
+  holder: Marcelo Paiva
+  year: 2025
+citation: 
+  container-title: "Café com estatística e R: Treinamento 1 - Tipos de variáveis, escalas e uma introdução ao R"
+  volume: 1
+  issue: 1
+funding: "The author received no specific funding for this work."
+lang: pt-BR
+toc: true
+toc-depth: 4
+toc-expand: true
+toc-title: "Índice"
+number-sections: true
+format:
+  html:
+    code-fold: true
+    code-summary: "Mostrar código"
+    code-tools: true
+    highlight-style: ayu-mirage
+    code-line-numbers: true
+    theme:
+      light: journal
+      dark: superhero
+    fontsize: 1.1em
+    linestretch: 1.7
+    max-width: 1800px
+    margin: 1rem
+  pdf: 
+    documentclass: report
+    lof: true
+    lot: true
+    geometry:
+      - top=30mm
+      - left=20mm
+      - heightrounded
+    colorlinks: true
+---
+
+# Fundamentos de R para análise de dados
+
+## Conhecimentos básicos de R
+
+### Instalação do R e RStudio
+
+**R** é uma linguagem para computação estatística, enquanto **RStudio** é um ambiente de desenvolvimento integrado (IDE) que facilita o trabalho. Ou seja, o R é quem faz o trabalho pesado e o RStudio é uma das várias maneiras de se usar o R com menos esforço.
+
+**Processo de instalação:**
+1. Baixe o R em: https://cran.r-project.org/
+2. Baixe o RStudio em: https://posit.co/products/open-source/rstudio/?sid=1
+3. Siga os passos de instalação de cada um deles em suas próprias páginas.
+
+### Sintaxe Básica
+
+Imagine que você vai ler um artigo. Você imprime esse documento e inicia sua leitura, mas começa sentir sono e resolve parar e ir tomar um café. Quando você retorna para continuar sua leitura, seu artigo sumiu! Pior que isso, você também esqueceu onde havia parado de ler!
+
+Então você precisa novamente imprimir o documento e iniciar sua leitura novamente. Agora imagine que isso acontece a cada vez que para de ler e se distancia do seu documento. Seria um sofrimento ler qualquer artigo, uma vez que sempre seria necessário imprimir e ler o documento de uma vez.
+
+O mesmo ocorre na análise de dados e computação em geral, nós queremos ter uma forma de ler ou registrar um dado e depois poder retornar a usá-lo sem grandes problemas. Para isso usamos variáveis (que não é a mesma variável da estatística). Então, no R, uma variável representa um nome associado a um dado gravado na memória. Por ser somente um nome, não há restrições para o que ele nomeia (o tipo de dado), somente não se aceita que ele seja um nome feio, que usa caractéres proibidos (numeros no início, "$"", ".", ",").
+
+```{r}
+# | label: creating_variables
+
+# para criar comentários comece a linha com #
+# esses comentários são desconsiderados pelo interpretador do R (não processados)
+
+# forma de atribuição mais comum
+x <- 10
+# forma menos comum
+y = 20
+# Atribuição reversa - para aqueles que vivem no Upside Down
+30 -> z
+
+# R é case-sensitive (diferencia maiusculas de minusculas)
+Var1 <- 5
+var1 <- 10
+
+# Boas práticas para nomear variável
+# Nunca:
+# - Começar com números: 2var (incorreto)
+# - Usar espaços ou carácteres especiais: minha variavel (incorreto)
+# - Usar palavras reservadas: mean, if, for
+
+# Use nomes descritivos, quem lê seu código não sabe o que você pensou
+p_valor_teste_t <- 0.032
+ic_95_inferior <- 12.3
+ic_95_superior <- 18.7
+```
+
+### Tipos de Dados
+
+**Numeric (double/integer):**
+
+```{r}
+# | label: data_types_numeric
+
+# Números reais (padrão)
+altura <- 1.75
+peso <- 68.5
+# "numeric"
+class(altura)
+class(1)
+
+# Inteiros (com L)
+n_amostras <- 100L
+# "integer"
+class(n_amostras)
+```
+
+**Character (texto):**
+
+```{r}
+# | label: data_types_character
+
+tratamento <- "vacina"
+
+# c() é um vetor (agrupamento de dados atômicos)
+grupo <- c("controle", "tratado", "placebo")
+# "character"
+class(tratamento)
+```
+
+**Logical (booleano, verdadeiro/falso):**
+
+```{r}
+# | label: data_types_logical
+
+significativo <- TRUE
+hipotese_nula <- FALSE
+p_valor <- 0.01
+# operações lógicas: Retorna TRUE ou FALSE
+p_valor < 0.05
+
+class(hipotese_nula)
+```
+
+### Vetores e Operações Básicas
+
+Os vetores são a estrutura fundamental do R. **Tudo é vetor em sua essência**!
+
+```{r}
+# | label: data_types_vector
+
+# Como criar vetores
+dados <- c(23, 45, 12, 67, 34)
+sequencia <- 1:10
+seq_regular <- seq(0, 1, by=0.1)
+repeticao <- rep(c(0,1), times=5)
+
+# vetor nomeado
+idades <- c(fulano=21, cicrano=43)
+names(idades)
+
+# Operações vetorizadas são realizadas elemento por elemento
+x <- c( 1,  2,  3,  4,  5)
+y <- c(10, 20, 30, 40, 50)
+
+x + y
+x * 2
+x^2
+sqrt(x)
+
+# Operações em vetores de tamanho diferente
+# Cuidado! porque ocorre reciclagem do menor vetor
+c(1, 2, 3) + c(10, 20)
+```
+
+### Funções Básicas
+
+Funções possuem um padrão nome_da_funcao(argumento1, argumento2, ...). Ela é um bloco de código com uma finalidade específica, que abstrai a complexidade de como é feito algo para quem a usa. Então, por exemplo, se uso uma função media(x), eu não preciso saber o "como" e somente o que ela faz (calcula a média de um grupo de elementos em x).
+
+Funções também são úteis quando repetimos um bloco de código em vários momentos de uma análise, pois, podemos definir uma função para executar esse bloco de código uma vez e depois só executá-la (princípio DRY).
+
+```{r}
+# | label: functions_basic
+
+dados <- c(23, 45, 12, 67, 34, 28, 51)
+
+# funções do dia-a-dia
+sum(dados)        # Soma
+mean(dados)       # Média aritmética
+median(dados)     # Mediana
+var(dados)        # Variância amostral (n-1)
+sd(dados)         # Desvio padrão
+min(dados)        # Mínimo
+max(dados)        # Máximo
+range(dados)      # Min e Max
+quantile(dados)   # Quartis
+summary(dados)    # Resumo estatístico
+
+# Outras funções úteis
+# Tamanho do vetor
+length(dados)
+# Ordenação
+sort(dados, decreasing = FALSE)
+# Valores únicos
+unique(dados)
+# Tabela de frequências
+dados <- c(rep("a", 2), rep("b", 4), rep("c", 8), rep("d", 1))
+table(dados)
+prop.table(table(dados))
+```
+
+### Operadores Aritméticos e Lógicos
+
+**Operadores Aritméticos:**
+
+```{r}
+# | label: arithmetics_operations
+
+# Básicos
+10 + 5    # Adição
+10 - 5    # Subtração
+10 * 5    # Multiplicação
+10 / 5    # Divisão
+10 ^ 2    # Potenciação
+10 ** 2   # Potenciação
+10 %% 3   # Módulo (resto): 1
+10 %/% 3  # Divisão inteira: 3
+
+amostra <- sample(0:200, 1e6, replace = TRUE)
+media <- sum(amostra) / length(amostra)
+variancia <- sum((amostra - mean(amostra))^2) / (length(amostra) - 1)
+```
+
+**Operadores Lógicos:**
+
+```{r}
+# | label: boolean_operations
+
+# Comparação
+5 > 3      # maior
+5 < 3      # menor
+5 >= 3     # maior ou igual
+5 <= 3     # menor ou igual
+5 == 3     # igual
+5 != 3     # diferente
+"a" == "b"
+
+# Operadores booleanos
+p <- TRUE
+q <- FALSE
+# operação   conectivo
+!p           # NEGAÇÂO
+p & q        # E - conjunção (só é V em VV)
+p | q        # OU - disjunção inclusiva (só é F em FF)
+xor(p, q)    # OU OU - disjunção exclusiva (é F sempre que iguais - VV, FF)
+!p | q       # equivalente à condicional
+(!p | q) & (!q | p) # equivalente à bicondicional
+
+10 < 12 & 12 > 5
+
+# short circuit evaluation
+10 > 12 && nao_existo
+10 < 12 || nao_existo
+
+# Vetorização
+idades <- c(18, 25, 30, 17, 22)
+idades >= 18
+```
+
+## Estruturas de dados
+
+### Matrizes
+
+Estruturas bidimensionais com elementos do **mesmo tipo**.
+
+```{r}
+# | label: matrices
+
+# Criação de matrizes
+matriz1 <- matrix(1:12, nrow=3, ncol=4)
+matriz2 <- matrix(1:12, nrow=3, ncol=4, byrow=TRUE)
+
+# Matriz de correlação
+dados <- matrix(rnorm(100), ncol=5)
+cor_matrix <- cor(dados)
+
+# Operações matriciais
+A <- matrix(c(1,2,3,4), nrow=2)
+B <- matrix(c(5,6,7,8), nrow=2)
+
+A + B         # Soma elemento por elemento
+A * B         # Multiplicação elemento por elemento
+A %*% B       # Multiplicação matricial verdadeira
+t(A)          # Transposta
+solve(A)      # Inversa (se existir)
+det(A)        # Determinante
+
+# Dimensões
+dim(A)
+nrow(A)
+ncol(A)
+```
+
+### Data Frames
+
+São basicamente tabelas com colunas de **variados tipos** em que cada linha representa um registro (planilha do excel). É o principal tipo de dado com que trabalhamos na prática. Todas as colunas no `data.frame` devem apresentar o mesmo tamanho.
+
+```{r}
+# | label: data_frames
+
+# Criação
+df <- data.frame(
+  id = 1:5,
+  tratamento = c("A", "B", "A", "B", "A"),
+  peso_inicial = c(65.2, 70.1, 68.5, 72.3, 66.8),
+  peso_final = c(68.1, 71.5, 71.2, 73.8, 69.5),
+  melhorou = c(TRUE, TRUE, TRUE, TRUE, NA)
+)
+
+# Estrutura e resumo
+str(df)         # Estrutura do data.frame
+summary(df)     # Resumo estatístico simples de cada coluna
+head(df)        # Primeiras x linhas
+tail(df)        # Últimas x linhas
+
+# Acessando colunas
+df$peso_inicial
+df[["peso_inicial"]]
+df[, "peso_inicial"]
+df[, 3]
+df[c(1, 3), 3]
+
+# Criando nova variável no data.frame
+df$ganho_peso <- df$peso_final - df$peso_inicial
+df$ganho_percentual <- (df$ganho_peso / df$peso_inicial) * 100
+
+head(df)
+```
+
+### Listas
+
+Estruturas mais flexíveis - podem conter elementos de **tipos e tamanhos diferentes**.
+
+```{r}
+# | label: lists
+
+# Lista com resultados de uma análise estatística
+resultado_teste <- list(
+  nome_teste = "Teste t de Student",
+  estatistica_t = 2.453,
+  graus_liberdade = 48,
+  p_valor = 0.018,
+  intervalo_confianca = c(1.23, 5.67),
+  dados_originais = df,
+  matriz_cov = matrix(rnorm(9), 3, 3)
+)
+
+# Acessando elementos
+resultado_teste$p_valor
+resultado_teste[["p_valor"]]
+resultado_teste[[4]]
+
+teste_t <- t.test(df$peso_final, df$peso_inicial, paired=TRUE)
+str(teste_t)
+names(teste_t)
+```
+
+### Fatores
+
+Variáveis categóricas com níveis fixos - essencial para modelos estatísticos.
+
+```{r}
+# | label: factors
+
+# Criação de fatores
+sexo <- factor(c("M", "F", "F", "M", "F"), levels = c("M", "F"))
+levels(sexo)
+# Recodificação
+levels(sexo) <- c("Masculino", "Feminino")
+
+# Fator ordenado
+educacao <- factor(
+  c("Médio", "Superior", "Fundamental", "Superior", "Médio"),
+  levels = c("Fundamental", "Médio", "Superior"),
+  ordered = TRUE
+)
+as.integer((educacao))
+
+# GLMs e ANOVA tratam fatores como dummies ou como variáveis discretas
+df$tratamento[5] <- "C"
+df$grupo <- df$tratamento
+lm(peso_final ~ grupo, data=df)
+
+df$grupo <- factor(df$tratamento)
+lm(peso_final ~ grupo, data=df)
+
+df$grupo <- factor(df$tratamento, ordered = TRUE)
+lm(peso_final ~ grupo, data=df)
+```
+
+### Arrays
+
+Generalizações de matrizes para **múltiplas dimensões**.
+
+```{r}
+# | label: arrays
+
+# Array de 3 dimensões (exemplo: medidas x indivíduos x tempo)
+n_pacientes <- 5
+n_tempos <- 3
+peso_inicial <- rnorm(n_pacientes, mean = 70, sd = 5)
+altura_inicial <- rnorm(n_pacientes, mean = 170, sd = 10)
+idade_inicial <- rpois(n_pacientes, lambda = 23)
+
+# matriz vazia
+peso_tempo <- matrix(nrow = n_pacientes, ncol = n_tempos)
+altura_tempo <- matrix(nrow = n_pacientes, ncol = n_tempos)
+idade_tempo <- matrix(nrow = n_pacientes, ncol = n_tempos)
+
+for(i in 1:n_pacientes) {
+  peso_tempo[i, ] <- peso_inicial[i] + cumsum(c(0, rnorm(n_tempos-1, mean=0.5, sd=1)))
+  altura_tempo[i, ] <- altura_inicial[i] + rnorm(n_tempos, mean=0, sd=0.5)
+  idade_tempo[i, ] <- idade_inicial[i] + c(0, 0.25, 0.5)
+}
+
+imc_tempo <- peso_tempo / (altura_tempo/100)^2
+
+medidas_tempo <- array(
+  c(t(peso_tempo), t(altura_tempo), t(imc_tempo), t(idade_tempo)),
+  dim = c(n_pacientes, n_tempos, 4),
+  dimnames = list(
+    paste("Paciente", 1:5),
+    c("Mês_0", "Mês_3", "Mês_6"),
+    c("Peso", "Altura", "IMC", "Idade")
+  )
+)
+
+medidas_tempo[1, , ] # paciente 1
+medidas_tempo[, , 4] # idade
+medidas_tempo[, 2, ] # mes 2
+
+n <- 1000
+dados_epi <- data.frame(
+  Sexo = sample(c("M", "F"), n, replace = TRUE),
+  Idade = sample(c("0-20", "21-40", "41-60", "60+"), n, replace = TRUE),
+  Exposicao = sample(c("Sim", "Não"), n, replace = TRUE, prob = c(0.3, 0.7)),
+  Doenca = sample(c("Presente", "Ausente"), n, replace = TRUE, prob = c(0.1, 0.9))
+)
+tabela_4d <- table(dados_epi)
+print(dim(tabela_4d))  # 2 x 4 x 2 x 2
+
+# Análise de odds ratio estratificado
+for(sexo in c("M", "F")) {
+  for(idade in unique(dados_epi$Idade)) {
+    subtabela <- tabela_4d[sexo, idade, , ]
+    if(all(subtabela > 0)) {
+      #|                | desfecho: Sim  | desfecho: Não |
+      #|----------------|----------------|---------------|
+      #| preditor: Sim  | A              | B             |
+      #| preditor: Não  | C              | D             |
+      # OR = a*d/b*c
+      
+      OR <- (subtabela[2,2] * subtabela[1,1]) / 
+            (subtabela[2,1] * subtabela[1,2])
+      cat(sprintf("OR para %s, %s: %.2f\n", sexo, idade, OR))
+    }
+  }
+}
+```
+
+### Indexação e Seleção de Dados
+
+```{r}
+# | label: indexing
+
+# VETORES
+x <- c(10, 20, 30, 40, 50)
+x[2]
+x[c(1,3,5)]
+x[-2]
+x[x > 25]
+
+# MATRIZES [linha, coluna]
+mat <- matrix(1:12, nrow=3)
+mat[2, 3]
+mat[2, ]
+mat[, 3]
+mat[1:2, 3:4]
+
+# DATA FRAMES
+df[2, 3]
+df[2, ]
+df[, "peso_inicial"]
+df$peso_inicial
+df[df$tratamento == "A", ]
+df[df$ganho_peso > 2 & df$tratamento == "A", c("id", "ganho_peso")]
+
+# LISTAS
+lista <- list(a=1:5, b=matrix(1:4,2), c="texto")
+lista[[1]]
+lista$a
+lista[["b"]]
+```
+
+# Tipos de variáveis e escalas de mensuração e precisão
+
