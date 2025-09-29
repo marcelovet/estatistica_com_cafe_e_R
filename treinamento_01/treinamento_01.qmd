@@ -515,3 +515,419 @@ lista[["b"]]
 
 # Tipos de variáveis e escalas de mensuração e precisão
 
+## Tipos de variáveis
+
+Variável é uma característica em estudo em uma população (ou amostra) que pode ser **medida, contada ou categorizada**. O tipo influencia na escolha de estatísticas descritivas, gráficos e métodos de análise que serão adotados para analisar os dados. Assim, vamos começar nosso estudo pela classificação das variáveis relativa ao fato de serem mensuradas ou categorizadas, bem como as escalas de mensuração.
+
+Em geral, variáveis são classificadas como **métricas e não métricas**. Variáveis não métricas ou qualitativas são características registradas dentro de um número finito de categorias, em que o indivíduo possui ou não determinada categoria em análise (ex. sexo). Variáveis métricas ou quantitivas são contadas ou mensuradas (nesse caso não há ausência de determinada característica, embora ele possa apresentar 0 dela).
+
+```{mermaid}
+%%| label: fig1_diagrama_tipos_variaveis
+%%| fig-cap: "Tipos de variáveis."
+
+flowchart TB
+  A["Tipos de variáveis"]
+  A --> B["Não métricas (qualitativas)"]
+  A --> C["Métricas (quantitativas)"]
+```
+
+### Variáveis Não Métricas (Qualitativas)
+
+Representam características, atributos ou qualidades que não podem ser medidas numericamente de forma intrínseca. Normalmente, são apresentadas na análise  em tabelas de frequência, sem medidas de posição, dispersão ou forma. Uma medida que pode ser associada é a moda, valor ou categoria mais frequente.
+
+**Características principais**:
+
+- Representam categorias ou classes
+- Não admitem operações aritméticas significativas
+- Podem ser codificadas numericamente, mas os números são apenas rótulos
+
+**Exemplos**: A) Raça de animais (Holandesa, Jersey, Angus); B) Diagnóstico clínico (positivo, negativo); C) Coloração de pelagem (preto, branco, malhado).
+
+### Variáveis Métricas (Quantitativas)
+
+Representam quantidades mensuráveis ou que são contadas. Permitem maior gama de possibilidades gráficas (gráficos de linhas, dispersão, histograma, boxplot...), medidas de posição, dispersão e forma.
+
+Podem ser discretas, quando assumem um conjunto finito ou enumerável de valores, ou contínuas, quando os valores estão em um intervalo de números reais (em tese, assumem infinitos valores dentro do intervalo).
+
+**Características principais**:
+
+- Expressam magnitude ou quantidade
+- Permitem operações aritméticas (soma, média, etc.)
+- Possuem unidade de medida (kg, cm, °C, etc.)
+
+**Exemplos**: A) Peso corporal (kg); B) Contagem de leucócitos (células/μL); C) Produção de leite (litros/dia); D) número de filhos.
+
+## Escalas de mensuração (Stevens, 1946)
+
+Mensuração é o ato de atribuir números ou rótulos a um indíviduo de acordo com regras específicas para representar quantidades ou qualidades de um atributo (a variável em estudo). A escala é o conjunto de possíveis valores que o atributo poderá assumir, considerando a regra de mensuração.
+
+Existem várias classificações de tipos de escala, mas vamos usar a de Stevens (1946), pela simplicidade e amplo uso.
+
+```{mermaid}
+%%| label: fig2_diagrama_tipos_escalas
+%%| fig-cap: "Tipos de escalas."
+
+flowchart TB
+  A["Variável qualitativa"]
+  A --> B["Escala Nominal"]
+  A --> C["Escala Ordinal"]
+
+  D[Variável quantitativa]
+  D --> E["Escala intervalar"]
+  D --> F["Escala Razão"]
+```
+
+### Escala Nominal (Variáveis Não Métricas)
+
+É a mais básica das escalas, onde números ou símbolos servem apenas para identificar e classificar. Não estabelece relações de orgem ou grandeza. Possibilita contar o número de elementos em cada categoria e testar hipóteses sobre a distribuição de unidades dentro das categorias, mas medidas de posição, dispersão e forma não fazem muito sentido para ela.
+
+**Exemplos**:
+```
+Tipo sanguíneo: A, B, AB, O
+Sexo: M=Macho, F=Fêmea
+Diagnóstico de LVC: 0=Negativo, 1=Positivo
+Espécie animal: 1=Bovino, 2=Suíno, 3=Equino
+País de Origem: Brasil, Bolívia, Peru, Canadá, ...
+```
+
+**Propriedades matemáticas**:
+
+- Equivalência (=, ≠)
+- Não há ordenação intrínseca
+
+**Ferramentas ou medidas para caracterização dos dados**:
+
+- Tabelas de frequência
+- Gráficos de barras ou setores
+- Contagem de frequências, moda
+
+**Análise estatística possível**:
+
+- Teste qui-quadrado ($\chi^{2}$)
+- Coeficiente de contingência ($CC$)
+- $V$ de Cramér
+
+### Escala Ordinal (Variáveis Não Métricas)
+
+Ainda classifica o atributo em classes ou categorias, mas existe uma relação inerente de ordem entre as diferentes categorias, mesmo que as distâncias entre categorias não sejam necessariamente iguais. Por exemplo, a idade dos indivíduos sendo mensurada nas faixas etárias jovem (15 a 21 anos), adulto (22 a 65 anos), idoso (mais que 65 anos). Embora, exista uma ordem entre as faixas (idoso > adulto > jovem, na idade), o intervalo entre cada classe não é igual, ou seja, não faz sentido eu pensar em algo como "1 idoso = 3 jovem anos".
+
+**Exemplos**:
+```
+Escore de condição corporal: 1 (magro) < 2 < 3 < 4 < 5 (obeso)
+Grau de claudicação: 0 (normal) < 1 (leve) < 2 (moderado) < 3 (severo)
+Escolaridade: fundamental < médio < superior
+Escala Linkert: 1 (Total discordância) < 2 < 3 (Neutro) < 4 < 5 (Total cordância)
+```
+
+**Propriedades matemáticas**:
+
+- Relações de ordem e equivalência (<, >, =)
+- Intervalos entre categorias não são uniformes
+
+**Ferramentas ou medidas para caracterização dos dados**:
+
+- Tabelas de frequência
+- Gráficos de barras ou setores
+- Contagem de frequências, moda, mediana, percentis, correlação de Spearman
+
+**Análise estatística possível**:
+
+- Teste de Mann-Whitney $U$
+- Teste de Kruskal-Wallis
+- Correlação de postos de Spearman ($\rho$ de Spearman)
+- Correlação de postos de Kendall ($\tau$ de Kendall)
+
+### Escala Intervalar (Variável Quantitativa)
+
+Além de haver ordenação, possui intervalos iguais entre valores, ou seja, unidade de medida constante. Porém, o zero da escala é arbitrário (não representa ausência absoluta). Assim, conseguimos calcular a diferença entre dois valores mensurados, mas não podemos inferir que um seja múltiplo do outro.
+
+**Exemplos**:
+```
+Temperatura em Celsius: 0°C é arbitrário
+Calendário: ano 0 é convenção
+Escores padronizados (z-score): média=0 por construção
+```
+
+**Propriedades matemáticas**:
+
+- Relações de ordem e equivalência (<, >, =)
+- Permite inferir diferença
+- Razões não têm significado
+- Se X está em escala intervalar, então:
+  - Y = a + bX também está em escala intervalar
+  - A razão X₁/X₂ não é invariante sob transformação linear
+
+```{r}
+# peso em quilos ou gramas
+x1 = 10 # 10 kg
+x2 = 100 # 100 kg
+
+x2 / x1
+
+y1 = x1 * 1000 # 10000 g
+y2 = x2 * 1000 # 100000 g
+
+y2 / y1
+
+# temperatura em celsius ou fahrenheit (1.8 * C + 32)
+x1 = 10 # 10 C
+x2 = 20 # 20 C
+
+x2 / x1
+
+y1 = 32 + (1.8 * x1) # 50 F
+y2 = 32 + (1.8 * x2) # 68 F
+
+y2 / y1
+
+x3 = 30
+y3 = 32 + (1.8 * x3)
+
+(x3 - x1) / (x3 - x2) == (y3 - y1) / (y3 - y2)
+```
+
+
+**Ferramentas ou medidas para caracterização dos dados**:
+
+- Gráficos de linhas, dispersão, histograma, boxplot
+- Média, desvio-padrão, mediana, percentis, correlação (com os devidos cuidados)
+
+```{r}
+x <- rnorm(1000, mean=283.15, sd=5.15) # aproximadamente 20°C
+mean(x)
+sd(x)
+sd(x) / mean(x) * 100
+
+y = x - 273.15
+mean(y)
+sd(y)
+sd(y) / mean(y) * 100
+
+y = x*2
+mean(y)
+sd(y)
+sd(y) / mean(y) * 100
+```
+
+```{r}
+#| warning: false
+#| label: fig3_density_variaveis_escala_intervalar
+#| fig-cap: "Distribuição de uma variável na escala razão e sua transformada nas escalar intervalar."
+
+require(tidyverse)
+require(gridExtra)
+
+temperatures <- tibble(kelvin = x, celsius = y)
+
+k_plot <- ggplot(data = temperatures, aes(x=kelvin, y = ..density..)) +
+  geom_histogram(fill = "cornsilk", colour = "grey60", size = .2) +
+  geom_density() +
+  labs(
+    x = "Kelvin",
+    y = "Densidade"
+  ) +
+  theme_bw()
+
+c_plot <- ggplot(data = temperatures, aes(x=celsius, y = ..density..)) +
+  geom_histogram(fill = "cornsilk", colour = "grey60", size = .2) +
+  geom_density() +
+  labs(
+    x = "Celsius",
+    y = "Densidade"
+  ) +
+  theme_bw()
+
+marrangeGrob(
+    list(k_plot, c_plot),
+    ncol = 2, nrow = 1,
+    top = "Distribuição da variável original e sua transformada na forma Y = aX + b"
+)
+```
+
+**Análise estatística possível**:
+
+- Testes paramétricos ou não-paramétricos
+- Coeficiente de correlação de Pearson ($\rho$ de Pearson)
+
+### Escala de Razão (Variável Quantitativa)
+
+Possui todas as propriedades da escala intervalar, mais um zero absoluto significativo.
+
+**Exemplos**:
+```
+Peso: 0 kg = ausência de massa
+Contagem: 0 células = nenhuma célula
+Concentração: 0 mg/dL = ausência da substância
+Tempo de reação: 0 segundos = instantâneo
+```
+
+**Propriedades matemáticas**:
+
+- Zero representa ausência completa
+- Relações de ordem e equivalência (<, >, =)
+- Permite inferir diferença e razão
+- Todas as operações aritméticas são válidas (+, -, *, /)
+- Operações permitidas: média, desvio padrão, correlação de Pearson
+
+**Ferramentas ou medidas para caracterização dos dados**:
+
+- Gráficos de linhas, dispersão, histograma, boxplot
+- Média, desvio-padrão, coeficiente de variação, mediana, percentis, correlação
+
+**Análise estatística possível**:
+
+- Testes paramétricos ou não-paramétricos
+- Coeficiente de correlação de Pearson ($\rho$ de Pearson)
+
+**Tabela resumo do efeito da transformação linear nas propriedades das variáveis quantitativas**
+
+| Propriedade            | Transformação Linear Positiva (Y=a+bX, b>0 e a>0) | Transformação de Proporção (Y=bX, b>0 e a=0) |
+|------------------------|---------------------------------------------------|----------------------------------------------|
+| Ordem (X₁ < X₂)        | Invariante                                        | Invariante                                   |
+| Diferenças             | Não invariante (multiplicadas por b)              | Não invariante                               |
+| Razões de diferenças   | Invariante                                        | Invariante                                   |
+| Razões diretas (X₁/X₂) | Não invariante                                    | Invariante                                   |
+| Correlação             | Invariante                                        | Invariante                                   |
+| Média                  | Não invariante                                    | Não invariante                               |
+| CV                     | Não invariante                                    | Invariante                                   |
+
+Invariante significa que determinada propriedade permanece inalterada após a transformação.
+
+Em termos matemáticos:
+
+- Dada uma propriedade $P(X)$ de uma variável $X$
+- e uma transformação $T$ de $X$ em uma variável $Y$: $X \rightarrow Y = T(X)$
+- $P$ é invariante sob $T$ se: $P(X) = P(Y)$
+
+
+## Número de categorias e pecisão
+
+Variáveis qualitativas podem ser classificadas em dicotômicas quando apresentam apenas duas categorias ou policotômicas quando possuem mais que duas categorias. Já as variáveis quantitativas podem ser classificadas conforme a escala de precisão em discretas ou contínuas.
+
+```{mermaid}
+%%| label: fig4_diagrama_classificacao_precisao
+%%| fig-cap: "Tipos de escalas."
+
+flowchart TB
+  A["Variável qualitativa"]
+  A --> B["Dicotômica ou binária"]
+  A --> C["Policotômica"]
+
+  D[Variável quantitativa]
+  D --> E["Discreta"]
+  D --> F["Contínua"]
+```
+
+### Variável Dicotômica ou Binária (Dummy)
+
+Variável com exatamente duas categorias mutuamente exclusivas. Nas variáveis dummy, uma categoria indica a presença de determinada característica e a outra a ausência.
+
+**Representação matemática**:
+```
+X = {0, 1} ou X = {Sim, Não}
+P(X=1) = p, P(X=0) = 1-p
+```
+
+**Propriedades estatísticas**:
+
+- $E[X] = p$
+- $Var(X) = p(1-p)$
+- Distribuição: $X \sim Bernoulli(p)$
+
+**Exemplos**:
+
+- Presença/ausência de doença
+- Vacinado/não vacinado
+- Tratamento/controle
+
+### Variável Policotômica
+
+Variável categórica com três ou mais categorias.
+
+**Tipos**:
+
+- Nominal policotômica: sem ordem (raça, região)
+- Ordinal policotômica: com ordem (estágio da doença: I, II, III)
+
+Uma variável qualitativa com $n$ categorias pode ser representada por $n-1$ variáveis dummies (dicotômicas).
+
+| Estágio da doença | D1 | D2 |
+|-------------------|----|----|
+| Estágio I         | 0  | 0  |
+| Estágio II        | 0  | 1  |
+| Estágio III       | 1  | 0  |
+
+
+### Variável Quantitativa Discreta
+
+Assume valores em um conjunto enumerável (geralmente inteiros), geralmente finito ("infinito somente nos extremos").
+
+**Características**:
+
+- Resultado de contagem
+- Valores isolados na reta numérica
+- Função de probabilidade: $P(X = x)$
+  - $E[X] = \mu_x = \sum_{i=1}^{n} x_i P(X = x_i), i=1,2,...,n$
+
+**Distribuições comuns**:
+
+- $Poisson(\lambda)$: contagem de eventos raros
+- $Binomial(n,p)$: número de sucessos em n tentativas
+- Binomial Negativa, $BinNeg(n,p)$: número de falhas até o fim do experimento
+
+**Exemplos**:
+```
+Número de crias: 0, 1, 2, 3, ...
+Contagem de parasitas: valores inteiros ≥ 0
+Número de tratamentos: 1, 2, 3, ...
+```
+
+### Variável Quantitativa Contínua
+
+Pode assumir qualquer valor em um intervalo dos reais (infinitos valores dentro do intervalo).
+
+**Características**:
+
+- Resultado de medição
+- Infinitos valores possíveis em qualquer intervalo
+- Função densidade de probabilidade: $f(x)$
+  - $f(x) > 0$
+  - $\int f(x)dx = 1$
+  - a probabilidade de $X$ assumir valores dentro de um intervalo $[a, b]$ é justamente a área sob a curva de $f(x)$ limitada pelos pontos $a$ e $b$, logo, $P(a \leq X \leq b) = \int_{a}^{b} f(x)dx$
+  - $E[X] = \int_{-\infty}^{+\infty} xf(x)dx$
+
+**Distribuições comuns**:
+
+- $Normal(\mu, \sigma^2)$: muitos fenômenos naturais
+- $Exponencial(\lambda)$: tempo entre eventos
+- $Gamma(\alpha, \beta)$: tempos de espera, concentrações
+
+**Exemplos**:
+```
+Peso corporal: qualquer valor positivo real
+Glicemia: valores contínuos em mg/dL
+Produção de leite: litros com precisão decimal
+```
+
+### Implicações práticas do tipo de variável na análise estatística
+
+**Testes de hipótese**
+
+- Nominal: Qui-quadrado, Teste Exato de Fisher, Coeficiente de associação
+- Ordinal: Mann-Whitney, Kruskal-Wallis, Coeficiente de correlação de Spearman
+- Quantitativa: Correlação de Pearson, Teste t, ANOVA (se normal), Correlação de Spearman, Mann-Whitney, Kruskal-Wallis (se não normal)
+
+**Modelagem Estatística**
+
+- Binária: Regressão Logística
+- Policotômica: Regressão Multinomial
+- Ordinal: Regressão Ordinal (Proportional Odds)
+- Contagem: Regressão Poisson/Binomial Negativa
+- Contínua: Regressão Linear (se normal)
+
+**Cuidados na interpretação de suas variáveis em estudo**
+
+1. **Não tratar ordinal como quantitativa**: A média de escores 1, 2, 3 possui algum significado? E o desvio padrão dos estágios 1, 2, 3 e 4 de determinada neoplasia?
+2. **Verificar escala antes de calcular razões**: 20°C não é "duas vezes mais quente" que 10°C
+3. **Considerar a precisão da medida**: Uma balança com precisão de 1kg torna a variável peso, que é inerentemente contínua, em uma variável discreta na prática.
+
