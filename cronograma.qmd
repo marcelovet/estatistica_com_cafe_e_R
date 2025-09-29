@@ -26,10 +26,6 @@ citation:
   issue: 1
 funding: "The author received no specific funding for this work."
 lang: pt-BR
-toc: true
-toc-depth: 4
-toc-expand: true
-toc-title: "Índice"
 number-sections: false
 format:
   html:
@@ -47,8 +43,6 @@ format:
     margin: 1rem
   pdf: 
     documentclass: report
-    lof: true
-    lot: true
     geometry:
       - top=30mm
       - left=20mm
@@ -56,11 +50,11 @@ format:
     colorlinks: true
 ---
 
-Abaixo está a proposta dos tópicos que serão abordados nos treinamentos.
-
 # Estatística Clássica e fundamentos de epidemiologia
 
 ## Treinamento 1: Introdução ao R e variáveis em estudos
+
+- **Data prevista: 02/10/2025**
 
 - Introdução ao R
 - Tipos de variáveis e escalas de mensuração e precisão
@@ -79,6 +73,8 @@ Abaixo está a proposta dos tópicos que serão abordados nos treinamentos.
     - Variável quantitativa contínua
 
 ## Treinamento 2: estatísticas descritivas e construção de gráficos no R
+
+- **Data prevista: 16/10/2025**
 
 - Estatística descritiva univariada
     - Tabela de distribuição de frequências
@@ -127,6 +123,8 @@ Abaixo está a proposta dos tópicos que serão abordados nos treinamentos.
         - Coeficiente de correlação de Pearson
 
 ## Treinamento 3: Probabilidade, variáveis aleatórias e distribuições de probabilidade
+
+- **Data prevista: 30/10/2025**
 
 - Probabilidade
     - Terminologia e conceitos
@@ -187,6 +185,8 @@ Abaixo está a proposta dos tópicos que serão abordados nos treinamentos.
         - Distribuição F de Snedecor
 
 ## Treinamento 4: Causalidade, amostragem e desenho de questionários
+
+- **Data prevista: 13/11/2025**
 
 - Causalidade
     - Conceitos de multíplas causas e inferência científica

@@ -1314,9 +1314,9 @@ Coefficients:
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>          Peso   Altura      IMC Idade
-Mês_0 72.46646 179.5023 22.49039 21.00
-Mês_3 69.22782 164.8892 25.46223 21.50
-Mês_6 75.27459 167.7502 26.74990 19.25</code></pre>
+Mês_0 65.82543 180.2795 20.25354 10.00
+Mês_3 70.70323 172.8588 23.66227 19.50
+Mês_6 73.18697 164.6212 27.00614 20.25</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
@@ -1324,11 +1324,11 @@ Mês_6 75.27459 167.7502 26.74990 19.25</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>           Mês_0 Mês_3 Mês_6
-Paciente 1 21.00 21.50 19.25
-Paciente 2 21.25 22.00 19.50
-Paciente 3 21.50 22.25 19.00
-Paciente 4 21.00 22.50 19.25
-Paciente 5 21.25 19.00 19.50</code></pre>
+Paciente 1 10.00 19.50 20.25
+Paciente 2 10.25 31.00 20.50
+Paciente 3 10.50 31.25 26.00
+Paciente 4 19.00 31.50 26.25
+Paciente 5 19.25 20.00 26.50</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
@@ -1336,11 +1336,11 @@ Paciente 5 21.25 19.00 19.50</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>               Peso   Altura      IMC Idade
-Paciente 1 69.22782 164.8892 25.46223 21.50
-Paciente 2 80.94517 168.0194 28.67293 22.00
-Paciente 3 84.17168 167.4220 30.02902 22.25
-Paciente 4 83.50930 167.9502 29.60560 22.50
-Paciente 5 74.13867 166.7823 26.65293 19.00</code></pre>
+Paciente 1 70.70323 172.8588 23.66227 19.50
+Paciente 2 73.32068 168.4508 25.83927 31.00
+Paciente 3 73.34548 168.0536 25.97033 31.25
+Paciente 4 73.96130 167.7757 26.27523 31.50
+Paciente 5 72.40254 165.0458 26.57937 20.00</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
@@ -1378,13 +1378,14 @@ Paciente 5 74.13867 166.7823 26.65293 19.00</code></pre>
 <span id="cb174-17"><a href="#cb174-17"></a>}</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>OR para M, 60+: 2.27
-OR para M, 0-20: 1.50
-OR para M, 21-40: 2.24
-OR para F, 60+: 1.84
-OR para F, 0-20: 1.09
-OR para F, 21-40: 1.23
-OR para F, 41-60: 0.76</code></pre>
+<pre><code>OR para M, 21-40: 0.54
+OR para M, 0-20: 0.92
+OR para M, 60+: 1.11
+OR para M, 41-60: 1.56
+OR para F, 21-40: 1.75
+OR para F, 0-20: 0.27
+OR para F, 60+: 3.14
+OR para F, 41-60: 4.94</code></pre>
 </div>
 </div>
 </section>
@@ -1741,21 +1742,21 @@ Escores padronizados (z-score): média=0 por construção</code></pre>
 <span id="cb223-2"><a href="#cb223-2"></a><span class="fu">mean</span>(x)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 283.1221</code></pre>
+<pre><code>[1] 283.0595</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
 <div class="sourceCode cell-code" id="cb225"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb225-1"><a href="#cb225-1"></a><span class="fu">sd</span>(x)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 5.17091</code></pre>
+<pre><code>[1] 5.185228</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
 <div class="sourceCode cell-code" id="cb227"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb227-1"><a href="#cb227-1"></a><span class="fu">sd</span>(x) <span class="sc">/</span> <span class="fu">mean</span>(x) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.826389</code></pre>
+<pre><code>[1] 1.831851</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
@@ -1763,21 +1764,21 @@ Escores padronizados (z-score): média=0 por construção</code></pre>
 <span id="cb229-2"><a href="#cb229-2"></a><span class="fu">mean</span>(y)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 9.972074</code></pre>
+<pre><code>[1] 9.909466</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
 <div class="sourceCode cell-code" id="cb231"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb231-1"><a href="#cb231-1"></a><span class="fu">sd</span>(y)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 5.17091</code></pre>
+<pre><code>[1] 5.185228</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
 <div class="sourceCode cell-code" id="cb233"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb233-1"><a href="#cb233-1"></a><span class="fu">sd</span>(y) <span class="sc">/</span> <span class="fu">mean</span>(y) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 51.8539</code></pre>
+<pre><code>[1] 52.32601</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
@@ -1785,21 +1786,21 @@ Escores padronizados (z-score): média=0 por construção</code></pre>
 <span id="cb235-2"><a href="#cb235-2"></a><span class="fu">mean</span>(y)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 566.2441</code></pre>
+<pre><code>[1] 566.1189</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
 <div class="sourceCode cell-code" id="cb237"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb237-1"><a href="#cb237-1"></a><span class="fu">sd</span>(y)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 10.34182</code></pre>
+<pre><code>[1] 10.37046</code></pre>
 </div>
 <details class="code-fold">
 <summary>Mostrar código</summary>
 <div class="sourceCode cell-code" id="cb239"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb239-1"><a href="#cb239-1"></a><span class="fu">sd</span>(y) <span class="sc">/</span> <span class="fu">mean</span>(y) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.826389</code></pre>
+<pre><code>[1] 1.831851</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2077,11 +2078,11 @@ Produção de leite: litros com precisão decimal</code></pre>
 <li>Contagem: Regressão Poisson/Binomial Negativa</li>
 <li>Contínua: Regressão Linear (se normal)</li>
 </ul>
-<p><strong>Cuidados na Interpretação</strong></p>
+<p><strong>Cuidados na interpretação de suas variáveis em estudo</strong></p>
 <ol type="1">
-<li><strong>Não tratar ordinal como quantitativa</strong>: A média de escores 1, 2, 3 pode não ter significado</li>
+<li><strong>Não tratar ordinal como quantitativa</strong>: A média de escores 1, 2, 3 possui algum significado? E o desvio padrão dos estágios 1, 2, 3 e 4 de determinada neoplasia?</li>
 <li><strong>Verificar escala antes de calcular razões</strong>: 20°C não é “duas vezes mais quente” que 10°C</li>
-<li><strong>Considerar a precisão da medida</strong>: Uma balança com precisão de 1kg torna o peso discreto na prática</li>
+<li><strong>Considerar a precisão da medida</strong>: Uma balança com precisão de 1kg torna a variável peso, que é inerentemente contínua, em uma variável discreta na prática.</li>
 </ol>
 <!-- -->
 
@@ -3495,11 +3496,11 @@ uma introdução ao R. September 29, 2025.
 <span id="cb246-965"><a href="#cb246-965"></a><span class="ss">- </span>Contagem: Regressão Poisson/Binomial Negativa</span>
 <span id="cb246-966"><a href="#cb246-966"></a><span class="ss">- </span>Contínua: Regressão Linear (se normal)</span>
 <span id="cb246-967"><a href="#cb246-967"></a></span>
-<span id="cb246-968"><a href="#cb246-968"></a>**Cuidados na Interpretação**</span>
+<span id="cb246-968"><a href="#cb246-968"></a>**Cuidados na interpretação de suas variáveis em estudo**</span>
 <span id="cb246-969"><a href="#cb246-969"></a></span>
-<span id="cb246-970"><a href="#cb246-970"></a><span class="ss">1. </span>**Não tratar ordinal como quantitativa**: A média de escores 1, 2, 3 pode não ter significado</span>
+<span id="cb246-970"><a href="#cb246-970"></a><span class="ss">1. </span>**Não tratar ordinal como quantitativa**: A média de escores 1, 2, 3 possui algum significado? E o desvio padrão dos estágios 1, 2, 3 e 4 de determinada neoplasia?</span>
 <span id="cb246-971"><a href="#cb246-971"></a><span class="ss">2. </span>**Verificar escala antes de calcular razões**: 20°C não é "duas vezes mais quente" que 10°C</span>
-<span id="cb246-972"><a href="#cb246-972"></a><span class="ss">3. </span>**Considerar a precisão da medida**: Uma balança com precisão de 1kg torna o peso discreto na prática</span>
+<span id="cb246-972"><a href="#cb246-972"></a><span class="ss">3. </span>**Considerar a precisão da medida**: Uma balança com precisão de 1kg torna a variável peso, que é inerentemente contínua, em uma variável discreta na prática.</span>
 </code><button title="Copiar para a área de transferência" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
