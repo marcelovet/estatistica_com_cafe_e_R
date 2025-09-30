@@ -244,6 +244,8 @@ format:
 
 ## Treinamento 5: Testes de hipóteses e testes paramétricos
 
+- **Data prevista: 18/12/2025**
+
 - Testes de Hipóteses
 - Testes paramétricos
 - Testes para normalidade univariada
@@ -269,6 +271,8 @@ format:
 
 ## Treinamento 6: Testes não paramétricos
 
+- **Data prevista: 08/01/2026**
+
 - Testes para uma amostra
   - Teste binomial
   - Teste qui-quadrado (χ²) para uma amostra
@@ -288,6 +292,8 @@ format:
   - Teste de Kruskal–Wallis
 
 ## Treinamento 7: Medidas de frequência de doenças e de associação
+
+- **Data prevista: 22/01/2026**
 
 - Medidas de frequência da doença
     - Contagem, proporção, odds e taxas
@@ -312,6 +318,8 @@ format:
     - Testes de hipótese e intervalo de confiança para medidas de associação
 
 ## Treinamento 8: Tipos de estudo
+
+- **Data prevista: 05/02/2026**
 
 - Estudo observacional
 - Coorte

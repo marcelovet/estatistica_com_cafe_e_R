@@ -58,6 +58,31 @@ format:
 
 # Fundamentos de R para análise de dados
 
+```{r}
+#| label: setup
+#| warning: false
+
+# Pacotes
+library(tidyverse)
+library(gridExtra)
+library(plotly)
+library(gt)
+library(tidyverse)
+
+# Tema personalizado para gráficos
+tema_didatico <- theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(face = "italic", size = 11),
+    axis.title = element_text(size = 12),
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+
+cores <- c("#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7")
+
+```
+
 ## Conhecimentos básicos de R
 
 ### Instalação do R e RStudio
@@ -543,6 +568,61 @@ Representam características, atributos ou qualidades que não podem ser medidas
 
 **Exemplos**: A) Raça de animais (Holandesa, Jersey, Angus); B) Diagnóstico clínico (positivo, negativo); C) Coloração de pelagem (preto, branco, malhado).
 
+```{r}
+#| label: fig2_qualitativa_nominal_ordinal
+#| fig-width: 14
+#| fig-cap: "Variáveis qualitativas"
+
+# resultados iguais em diferentes simulações
+set.seed(42)
+
+dados_vet <- data.frame(
+  # Variáveis qualitativas
+  especie = sample(c("Cão", "Gato", "Coelho"), 100, replace = TRUE, prob = c(0.5, 0.4, 0.1)),
+  sexo = sample(c("Macho", "Fêmea"), 100, replace = TRUE),
+  condicao_corporal = sample(c("Magro", "Ideal", "Sobrepeso", "Obeso"), 100, replace = TRUE),
+  
+  # Variáveis quantitativas
+  peso_kg = round(rnorm(100, mean = 15, sd = 8), 1),
+  idade_meses = rpois(100, lambda = 36)
+)
+
+p1 <- ggplot(
+  dados_vet,
+  aes(x = especie, fill = especie)
+) +
+  geom_bar() +
+  scale_fill_manual(
+    values = cores[1:3]
+  ) +
+  tema_didatico +
+  labs(
+    title = "Variável Qualitativa: ESPÉCIE",
+    subtitle = "Categorias SEM ordem natural",
+    y = "Frequência"
+  ) +
+  theme(legend.position = "none")
+
+p2 <- ggplot(
+  dados_vet,
+  aes(x = condicao_corporal, fill = condicao_corporal)
+) +
+  geom_bar() +
+  scale_x_discrete(
+    limits = c("Magro", "Ideal", "Sobrepeso", "Obeso")
+  ) +
+  scale_fill_manual(values = cores) +
+  tema_didatico +
+  labs(
+    title = "Variável Qualitativa ORDINAL: CONDIÇÃO CORPORAL",
+    subtitle = "Categorias COM ordem natural",
+    y = "Frequência"
+  ) +
+  theme(legend.position = "none")
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
 ### Variáveis Métricas (Quantitativas)
 
 Representam quantidades mensuráveis ou que são contadas. Permitem maior gama de possibilidades gráficas (gráficos de linhas, dispersão, histograma, boxplot...), medidas de posição, dispersão e forma.
@@ -557,6 +637,47 @@ Podem ser discretas, quando assumem um conjunto finito ou enumerável de valores
 
 **Exemplos**: A) Peso corporal (kg); B) Contagem de leucócitos (células/μL); C) Produção de leite (litros/dia); D) número de filhos.
 
+```{r}
+#| label: fig3_quantitativa_discreta_continua
+#| fig-width: 14
+#| fig-cap: "Variáveis quantitativas"
+#| warning: false
+
+p3 <- ggplot(
+  dados_vet,
+  aes(x = factor(idade_meses))
+) +
+  geom_bar(fill = cores[3], alpha = 0.7) +
+  tema_didatico +
+  labs(
+    title = "Variável Quantitativa DISCRETA: IDADE",
+    subtitle = "Apenas valores inteiros (meses completos)",
+    x = "Idade (meses)",
+    y = "Frequência"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+p4 <- ggplot(
+  dados_vet,
+  aes(x = peso_kg, y = ..density..)
+) +
+  geom_histogram(
+    fill = cores[1], colour = "grey60", alpha = 0.7, size=.2
+  ) +
+  geom_density(
+    color = cores[2], size = 1.2
+  ) +
+  tema_didatico +
+  labs(
+    title = "Variável Quantitativa CONTÍNUA: PESO",
+    subtitle = "Pode assumir qualquer valor no intervalo",
+    x = "Peso (kg)",
+    y = "Frequência"
+  )
+
+grid.arrange(p3, p4, ncol = 2)
+```
+
 ## Escalas de mensuração (Stevens, 1946)
 
 Mensuração é o ato de atribuir números ou rótulos a um indíviduo de acordo com regras específicas para representar quantidades ou qualidades de um atributo (a variável em estudo). A escala é o conjunto de possíveis valores que o atributo poderá assumir, considerando a regra de mensuração.
@@ -564,7 +685,7 @@ Mensuração é o ato de atribuir números ou rótulos a um indíviduo de acordo
 Existem várias classificações de tipos de escala, mas vamos usar a de Stevens (1946), pela simplicidade e amplo uso.
 
 ```{mermaid}
-%%| label: fig2_diagrama_tipos_escalas
+%%| label: fig4_diagrama_tipos_escalas
 %%| fig-cap: "Tipos de escalas."
 
 flowchart TB
@@ -575,6 +696,126 @@ flowchart TB
   D[Variável quantitativa]
   D --> E["Escala intervalar"]
   D --> F["Escala Razão"]
+```
+
+```{r}
+#| label: fig5_escalas
+#| fig-width: 10
+#| fig-cap: "Classificações de escalas"
+#| warning: false
+
+escalas_demo <- data.frame(
+  # NOMINAL
+  cor_pelagem = c("Preto", "Branco", "Caramelo", "Malhado", "Cinza"),
+  
+  # ORDINAL
+  gravidade_doenca = factor(
+    c("Leve", "Moderada", "Grave", "Crítica", "Leve"),
+    levels = c("Leve", "Moderada", "Grave", "Crítica"),
+    ordered = TRUE
+  ),
+  
+  # INTERVALAR
+  temperatura_celsius = c(38.5, 39.2, 37.8, 40.1, 38.9),
+  
+  # RAZÃO
+  dose_medicamento_mg = c(0, 50, 100, 150, 200)
+)
+
+visualizar_escalas <- function() {
+  # Escala Nominal
+  p_nominal <- data.frame(
+    categoria = escalas_demo$cor_pelagem,
+    y = 1:5,
+    x = 1
+  ) %>%
+    ggplot(aes(x = x, y = y, label = categoria, fill = categoria)) +
+    geom_tile(width = 0.8, height = 0.8) +
+    geom_text(size = 4, color = "white", fontface = "bold") +
+    scale_fill_manual(values = cores) +
+    tema_didatico +
+    labs(
+      title = "ESCALA NOMINAL",
+      subtitle = "Apenas categorias distintas\n = ou ≠") +
+    theme(
+      axis.text = element_blank(),
+      axis.title = element_blank(),
+      legend.position = "none"
+    )
+  
+  # Escala Ordinal
+  p_ordinal <- data.frame(
+    categoria = as.character(escalas_demo$gravidade_doenca),
+    y = 1:5,
+    x = 1,
+    ordem = as.numeric(escalas_demo$gravidade_doenca)
+  ) %>%
+    ggplot(aes(x = x, y = ordem, label = categoria, fill = ordem)) +
+    geom_tile(width = 0.8, height = 0.8) +
+    geom_text(size = 4, color = "white", fontface = "bold") +
+    scale_fill_gradient(low = cores[4], high = cores[1]) +
+    tema_didatico +
+    labs(
+      title = "ESCALA ORDINAL",
+      subtitle = "Ordem importa!\n = ou ≠ | > ou <") +
+    theme(
+      axis.text = element_blank(),
+      axis.title = element_blank(),
+      legend.position = "none"
+    )
+  
+  # Escala Intervalar
+  p_intervalar <- data.frame(
+    temp = escalas_demo$temperatura_celsius,
+    y = 1:5
+  ) %>%
+    ggplot(aes(x = temp, y = y)) +
+    geom_segment(
+      aes(x = 37, xend = temp, y = y, yend = y),
+      color = cores[2], size = 2
+    ) +
+    geom_point(size = 4, color = cores[1]) +
+    geom_text(aes(label = paste0(temp, "°C")), vjust = -1) +
+    scale_x_continuous(limits = c(37, 41)) +
+    tema_didatico +
+    labs(
+      title = "ESCALA INTERVALAR",
+      subtitle = "Intervalos iguais, zero arbitrário\n Todas anteriores | + ou -",
+      x = "Temperatura (°C)") +
+    theme(
+      axis.text.y = element_blank(),
+      axis.title.y = element_blank()
+    )
+  
+  # Escala de Razão
+  p_razao <- data.frame(
+    dose = escalas_demo$dose_medicamento_mg,
+    y = 1:5
+  ) %>%
+    ggplot(aes(x = dose, y = y)) +
+    geom_segment(
+      aes(x = 0, xend = dose, y = y, yend = y),
+      color = cores[3], size = 2
+    ) +
+    geom_point(size = 4, color = cores[1]) +
+    geom_text(aes(label = paste0(dose, "mg")), vjust = -1) +
+    scale_x_continuous(limits = c(-10, 210)) +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+    tema_didatico +
+    labs(
+      title = "ESCALA DE RAZÃO",
+      subtitle = "Zero absoluto existe!\n TODAS as operações | × ou ÷",
+      x = "Dose (mg)"
+    ) +
+    theme(
+      axis.text.y = element_blank(),
+      axis.title.y = element_blank()
+    )
+  
+  grid.arrange(p_nominal, p_ordinal, p_intervalar, p_razao, ncol = 2)
+}
+
+visualizar_escalas()
 ```
 
 ### Escala Nominal (Variáveis Não Métricas)
@@ -693,48 +934,74 @@ y3 = 32 + (1.8 * x3)
 - Média, desvio-padrão, mediana, percentis, correlação (com os devidos cuidados)
 
 ```{r}
-x <- rnorm(1000, mean=283.15, sd=5.15) # aproximadamente 20°C
+set.seed(21)
+
+x <- rnorm(10000, mean=283.15, sd=5.15) # aproximadamente 20°C
 mean(x)
 sd(x)
 sd(x) / mean(x) * 100
 
-y = x - 273.15
+y = x*2
 mean(y)
 sd(y)
 sd(y) / mean(y) * 100
 
-y = x*2
+y = x - 273.15
 mean(y)
 sd(y)
 sd(y) / mean(y) * 100
 ```
 
 ```{r}
-#| warning: false
-#| label: fig3_density_variaveis_escala_intervalar
+#| label: fig6_transformacao_linear
+#| fig-width: 10
 #| fig-cap: "Distribuição de uma variável na escala razão e sua transformada nas escalar intervalar."
-
-require(tidyverse)
-require(gridExtra)
+#| warning: false
 
 temperatures <- tibble(kelvin = x, celsius = y)
 
 k_plot <- ggplot(data = temperatures, aes(x=kelvin, y = ..density..)) +
   geom_histogram(fill = "cornsilk", colour = "grey60", size = .2) +
-  geom_density() +
+  geom_density(linetype = "dashed") +
   labs(
     x = "Kelvin",
     y = "Densidade"
   ) +
+  geom_vline(xintercept = mean(temperatures$kelvin), linetype = "dotted", color = "blue", size = 1) +
+  annotate(
+    "text",
+    label = str_c(
+      "Média = ", round(mean(temperatures$kelvin), 1),
+      "\nDP = ", round(sd(temperatures$kelvin), 1),
+      "\nCV = ", round(sd(temperatures$kelvin) / mean(temperatures$kelvin) * 100, 1), "%"
+    ),
+    x = mean(temperatures$kelvin) + 6,
+    y = 0.02,
+    color = "blue"
+  ) +
+  scale_x_continuous(breaks = seq(260, 305, 5)) +
   theme_bw()
 
 c_plot <- ggplot(data = temperatures, aes(x=celsius, y = ..density..)) +
   geom_histogram(fill = "cornsilk", colour = "grey60", size = .2) +
-  geom_density() +
+  geom_density(linetype = "dashed") +
   labs(
     x = "Celsius",
     y = "Densidade"
   ) +
+  geom_vline(xintercept = mean(temperatures$celsius), linetype = "dotted", color = "blue", size = 1) +
+  annotate(
+    "text",
+    label = str_c(
+      "Média = ", round(mean(temperatures$celsius), 1),
+      "\nDP = ", round(sd(temperatures$celsius), 1),
+      "\nCV = ", round(sd(temperatures$celsius) / mean(temperatures$celsius) * 100, 1), "%"
+    ),
+    x = mean(temperatures$celsius) + 5,
+    y = 0.02,
+    color = "blue"
+  ) +
+  scale_x_continuous(breaks = seq(-10, 30, 5)) +
   theme_bw()
 
 marrangeGrob(
@@ -805,8 +1072,8 @@ Em termos matemáticos:
 Variáveis qualitativas podem ser classificadas em dicotômicas quando apresentam apenas duas categorias ou policotômicas quando possuem mais que duas categorias. Já as variáveis quantitativas podem ser classificadas conforme a escala de precisão em discretas ou contínuas.
 
 ```{mermaid}
-%%| label: fig4_diagrama_classificacao_precisao
-%%| fig-cap: "Tipos de escalas."
+%%| label: fig7_diagrama_classificacao_precisao
+%%| fig-cap: "Classificação conforme o número de categorias e escala de precisão."
 
 flowchart TB
   A["Variável qualitativa"]
@@ -816,6 +1083,168 @@ flowchart TB
   D[Variável quantitativa]
   D --> E["Discreta"]
   D --> F["Contínua"]
+```
+
+```{r}
+#| label: fig8_distribuicoes_categoria_precisao
+#| fig-width: 10
+#| fig-cap: "Distribuição de uma variável conforme o número de categorias e escala de precisão."
+#| warning: false
+#| fig-height: 12
+
+set.seed(123)
+n <- 200
+
+dados_categorias <- data.frame(
+  # DICOTÔMICA/BINÁRIA
+  vacinado = sample(c("Sim", "Não"), n, replace = TRUE),
+  teste_positivo = sample(0:1, n, replace = TRUE),
+  
+  # POLICOTÔMICA
+  especie = sample(
+    c("Canino", "Felino", "Lagomorfo", "Ave", "Réptil"),
+    n, replace = TRUE, prob = c(0.4, 0.3, 0.15, 0.1, 0.05)
+  ),
+  
+  # DISCRETA
+  numero_filhotes = rpois(n, lambda = 3),
+  dias_internacao = sample(0:14, n, replace = TRUE),
+  
+  # CONTÍNUA
+  glicemia = round(rnorm(n, mean = 100, sd = 20), 1),
+  peso_gramas = round(rnorm(n, mean = 3500, sd = 1200), 2)
+)
+
+visualizar_tipos_categorias <- function() {
+  # DICOTÔMICA
+  p_dic1 <- ggplot(
+    dados_categorias,
+    aes(x = vacinado, fill = vacinado)
+  ) +
+  geom_bar() +
+  scale_fill_manual(values = cores[c(1,3)]) +
+  tema_didatico +
+  labs(
+    title = "Variável DICOTÔMICA",
+    subtitle = "Exatamente 2 categorias",
+    y = "Frequência"
+  ) +
+  theme(legend.position = "none")
+  
+  # DICOTÔMICA como dummy (0/1)
+  p_dic2 <- ggplot(
+    dados_categorias,
+    aes(x = factor(teste_positivo))
+  ) +
+  geom_bar(fill = cores[2]) +
+  scale_x_discrete(labels = c("0\n(Negativo)", "1\n(Positivo)")) +
+  tema_didatico +
+  labs(
+    title = "Variável DUMMY (0/1)",
+    subtitle = "Dicotômica codificada numericamente",
+    x = "Resultado do teste",
+    y = "Frequência"
+  )
+  
+  # POLICOTÔMICA
+  p_poli <- ggplot(
+    dados_categorias,
+    aes(x = especie, fill = especie)
+  ) +
+  geom_bar() +
+  scale_fill_manual(values = cores) +
+  tema_didatico +
+  labs(
+    title = "Variável POLICOTÔMICA",
+    subtitle = "Mais de 2 categorias",
+    y = "Frequência"
+  ) +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+  
+  # DISCRETA
+  p_disc <- ggplot(
+    dados_categorias,
+    aes(x = numero_filhotes)
+  ) +
+  geom_bar(fill = cores[4], alpha = 0.7) +
+  scale_x_continuous(breaks = 0:max(dados_categorias$numero_filhotes)) +
+  tema_didatico +
+  labs(
+    title = "Variável DISCRETA",
+    subtitle = "Valores inteiros, contáveis",
+    x = "Número de filhotes",
+    y = "Frequência"
+  )
+  
+  # CONTÍNUA
+  p_cont <- ggplot(
+    dados_categorias,
+    aes(x = glicemia)
+  ) +
+  geom_histogram(
+    aes(y = ..density..),
+    fill = cores[5],
+    alpha = 0.7,
+    bins = 30
+  ) +
+  geom_density(color = cores[1], size = 1.2) +
+  tema_didatico +
+  labs(
+    title = "Variável CONTÍNUA",
+    subtitle = "Infinitos valores possíveis no intervalo",
+    x = "Glicemia (mg/dL)",
+    y = "Densidade"
+  )
+  
+  # Demonstração de precisão: discreta vs contínua
+  p_precisao <- data.frame(
+    discreta = dados_categorias$dias_internacao,
+    continua = dados_categorias$peso_gramas/1000
+  ) %>%
+  ggplot() +
+  geom_point(
+    aes(x = 1, y = discreta),
+    color = cores[2],
+    position = position_jitter(width = 0.02, height = 0),
+    alpha = 0.5
+  ) +
+  geom_point(
+    aes(x = 2, y = continua*5),
+    color = cores[3],
+    position = position_jitter(width = 0.02, height = 0),
+    alpha = 0.5
+  ) +
+  scale_x_continuous(
+    breaks = c(1, 2),
+    labels = c("Discreta\n(dias)", "Contínua\n(kg)")
+  ) +
+  scale_y_continuous(breaks = seq(0, 38, 1)) +
+  tema_didatico +
+  labs(
+    title = "PRECISÃO: Discreta vs Contínua",
+    subtitle = "Discreta: gaps entre valores | Contínua: qualquer precisão",
+    x = "",
+    y = "Valores observados"
+  )
+  
+  grid.arrange(
+    p_dic1, p_dic2, p_poli, p_disc, p_cont, p_precisao,
+    layout_matrix = rbind(
+      c(1, 2),
+      c(3, 4),
+      c(5, 5),
+      c(6, 6),
+      c(6, 6),
+      c(6, 6)
+    )
+  )
+
+}
+
+visualizar_tipos_categorias()
 ```
 
 ### Variável Dicotômica ou Binária (Dummy)
@@ -927,7 +1356,9 @@ Produção de leite: litros com precisão decimal
 
 **Cuidados na interpretação de suas variáveis em estudo**
 
-1. **Não tratar ordinal como quantitativa**: A média de escores 1, 2, 3 possui algum significado? E o desvio padrão dos estágios 1, 2, 3 e 4 de determinada neoplasia?
-2. **Verificar escala antes de calcular razões**: 20°C não é "duas vezes mais quente" que 10°C
-3. **Considerar a precisão da medida**: Uma balança com precisão de 1kg torna a variável peso, que é inerentemente contínua, em uma variável discreta na prática.
-
+1. **Nem sempre números são variáveis quantitativas**: código postal, ID do paciente, número de documento...
+2. **Não tratar ordinal como quantitativa**: A média de escores 1, 2, 3 possui algum significado? E o desvio padrão dos estágios 1, 2, 3 e 4 de determinada neoplasia?
+3. **Zero em escalas intervalares não indicam ausência**: 0°C ≠ ausência de temperatura
+4. **Verificar escala antes de calcular razões**: 20°C não é "duas vezes mais quente" que 10°C
+5. **Considerar a precisão da medida**: Uma balança com precisão de 1kg torna a variável peso, que é inerentemente contínua, em uma variável discreta na prática.
+6. **Sempre leve em consideração as transformações aplicadas na variável**: aX+b, log(X), sqrt(X).
