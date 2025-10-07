@@ -1,0 +1,180 @@
+---
+title: "Café com estatística e R"
+subtitle: "Treinamento 2 - Importação e manipulação de dados no R e estatística descritiva"
+date: last-modified
+author:
+  - name: Marcelo Teixeira Paiva
+    orcid: 0000-0001-6334-073X
+    email: marcelo_thelin@hotmail.com
+    affiliation: 
+      - name: CRMV-MG
+        city: Belo Horizonte
+        state: MG
+        country: Brazil
+        url: portal.crmvmg.gov.br
+abstract: > 
+  Relatório do segundo treinamento onde foi apresentado como importar dados e manipulá-los no R, bem como as principais estatísticas descritivas univariadas e multivariadas.
+keywords:
+  - statistical analysis
+license: "CC0"
+copyright: 
+  holder: Marcelo Paiva
+  year: 2025
+citation: 
+  container-title: "Café com estatística e R: Treinamento 2 - Importação e manipulação de dados no R e estatística descritiva"
+  volume: 1
+  issue: 1
+funding: "The author received no specific funding for this work."
+lang: pt-BR
+toc: true
+toc-depth: 4
+toc-expand: true
+toc-title: "Índice"
+number-sections: true
+format:
+  html:
+    code-fold: true
+    code-summary: "Mostrar código"
+    code-tools: true
+    highlight-style: ayu-mirage
+    code-line-numbers: true
+    theme:
+      light: journal
+      dark: superhero
+    fontsize: 1.1em
+    linestretch: 1.7
+    max-width: 1800px
+    margin: 1rem
+  pdf: 
+    documentclass: report
+    lof: true
+    lot: true
+    geometry:
+      - top=30mm
+      - left=20mm
+      - heightrounded
+    colorlinks: true
+---
+
+```{r}
+#| label: setup
+#| warning: false
+
+# Pacotes
+library(tidyverse)
+library(gridExtra)
+library(plotly)
+library(gt)
+library(tidyverse)
+
+# Tema personalizado para gráficos
+tema_didatico <- theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(face = "italic", size = 11),
+    axis.title = element_text(size = 12),
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+
+cores <- c("#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7")
+```
+
+# Importação de dados no R
+
+## Pacotes necessários
+
+Pacotes (**package**) são coleções de funções, dados e documentação que estendem as capacidades do R base (aquele que você recebe na instalação padrão). São como "caixas de ferramentas" especializadas que você adiciona ao R para realizar tarefas específicas, então você tem pacotes para elaboração de gráficos, para certos tipos de análises, para manipulação de dados, para leitura (importação) de dados. Em [https://cran.r-project.org/web/views/](https://cran.r-project.org/web/views/) há uma "breve" lista de pacotes conforme a sua finalidade.
+
+```{r}
+# funções no R base
+length(ls("package:base"))
+
+# funções especializadas no pacote dplyr
+length(ls("package:dplyr"))
+
+# um pacote possui um conjunto de arquivos associados
+system.file(package = "ggplot2") %>% list.files()
+```
+
+Por padrão, ao iniciar uma sessão no R, serão carregados os pacotes e funções associados ao R base. Os demais devem ser instalados primeiramente, e depois carregados na seção para serem usados.
+
+```{r}
+# pacotes carregados no seu ambiente
+search()
+
+# pacotes instalados
+instalados <- installed.packages()[, "Package"]
+instalados[1:4]
+length(instalados)
+
+# verificando se um pacote já está instalado
+sum(installed.packages()[, "Package"] == 'dplyr')
+any(installed.packages()[, "Package"] == 'dplyr')
+"ggplot2" %in% rownames(installed.packages())
+```
+
+A instalação de pacotes no R é feita usando a função `install.packages` ou `devtools::install_github` para pacotes que estão no github e não em um repositório de pacotes.
+
+```{r}
+#| eval: false
+
+# pelo repositório oficial (na web)
+install.packages("ggplot2")
+install.packages(c("dplyr", "tidyr", "readr")) # instalando vários pacotes de uma vez
+
+# Instalar o pacote e todas dependências relacionadas a ele
+install.packages("ggplot2", dependencies = TRUE)
+
+# instalar de um arquivo local
+install.packages("caminho/para/pacote.tar.gz", repos = NULL, type = "source")
+
+# Instalar pacote mantido no GitHub
+install.packages("devtools")
+devtools::install_github("tidyverse/ggplot2")
+
+# Usar outros repositórios para instalação
+install.packages("ggplot2", repos = "https://cloud.r-project.org/")
+```
+
+Para carregar um pacote em uma sessão usamos `library()` ou `require()`. A diferença entre os dois é que, na ausência do pacote que você pretende carregar, `library` gera um erro, enquanto o `require` retorna um valor `FALSE` invisível, o qual pode ser usado, por exemplo, para criar uma lógica em seu script para instalar o pacote caso o mesmo não possa ser carregado ou, então, para gerar uma mensagem no terminal indicando essa ausência do pacote.
+
+```{r}
+library(ggplot2)
+
+# Não exibir mensagens de carregamento do pacote
+suppressPackageStartupMessages(library(ggplot2))
+
+# criando uma lógica simples com require para instalar pacotes que
+# não possam ser carregados
+if(!require(ggplot2)) {
+  install.packages("ggplot2")
+  require(ggplot2)
+}
+
+# usando uma função do pacote sem o carregar (namespace qualification)
+head(dplyr::filter(mtcars, mpg > 20), 2)
+
+# carregando vários pacotes de uma lista de nomes
+pacotes <- c("ggplot2", "dplyr", "tidyr")
+x <- lapply(pacotes, library, character.only = TRUE, quietly = TRUE)
+```
+
+Além dessas funções para instalação e carregamento de pacotes, também temos funções para atualizar e remover um pacote, obter sua descrição, versão e obter a forma recomendada pelo seus autores de citação quando usada em uma publicação.
+
+```{r}
+# Atualização de pacotes
+update.packages()  # todos
+update.packages(ask = FALSE)  # todos, mas exige confirmação
+
+# apagar um pacote
+remove.packages("nome_pacote")
+
+# descrição e versão
+packageDescription("ggplot2")
+packageVersion("ggplot2")
+
+# forma de citação
+citation("ggplot2")
+```
+

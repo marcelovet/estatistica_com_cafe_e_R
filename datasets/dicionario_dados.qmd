@@ -1,0 +1,1123 @@
+---
+title: "Café com estatística e R"
+subtitle: "Dicionário dos conjuntos de dados disponíveis"
+date: last-modified
+author:
+  - name: Marcelo Teixeira Paiva
+    orcid: 0000-0001-6334-073X
+    email: marcelo_thelin@hotmail.com
+    affiliation: 
+      - name: CRMV-MG
+        city: Belo Horizonte
+        state: MG
+        country: Brazil
+        url: portal.crmvmg.gov.br
+abstract: > 
+  Apresenta o dicionário dos conjuntos de dados do projeto, disponibilizados como material de estudo no livro Veterinary Epidemiologic Research (Dohoo et al., 2010).
+keywords:
+  - statistical analysis
+license: "CC BY"
+copyright: 
+  holder: Marcelo Paiva
+  year: 2025
+citation: 
+  container-title: "Café com estatística e R: Dicionário dos conjuntos de dados disponíveis"
+  volume: 1
+  issue: 1
+funding: "The author received no specific funding for this work."
+lang: pt-BR
+toc: true
+toc-depth: 4
+toc-expand: true
+toc-title: "Índice"
+number-sections: true
+format:
+  html:
+    code-fold: true
+    code-summary: "Mostrar código"
+    code-tools: true
+    highlight-style: ayu-mirage
+    code-line-numbers: true
+    theme:
+      light: journal
+      dark: superhero
+    fontsize: 1.1em
+    linestretch: 1.7
+    max-width: 1800px
+    margin: 1rem
+  pdf: 
+    documentclass: report
+    geometry:
+      - top=30mm
+      - left=20mm
+      - heightrounded
+    colorlinks: true
+---
+
+# Descrição dos Conjuntos de Dados
+
+Nas descrições que seguem, a menos que especificado de outra forma, todas as variáveis codificadas como 0 ou 1 (0/1) têm o seguinte significado:
+
+0 = não, ausente ou negativo  
+1 = sim, presente ou positivo  
+
+## ap2
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Håkan Vigre     | Coorte única  | 1114       | Porco              |
+
+**Referência(s)**  
+Vigre H, Dohoo IR, Stryhn H, Busch ME. Correlações intra-unidade na soroconversão para Actinobacillus pleuropneumoniae e Mycoplasma hyopneumoniae em diferentes níveis em instalações de produção de porcos multissítio na Dinamarca. Prev Vet Med. 2004; 63: 9-28.
+
+**Descrição Breve**  
+Dados foram coletados em 1.114 porcos de 35 lotes produzidos em seis fazendas que empregavam um processo de produção "all-in, all-out". Os porcos foram pesados e amostrados de sangue no momento da transferência do celeiro de desmame para o celeiro de acabamento (aproximadamente 70 dias de idade) e novamente 6 semanas depois (pouco antes do abate). As amostras de sangue foram testadas para anticorpos contra **Actinobacillus pleuropneumonia** (Tipo 2), **Mycoplasma hyopneumoniae**, o vírus da influenza e o vírus da síndrome respiratória e reprodutiva suína (PRRS). Dois dos objetivos do estudo eram determinar quando a soroconversão para os vários agentes ocorreu e em qual nível da população (por exemplo, porco, lote ou rebanho) a maior parte da variação na soroconversão ocorreu.
+
+**Tabela de Variáveis**
+
+| Variável    | Descrição                                                                 | Códigos/Unidades |
+|-------------|---------------------------------------------------------------------------|------------------|
+| farm_id    | Identificação da fazenda                                                 |                  |
+| batch_id   | Número de identificação do lote                                          |                  |
+| litt_id    | Número de identificação da ninhada                                       |                  |
+| pig_id     | Identificação do porco                                                   |                  |
+| parity     | Número de parição da porca                                               |                  |
+| vacc_mp    | Lote vacinado contra M. hyopneumoniae                                    | 0/1              |
+| seas_fin   | Estação dos porcos na unidade de acabamento (0=verão, 1=inverno)         | 0/1              |
+| age_t      | Idade do porco na transferência do desmame para a unidade de acabamento  | dias             |
+| w_age_t    | Peso em age_t                                                            | kg               |
+| age_t6     | Idade mais aproximadamente 6 semanas                                     | dias             |
+| w_age_t6   | Peso na age_t6                                                           | kg               |
+| dwg_fin    | Ganho de peso diário entre age_t e age_t6                                | g                |
+| ap2_t      | Reação sorológica contra A. pleuropneumoniae sorotipo 2 na age_t         | 0/1              |
+| mp_t       | Reação sorológica contra M. hyopneumoniae na age_t                       | 0/1              |
+| infl_t     | Reação sorológica contra vírus da influenza na age_t                     | 0/1              |
+| prrs_t     | Reação sorológica contra vírus PRRS na age_t                             | 0/1              |
+| ap2_t6     | Reação sorológica contra A. pleuropneumoniae sorotipo 2 na t6            | 0/1              |
+| mp_t6      | Reação sorológica contra M. hyopneumoniae na age_t6                      | 0/1              |
+| infl_t6    | Reação sorológica contra vírus da influenza na age_t6                    | 0/1              |
+| prrs_t6    | Reação sorológica contra vírus PRRS na age_t6                            | 0/1              |
+| ap2_sc     | Soroconversão para ap2 durante o período de acabamento                   | 0/1              |
+
+## beef_ultra
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Greg Keefe      | Coorte única  | 487        | Animal             |
+
+**Referência(s)**  
+Keefe G, Dohoo I, Valcour J, Milton R. Imagem ultrassonográfica de marmoreio na entrada do confinamento como preditor de grau de qualidade da carcaça. Canadian Journal of Animal Science. 2004; 84: 165-70.
+
+**Descrição Breve**  
+Dados foram coletados em 487 bovinos no momento em que entraram em um confinamento para "engorda" antes do abate. Os dados consistiam em informações demográficas mais leituras obtidas de uma avaliação ultrassonográfica do animal. Medições ultrassonográficas de espessura de gordura dorsal, área do músculo lombo e porcentagem de gordura intramuscular ("marmoreio") foram obtidas. O objetivo do estudo era determinar se o exame ultrassonográfico do animal no momento da entrada no confinamento era capaz de prever o grau final da carcaça (AAA, AA ou A). O grau da carcaça depende principalmente da quantidade de gordura intramuscular na carcaça no momento do abate.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades |
+|-----------|------------------------------------------------|------------------|
+| farm     | ID da fazenda                                  |                  |
+| id       | ID do animal                                   |                  |
+| grade    | Grau da carcaça                                | 1 = AAA<br>2 = AA<br>3 = A |
+| breed    | Raça (conhecida ou estimada)                   | múltiplas        |
+| sex      | Gênero                                         | 0 = fêmea<br>1 = macho |
+| bckgrnd  | Animal em background                           | 0/1              |
+| implant  | Implante hormonal usado                        | 0/1              |
+| backfat  | Espessura de gordura dorsal                    | mm               |
+| ribeye   | Área do músculo do olho de costela             | cm²              |
+| imfat    | Escore de gordura intramuscular                | % da área        |
+| days     | Período de engorda                             | dias             |
+| carc_wt  | Peso da carcaça                                | kg               |
+
+## bst_mast, bst_milk
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Ian Dohoo       | Meta-análise  | 29, 28     | Grupo de vacas     |
+
+**Referência(s)**  
+Dohoo IR, DesCôteaux L, Leslie K, Fredeen A, Shewfelt W, Preston A, Dowling P. Uma revisão de meta-análise dos efeitos da somatotropina bovina recombinante. 2. Efeitos na saúde animal, desempenho reprodutivo e descarte. Can J Vet Res. 2003a; 67: 252-64.  
+Dohoo IR, Leslie K, DesCôteaux L, Fredeen A, Dowling P, Preston A, Shewfelt W. Uma revisão de meta-análise dos efeitos da somatotropina bovina recombinante. 1. Metodologia e efeitos na produção. Can J Vet Res. 2003b; 67: 241-51.
+
+**Descrição Breve**  
+A pedido da Health Canada, a Canadian Veterinary Medical Association estabeleceu um painel de especialistas para revisar os efeitos na produção e saúde dos animais da somatotropina bovina recombinante (rBST) em bovinos leiteiros. O painel realizou uma meta-análise de toda a literatura disponível e avaliou uma ampla gama de efeitos de produção e saúde. Os dados neste arquivo consistem em razões de risco para mastite clínica associadas ao uso de rBST. Dados de 29 grupos distintos de vacas, de 20 estudos separados, estão incluídos. A precisão da estimativa pontual está incluída na forma de limites de confiança de 95%.
+
+**Tabela de Variáveis - bst_mast**
+
+| Variável   | Descrição                          | Códigos/Unidades |
+|------------|------------------------------------|------------------|
+| study     | Número do estudo                   |                  |
+| group     | Número do grupo de vacas           |                  |
+| parity    | Grupo de paridade                  | 1 = primíparas<br>2 = todas as idades combinadas<br>3 = multíparas |
+| study_yr  | Ano do estudo                      |                  |
+| rr        | Razão de risco                     |                  |
+| cilow     | Limite inferior de 95% de confiança|                  |
+| cihigh    | Limite superior de 95% de confiança|                  |
+| dur       | Duração do tratamento              | dias             |
+| dose_day  | Dosagem diária                     | mg/dia           |
+
+**Tabela de Variáveis – bst_milk** (mesmo que o acima, exceto por...)
+
+| Variável | Descrição                          | Códigos/Unidades |
+|----------|------------------------------------|------------------|
+| diff     | Diferença na produção de leite     |                  |
+| se       | Erro padrão da diferença           |                  |
+| ncows    | Número de vacas no estudo          |                  |
+
+## bvd_test
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Ann Lindberg    | Coorte única  | 2.162      | Vaca               |
+
+**Referência(s)**  
+Lindberg A, Groenendaal H, Alenius S, Emanuelson U. Validação de um teste para vacas carregando fetos persistentemente infectados com o vírus da diarreia viral bovina baseado na determinação de níveis de anticorpos no final da gravidez. Prev Vet Med. 2001; 51: 199-214.
+
+**Descrição Breve**  
+Amostras de sangue ou leite foram coletadas de 2.162 vacas prenhes em vários estágios de lactação. Após o nascimento de seus bezerros, o status do bezerro em relação à infecção persistente (PI) com o vírus da diarreia viral bovina (BVD) foi determinado. As amostras de sangue e leite foram testadas usando um ELISA para determinar níveis de anticorpos do vírus BVD na vaca. Uma variedade de pontos de corte foram então examinados para determinar quais davam a melhor combinação de sensibilidade e especificidade para detectar bezerros PI+. Regressão logística foi usada para avaliar os efeitos de outros fatores (particularmente estágio de lactação) na sensibilidade e especificidade estimadas do teste.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                          | Códigos/Unidades |
+|----------|------------------------------------|------------------|
+| cow_id  | Identificação da vaca              |                  |
+| breed   | Raça                               | 1 = vermelho e branco<br>2 = preto e branco<br>3 = carne<br>4 = outro |
+| parity  | Grupo de paridade                  | 1 = primíparas<br>2 = todas as idades combinadas<br>3 = multíparas |
+| pregmon | Mês de gravidez no teste           |                  |
+| season  | Estação de parto                   | 1 = inverno<br>2 = primavera<br>3 = verão<br>4 = outono |
+| spec    | Tipo de amostra                    | 0 = leite<br>1 = sangue |
+| calfst  | Status do bezerro                  | 0/1              |
+| od      | Densidade óptica                   |                  |
+| co_5    | Resultado do teste dicotomizado em 0.5 | 0/1          |
+| co_6    | Resultado do teste dicotomizado em 0.6 | 0/1          |
+| ... etc | ...                                | ...              |
+| co_15   | Resultado do teste dicotomizado em 1.5 | 0/1          |
+| co_16   | Resultado do teste dicotomizado em 1.6 | 0/1          |
+
+## calf
+
+| Contribuidor(es) | Tipo de Estudo     | # Registros | Unidade de Registro |
+|------------------|--------------------|-------------|---------------------|
+| Jeanne Lofstedt | Coorte retrospectiva | 254       | Bezerro            |
+
+**Referência(s)**  
+Lofstedt J, Dohoo IR, Duizer G. Modelo para prever septicemia em bezerros diarreicos. J Vet Intern Med. 1999; 13: 81-8.
+
+**Descrição Breve**  
+Esses dados vêm de uma análise retrospectiva dos registros médicos de todos os bezerros diarreicos apresentados à Atlantic Veterinary College, PEI, Canadá, entre 1989 e 1993. O objetivo final do estudo era desenvolver um modelo logístico que previsse se o bezerro estava séptico no momento da admissão (bezerros sépticos têm um prognóstico muito pior do que bezerros não sépticos e geralmente não valem o tratamento, considerando aspectos econômicos). Há 254 observações (registros) e 14 variáveis no conjunto de dados (calf). O conjunto de dados original tinha muito mais variáveis (incluindo muitos dados laboratoriais), mas este conjunto de dados contém apenas um subconjunto dos dados demográficos e dos dados de exame físico coletados. Todas as observações foram determinadas no dia da admissão, exceto pelo resultado (sepse), que foi baseado em todos os dados disponíveis no momento da morte ou alta.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                          | Códigos/Unidades |
+|----------|------------------------------------|------------------|
+| case    | Número do caso hospitalar          |                  |
+| age     | Idade na admissão                  | dias             |
+| breed   | Raça codificada                    | 1-9              |
+| sex     | Sexo                               | 0 = fêmea<br>1 = macho |
+| attd    | Atitude do bezerro                 | 0 = alerta<br>1 = deprimido<br>2 = não responsivo, comatoso |
+| dehy    | % desidratação                     |                  |
+| eye     | Uveíte/hipopion clinicamente evidente | 0/1          |
+| jnts    | Articulações inchadas clinicamente evidentes | número de articulações afetadas |
+| post    | Postura do bezerro                 | 0 = em pé<br>1 = esternal<br>2 = lateral |
+| pulse   | Frequência cardíaca                | batimentos por minuto |
+| resp    | Frequência respiratória            | respirações por minuto |
+| temp    | Temperatura retal                  | °C               |
+| umb     | Umbigo inchado clinicamente evidente | 0/1           |
+| sepsis  | Sepse (resultado)                  | 0/1              |
+
+## calf_pneu
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Iver Thysen     | Coorte        | 24         | Bezerro            |
+
+**Referência(s)**  
+Thysen I. Aplicação de análise de tempo de evento a dados de reposição, saúde e reprodução em pesquisa em bovinos leiteiros. Preventive Veterinary Medicine. 1988; 5: 239-50.
+
+**Descrição Breve**  
+Esses dados publicados foram usados em uma das primeiras publicações na literatura veterinária discutindo o uso de técnicas de análise de sobrevivência. Os dados consistem em registros de mortalidade de 24 bezerros que foram alojados em um de dois sistemas de alojamento: alojamento contínuo ou alojamento em lote (ou seja, all-in all-out). O evento de interesse era o tempo até o início da pneumonia clínica. Os bezerros foram seguidos por até 150 dias.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                          | Códigos/Unidades |
+|----------|------------------------------------|------------------|
+| calf    | ID do bezerro                      |                  |
+| stock   | Método de lotação                  | 0 = lote<br>1 = contínuo |
+| days    | Tempo até o início da pneumonia ou censura | dias      |
+| pn      | Pneumonia                          | 0/1              |
+
+## clin_mast
+
+| Contribuidor(es)          | Tipo de Estudo | # Registros                  | Unidade de Registro          |
+|---------------------------|----------------|------------------------------|------------------------------|
+| Richard Olde Riekerink   | Longitudinal   | 5338                         | Caso de mastite ou evento de censura |
+
+**Referência(s)**  
+Olde Riekerink RG, Barkema HW, Kelton DF, Scholl DT. Taxa de incidência de mastite clínica em fazendas leiteiras canadenses. J Dairy Sci. 2008; 91: 1366-77.
+
+**Descrição Breve**  
+Dados foram coletados de 106 rebanhos de 10 províncias canadenses ao longo de um período de aproximadamente 1 ano e meio. Os produtores coletaram amostras de leite de todos os casos de mastite clínica e essas amostras foram congeladas e então coletadas (aproximadamente mensalmente) e enviadas para a Atlantic Veterinary College, UPEI, para cultura. O resultado de interesse para o subconjunto de dados usado neste texto foi o tempo desde o parto (ou caso anterior de mastite) até cada caso clínico. Apenas vacas com pelo menos 100 dias de acompanhamento foram incluídas. Um total de 743 casos foram observados em 608 das 4595 vacas monitoradas durante o estudo.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades                  |
+|----------|------------------------------------------------|-----------------------------------|
+| cowid   | Número da vaca                                 |                                   |
+| prov    | Província                                      | Categórica - 1-10                 |
+| herd    | Número do rebanho                              |                                   |
+| pr      | Paridade (número de lactação)                  | 1 a 14                            |
+| start   | Início do período de risco                     | Data                              |
+| stop    | Fim do período de risco                        | Data                              |
+| par     | Período de risco total                         | Tempo total de risco              |
+| cases   | Número de casos de mastite                     |                                   |
+| d       | Dias desde o parto até o caso ou censura       | Dias                              |
+| mast    | Caso de mastite ou censura                     | 0 = censurado<br>1 = mastite clínica |
+
+## culling
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Ashwani Tiwari  | Longitudinal   | 721        | Vaca               |
+
+**Referência(s)**  
+Tiwari A, VanLeeuwen JA, Dohoo IR, Stryhn H, Keefe GP, Haddad JP. Efeitos da soropositividade para vírus da leucemia bovina, vírus da diarreia viral bovina, Mycobacterium avium subespécie paratuberculose e Neospora caninum no descarte em bovinos leiteiros em quatro províncias canadenses. Vet Microbiol. 2005; 109: 147-58.
+
+**Descrição Breve**  
+Esses dados foram coletados como parte de uma pesquisa de prevalência de 4 agentes infecciosos em rebanhos leiteiros em 5 províncias canadenses, mas apenas dados de uma província estão incluídos neste conjunto de dados. Apenas os resultados de teste para Mycobacterium avium subespécie paratuberculose (MAP ou doença de Johne) estão incluídos no conjunto de dados usado neste texto. Amostras de soro foram coletadas de 30 vacas em cada rebanho (se disponíveis) e testadas para MAP. As vacas foram seguidas por 4 anos após o teste e se a vaca foi descartada nesse período foi registrado. Vacas vendidas para fins leiteiros foram excluídas da análise. No final, registros de 721 vacas de 30 rebanhos estavam disponíveis para análise.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades                  |
+|----------|------------------------------------------------|-----------------------------------|
+| herd    | Número de identificação da fazenda             |                                   |
+| cow     | Número de identificação da vaca                |                                   |
+| dar     | Dias após o teste                              | Dias                              |
+| lact_c3 | Lactação 1, 2 ou 3+                            |                                   |
+| johnes  | Soropositivo para Johne                        | 0/1                               |
+| culled  | Descartada em 3,5 anos de acompanhamento       | 0 = censurada<br>1 = descartada   |
+
+## dairy_dis
+
+| Contribuidor(es)  | Tipo de Estudo          | # Registros | Unidade de Registro |
+|-------------------|-------------------------|-------------|---------------------|
+| John VanLeeuwen  | Pesquisa (transversal) | 2454       | Vaca               |
+
+**Referência(s)**  
+VanLeeuwen J, Keefe G, Tremblay R, Power C, Wichtel J. Soroprevalência de infecção com Mycobacterium avium subespécie paratuberculose, vírus da leucemia bovina e vírus da diarreia viral bovina em bovinos leiteiros do Maritime Canada. Canadian Veterinary Journal. 2001; 42: 193-8.
+
+**Descrição Breve**  
+Esses dados foram coletados como parte de uma pesquisa de prevalência de quatro doenças infecciosas de bovinos leiteiros no leste do Canadá. 30 rebanhos em cada uma das três províncias (Ilha do Príncipe Eduardo, Nova Escócia e New Brunswick) foram selecionados aleatoriamente de listas de todos os rebanhos leiteiros participantes de um programa de monitoramento de produção de leite. Em cada rebanho, aproximadamente 30 animais foram selecionados aleatoriamente e amostras de sangue coletadas. Essas amostras foram testadas para anticorpos contra: Neospora caninum, Mycobacterium avium (subesp. paratuberculose) e vírus da leucose bovina enzoótica. Além disso, um grupo de novilhas não vacinadas foi sangrado e testado para vírus da diarreia viral bovina, mas esses resultados de teste não estão incluídos neste conjunto de dados. Pesos de amostragem foram computados como o inverso do produto da probabilidade de um rebanho ser selecionado e a probabilidade de uma vaca ser selecionada dentro de um rebanho.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades                  |
+|-----------|------------------------------------------------|-----------------------------------|
+| prov     | Província                                      |                                   |
+| herd     | Número de identificação do rebanho             |                                   |
+| cow      | Número de identificação da vaca                |                                   |
+| lact     | Número de lactação                             |                                   |
+| dim      | Dias em leite                                  | Dias                              |
+| johnes   | Resultado do teste de Johne                    | 0/1                               |
+| leukosis | Resultado do teste de leucose                  | 0/1                               |
+| neospora | Resultados do teste de neospora                | 0/1                               |
+| tot_hrd  | Total de rebanhos na província                 |                                   |
+| prob_hrd | Probabilidade de seleção do rebanho            |                                   |
+| tot_cow  | Total de vacas no rebanho                      |                                   |
+| tot_smpl | Total de vacas amostradas no rebanho           |                                   |
+| prob_cow | Probabilidade de seleção da vaca               |                                   |
+| prob_smp | Probabilidade geral de seleção da vaca         |                                   |
+| weight   | Peso de amostragem                             |                                   |
+
+## daisy2
+
+| Contribuidor(es) | Tipo de Estudo                | # Registros | Unidade de Registro |
+|------------------|-------------------------------|-------------|---------------------|
+| John Morton     | Coorte única (longitudinal)  | 9383       | Lactação           |
+
+**Referência(s)**  
+Várias em preparação no momento da redação.
+
+**Descrição Breve**  
+Esses dados são um subconjunto dos dados coletados durante um grande estudo prospectivo longitudinal realizado em 9 regiões da Austrália. Em cada região, um praticante de laticínios foi responsável pela seleção de rebanhos e supervisão do estudo. Rebanhos leiteiros de parto o ano todo e sazonais foram incluídos no estudo. Todas as lactações iniciadas no período de acompanhamento de 12-15 meses foram inscritas. Dados de doenças e inseminação foram registrados pelos produtores, com entrada de dados ocorrendo nas clínicas veterinárias. Dados de produção de leite foram coletados eletronicamente de agências de registro de leite. Os dados neste subconjunto consistem em 9.383 registros de lactação de 8.441 vacas em 42 rebanhos de parto o ano todo de 4 regiões geográficas. Para muitas das análises neste texto, um subconjunto de 7 rebanhos com altas taxas de doenças reprodutivas foi usado.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades                  |
+|-----------|------------------------------------------------|-----------------------------------|
+| region   | Região geográfica (codificada 1-4)             |                                   |
+| herd     | Número do rebanho                              |                                   |
+| cow      | Número da vaca (único)                         |                                   |
+| study_lact | Número de lactação do estudo (1ª ou 2ª no período do estudo) | |
+| herd_size | Tamanho do rebanho                             |                                   |
+| mwp      | Período mínimo de espera para o rebanho        | Dias                              |
+| parity   | Número de lactação                             |                                   |
+| milk120  | Volume de leite (l) nos primeiros 120 dias de lactação | Litros                    |
+| calv_dt  | Data de parto                                  |                                   |
+| cf       | Intervalo do parto à primeira inseminação      | Dias                              |
+| fs       | Concepção na primeira inseminação              | 0/1                               |
+| cc       | Intervalo do parto à concepção                 | Dias                              |
+| wpc      | Intervalo do período de espera à concepção     | Dias                              |
+| spc      | Inseminações até concepção                     |                                   |
+| twin     | Gêmeos nascidos                                | 0/1                               |
+| dyst     | Distocia no parto                              | 0/1                               |
+| rp       | Placenta retida no parto                       | 0/1                               |
+| vag_disch | Secreção vaginal observada                     | 0/1                               |
+| h7       | Indicador para subconjunto de 7 rebanhos       |                                   |
+
+## elisa_repeat
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Javier Sanchez  | Experimental   | 40         | Amostra de leite   |
+
+**Referência(s)**  
+Sanchez J, Dohoo IR, Markham F, Leslie K, Conboy G. Avaliação da repetibilidade de um ELISA indireto grosseiro para adultos Ostertagia ostertagi e métodos de expressão dos resultados do teste. Vet Parasitol. 2002; 109: 75-90.
+
+**Descrição Breve**  
+Quarenta amostras individuais de leite de vacas foram testadas repetidamente (seis vezes) usando um ELISA indireto com antígeno grosseiro de Ostertagia. Os resultados foram registrados tanto como valores de densidade óptica (OD) brutos quanto valores ajustados com base nas leituras para os controles positivo e negativo na placa.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades                  |
+|----------|------------------------------------------------|-----------------------------------|
+| id      | Identificação da amostra                       |                                   |
+| raw1    | OD bruto - amostra #1                          |                                   |
+| raw2    | OD bruto - amostra #2                          |                                   |
+| ... etc | ...                                            | ...                               |
+| raw6    | OD bruto - amostra #6                          |                                   |
+| adj1    | OD ajustado - amostra #1                       |                                   |
+| adj2    | OD ajustado - amostra #2                       |                                   |
+| ... etc | ...                                            | ...                               |
+| adj6    | OD ajustado - amostra #6                       |                                   |
+
+## fec
+
+| Contribuidor(es) | Tipo de Estudo | # Registros     | Unidade de Registro          |
+|------------------|----------------|-----------------|------------------------------|
+| Ane Nødtvedt    | Coorte única   | 2.250          | Contagem mensal de ovos fecais |
+
+**Referência(s)**  
+Nødtvedt A, Dohoo I, Sanchez J, Conboy G, DesCôteaux L, Keefe G, Leslie K, Campbell J. O uso de modelagem binomial negativa em um estudo longitudinal de cargas parasitárias gastrointestinais em vacas leiteiras canadenses. Can J Vet Res. 2002; 66: 249-57.
+
+**Descrição Breve**  
+Amostras fecais mensais (em alguns rebanhos menos frequentemente) foram coletadas de vacas leiteiras em idade de lactação (n=313) em 38 rebanhos ao longo de 1 ano. Os dados foram coletados como parte de um estudo multifacetado sobre parasitismo em vacas leiteiras em lactação, que incluiu uma investigação epidemiológica longitudinal e um ensaio controlado dos efeitos da desparasitação no parto com eprinomectina. Os efeitos de fatores no nível do dia de amostragem, vaca e rebanho nas contagens de ovos fecais foram avaliados.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades                  |
+|-----------|------------------------------------------------|-----------------------------------|
+| province | Província canadense                            | 1 = PEI<br>2 = Quebec<br>3 = Ontario<br>4 = Saskatchewan |
+| herd     | Identificador do rebanho                       |                                   |
+| cow      | Identificador único da vaca                    |                                   |
+| visit    | Número da visita                               |                                   |
+| tx       | Tratamento com eprinomectina no parto          | 0/1                               |
+| fec      | Contagem de ovos fecais                        | Ovos/5 g                          |
+| lact     | Lactação                                       | 0 = primípara<br>1 = multípara    |
+| season   | Estação                                        | 1 = out-dez 99<br>2 = jan-mar 00<br>3 = abr-jun 00<br>4 = jul-set 00 |
+| past_lact | Vacas em lactação têm acesso a pastagem        | 0/1                               |
+| man_heif | Esterco espalhado em pastagem de novilhas      | 0/1                               |
+| man_lact | Esterco espalhado em pastagem de vacas         | 0/1                               |
+
+## feedlot
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Wayne Martin    | Caso-controle  | 588        | Animal             |
+
+**Referência(s)**  
+Martin SW, Nagy E, Armstrong D, Rosendal S. As associações de títulos de anticorpos virais e micoplasmáticos com doença respiratória e ganho de peso em bezerros de confinamento. Can Vet J. 1999; 40: 560-7, 570.
+
+**Descrição Breve**  
+Este conjunto de dados representa os dados combinados de vários estudos sobre o papel de microrganismos específicos como causas de doença respiratória bovina (BRD). Tipicamente, esses bovinos de corte entram em confinamentos no outono do ano e aproximadamente 30% desenvolverão BRD. A estratégia geral para os estudos foi sangrar todos os animais na chegada ao confinamento e novamente 28 dias depois (já que a maioria das ocorrências de BRD ocorre nesse período). Para análises, usamos todas as amostras de casos e um número aproximadamente igual de controles. Em alguns dos grupos menores, usamos todas as amostras e, portanto, nesses o design do estudo foi essencialmente uma coorte única. Os estudos foram conduzidos em essencialmente os mesmos confinamentos em anos diferentes, mas dependendo do tamanho, um confinamento poderia ter numerosos grupos de bezerros no estudo em qualquer ano dado. Os títulos foram registrados de forma quantitativa, mas foram dicotomizados neste conjunto de dados. Nota: No momento em que esses dados foram coletados, uma das bactérias importantes era chamada Pasteurella hemolytica. Agora é referida pelo seu nome mais novo, Mannheimia hemolytica.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades                  |
+|-----------|------------------------------------------------|-----------------------------------|
+| group    | Identificação do grupo                         |                                   |
+| tag      | Número da marca de orelha                      |                                   |
+| province | Província do confinamento                      | 1 = Alberta<br>2 = Ontario        |
+| brd      | Doença respiratória bovina clínica (caso-controle) | 0/1                           |
+| brsvpos  | Título de chegada para BRSV                    | 0/1                               |
+| brsvsc   | Soroconversão para BRSV durante o estudo       | 0/1                               |
+| bvdpos   | Título de chegada para vírus BVD               | 0/1                               |
+| bvdsc    | Soroconversão para BVD durante o estudo        | 0/1                               |
+| ibrpos   | Título de chegada para vírus IBR               | 0/1                               |
+| ibrsc    | Soroconversão para IBR durante o estudo        | 0/1                               |
+| pipos    | Título de chegada para vírus PI3               | 0/1                               |
+| pisc     | Soroconversão para PI3 durante o estudo        | 0/1                               |
+| phcypos  | Título de chegada para citotoxina Mh           | 0/1                               |
+| phcysc   | Soroconversão para citotoxina Mh durante o estudo | 0/1                          |
+| phaggpos | Título de chegada para aglutininas Mh          | 0/1                               |
+| phaggsc  | Soroconversão para Mh durante o estudo         | 0/1                               |
+| hspos    | Título de chegada para Hs                      | 0/1                               |
+| hssc     | Soroconversão para Hs durante o estudo         | 0/1                               |
+| wt0      | Peso de chegada                                | kg                                |
+| wt28     | Peso aos 28 dias                               | kg                                |
+
+## fish_trial
+
+| Contribuidor(es) | Tipo de Estudo             | # Registros | Unidade de Registro |
+|------------------|----------------------------|-------------|---------------------|
+| Tim Burnley     | Ensaio controlado randomizado | 2000      | Peixe              |
+
+**Referência(s)**  
+Burnley T: Desempenho de vacinas para salmão atlântico e características de produção avaliadas por meio de um ensaio de campo clínico multissítio. Tese de PhD não publicada. Univ of PEI, Charlottetown, PEI, Canadá; 2009.
+
+**Descrição Breve**  
+Esses dados são um pequeno subconjunto de um conjunto de dados coletado em ensaios de campo clínicos de aquicultura na Baía de Fundy, Canadá, durante os anos de 2004-2007. O objetivo da pesquisa era comparar o desempenho de diferentes vacinas no crescimento e sobrevivência de salmão atlântico sob condições de produção padrão. Os dados aqui originam-se de uma única gaiola de salmão que foram marcados individualmente (por tags transpondedores integrados passivos) em fevereiro de 2005 e seguidos até a colheita em agosto de 2007. Vacinas foram alocadas aleatoriamente aos peixes e aplicadas no dia 0; assim, os diferentes grupos de vacinas foram mantidos dentro da mesma gaiola durante toda a produção. Medições de peso foram obtidas nos peixes em quatro eventos de amostragem (incluindo a marcação inicial) e na colheita. Os dados aqui consistem em 100 peixes de cada um dos quatro grupos de vacinas, selecionados entre peixes com um conjunto completo de medições de peso para incluir todos os peixes com deformidade de mandíbula e uma amostra aleatória dos peixes sem deformidade de mandíbula. Como deformidades de mandíbula são formadas em um estágio inicial de crescimento e não são curadas, detecção de uma deformidade de mandíbula em qualquer evento de amostragem (tipicamente um dos eventos anteriores) implicava que o peixe era rotulado como tendo uma deformidade de mandíbula durante todo o período de crescimento. O resultado de interesse é o peso; como os pesos aumentam de médias de 60 g no dia 0 para 5.800 g na colheita, a análise será realizada em escala de log natural.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades                  |
+|-----------|------------------------------------------------|-----------------------------------|
+| fish     | ID do peixe                                    |                                   |
+| sample   | # de amostragem                                | 1-5                               |
+| day      | Dias desde a vacinação                         |                                   |
+| wt       | Peso no dia de amostragem                      | g                                 |
+| lnwt     | Log natural do peso                            |                                   |
+| wt_gain  | Ganho de peso desde a última amostragem        | g                                 |
+| adg      | Ganho diário médio                             | g/dia                             |
+| vaccine  | Grupo de vacina                                | 1-4                               |
+| jaw      | Deformidade de mandíbula                       | 0/1                               |
+
+## isa_day, isa_wk
+
+| Contribuidor(es)       | Tipo de Estudo       | # Registros          | Unidade de Registro |
+|------------------------|----------------------|----------------------|---------------------|
+| Larry Hammell, Ian Dohoo | Coorte retrospectiva | isa_day: 690<br>isa_wk: 101 | Gaiola - dia<br>Gaiola - semana |
+
+**Referência(s)**  
+Hammell KL, Dohoo IR. Padrões de mortalidade em surtos do vírus da anemia infecciosa do salmão em New Brunswick, Canadá. J Fish Dis. 2005a; 28: 639-50.  
+Hammell KL, Dohoo IR. Fatores de risco associados a mortalidades atribuídas ao vírus da anemia infecciosa do salmão em New Brunswick, Canadá. J Fish Dis. 2005b; 28: 651-61.
+
+**Descrição Breve**  
+Os dados para esses estudos foram coletados na classe de smolt de 1996 de 218 tanques-rede (gaiolas marítimas) de 14 sítios, mas apenas dados de 9 gaiolas em 1 sítio estão incluídos neste conjunto de dados. Dados de mortalidade para o período da primavera ao outono de 1997 foram registrados. O número de mortalidades foi registrado a cada vez que foram coletadas da gaiola por um mergulhador. O total de mortalidades foi então atribuído igualmente em uma base diária ao longo do intervalo desde o último mergulho. Gráficos de picos de mortalidades foram gerados e períodos de início, pico e fim de surtos foram identificados subjetivamente a partir do padrão observado. Apenas dados para o período do surto estão incluídos no conjunto de dados.
+
+**Tabela de Variáveis — isa_day**
+
+| Variável    | Descrição                                      | Códigos/Unidades |
+|-------------|------------------------------------------------|------------------|
+| site       | ID do sítio                                    |                  |
+| cage       | ID da gaiola                                   |                  |
+| int_st_dt  | Data de início do intervalo                    | Data             |
+| int_end_dt | Data de fim do intervalo                       | Data             |
+| mortint    | Comprimento do intervalo                       | Dias             |
+| morts      | # de mortalidades durante o intervalo          |                  |
+| par        | População em risco                             |                  |
+| mort_d     | Mortalidade diária                             |                  |
+| dt         | Data (dia durante o intervalo)                 |                  |
+| stage      | Estágio do surto                               | 1 = pré-pico<br>2 = pós-pico |
+
+Os dados de mortalidade diária foram subsequentemente compilados em uma base semanal e o padrão de surto de cada surto de ISA foi reconstruído com base na suposição de que peixes que morreram de ISA foram infecciosos pelas 2 semanas anteriores e expostos na semana anterior a isso. Esses dados estão no arquivo isa_wk.
+
+**Tabela de Variáveis — isa_wk**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| site    | Sítio                                          |                  |
+| cage    | Gaiola                                         |                  |
+| week    | Semana do surto                                |                  |
+| stage   | Estágio do surto                               | 1 = pré-pico<br>2 = pós-pico |
+| par     | População em risco                             |                  |
+| C       | # de casos (mortes)                            |                  |
+| S       | # suscetíveis                                  |                  |
+| E       | # expostos                                     |                  |
+| Ia      | # infecciosos - semana um                      |                  |
+| Ib      | # infecciosos - semana dois                    |                  |
+| I       | # infecciosos (Ia + Ib)                        |                  |
+| R       | # removidos                                    |                  |
+| N       | # na população                                 |                  |
+
+## isa_lcm
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Pascale Nerette | Longitudinal   | 403        | Peixe              |
+
+**Referência(s)**  
+Nerette P, Dohoo I, Hammell L. Estimativa de especificidade e sensibilidade de três testes diagnósticos para o vírus da anemia infecciosa do salmão na ausência de um padrão ouro. J Fish Dis. 2005; 28: 89-99.
+
+**Descrição Breve**  
+Amostras de tecido replicadas de 403 peixes de 4 populações diferentes de salmão atlântico que foram assumidas como tendo prevalências muito diferentes de ISA foram coletadas. As amostras foram distribuídas para vários laboratórios de forma cega, para que os laboratórios não soubessem de qual população o peixe veio. As amostras foram testadas usando IFAT (1 laboratório), PCR (3 laboratórios) e isolamento de vírus (2 laboratórios), e os resultados foram usados para construir modelos de classe latente para avaliar o desempenho de todos os testes.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| site    | Identificação do sítio                         |                  |
+| cage    | Identificação da gaiola                        |                  |
+| id      | Identificação única do peixe                   |                  |
+| pop     | População (prevalência)                        |                  |
+| ifat    | Pontuação IFAT                                 | 0-4              |
+| ifat_c2 | IFAT 0/1                                       | 0/1              |
+| pcr_a   | PCR do laboratório A                           | 0/1              |
+| pcr_b   | PCR do laboratório B                           | 0/1              |
+| pcr_c   | PCR do laboratório C                           | 0/1              |
+| vi_a    | VI do laboratório A                            | 0/1              |
+| vi_b    | VI do laboratório B                            | 0/1              |
+
+## isa_risk
+
+| Contribuidor(es)       | Tipo de Estudo    | # Registros | Unidade de Registro |
+|------------------------|-------------------|-------------|---------------------|
+| Larry Hammell, Ian Dohoo | Transversal     | 182        | Gaiola marítima    |
+
+**Referência(s)**  
+Hammell KL, Dohoo IR. Padrões de mortalidade em surtos do vírus da anemia infecciosa do salmão em New Brunswick, Canadá. J Fish Dis. 2005a; 28: 639-50.  
+Hammell KL, Dohoo IR. Fatores de risco associados a mortalidades atribuídas ao vírus da anemia infecciosa do salmão em New Brunswick, Canadá. J Fish Dis. 2005b; 28: 651-61.
+
+**Descrição Breve**  
+Após a introdução do vírus da anemia infecciosa do salmão na Baía de Fundy (Canadá), uma investigação epidemiológica de fatores de risco para a doença foi iniciada. No momento em que o estudo foi iniciado, a etiologia das mortalidades não era conhecida e as gaiolas foram designadas como "surtos" ou não, com base no padrão de mortalidades observado na gaiola. Um grande número de fatores de risco foi avaliado e este conjunto de dados consiste nos registros para 182 gaiolas que tinham dados completos sobre um subconjunto desses fatores (veja a lista abaixo). Embora os fatores listados abaixo fossem todos fatores fixos (ou seja, não mudavam durante o período do estudo), os dados foram usados para computar um fator variável no tempo: se havia ou não outra gaiola positiva (tanque-rede) no sítio. Isso foi usado em modelos de sobrevivência do tempo até a ocorrência de um surto.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades |
+|-----------|------------------------------------------------|------------------|
+| sitepen  | (1000*sítio)+gaiola identificador              |                  |
+| site     | Identificador do sítio                         |                  |
+| net-pen  | Identificador da gaiola                        |                  |
+| datestrt | Data em que os peixes foram colocados na gaiola pela primeira vez | Data |
+| apr01_97 | 1º de abril de 1997                            |                  |
+| date     | Data do surto OU censura                       |                  |
+| case     | Caso (surtos)                                  | 0/1              |
+| cummrt96 | Mort. cumulativa durante 1996                  |                  |
+| size     | Tamanho da gaiola                              | 0 = <10.000<br>1 = >10.000 |
+| par      | População inicial em risco na gaiola (número de peixes) | |
+| numcage  | Número de gaiolas no sítio                     |                  |
+
+## isa_test
+
+| Contribuidor(es)       | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------------|----------------|-------------|---------------------|
+| Carol McClure, Larry Hammell | Transversal | 1.071      | Peixe              |
+
+**Referência(s)**  
+McClure CA, Hammell KL, Stryhn H, Dohoo IR, Hawkins LJ. Aplicação de dados de vigilância na avaliação de testes diagnósticos para anemia infecciosa do salmão. Dis Aquat Organ. 2005; 63: 119-27.
+
+**Descrição Breve**  
+Após a identificação do vírus da anemia infecciosa do salmão na Baía de Fundy (Canadá), muitos peixes foram testados usando uma variedade de testes diagnósticos. Percebeu-se que os testes frequentemente davam resultados conflitantes e os dados disponíveis foram usados para fornecer uma avaliação preliminar das características operacionais de cada teste. Peixes derivados de gaiolas marítimas (tanques-rede) que tinham um surto confirmado de ISA foram considerados "padrão ouro positivo". Peixes amostrados de sítios que não tiveram surtos de ISA (em qualquer gaiola) durante o período do estudo foram considerados "padrão ouro negativo". Outros peixes amostrados não foram incluídos neste estudo. Resultados de testes de um total de 1.071 peixes que tiveram múltiplos testes realizados e que puderam ser classificados como positivos (n=264) ou negativos (n=807) foram incluídos no conjunto de dados.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades |
+|-----------|------------------------------------------------|------------------|
+| id       | Identificação do caso                          |                  |
+| date     | Data de submissão                              |                  |
+| site     | Identificação do sítio                         |                  |
+| cage     | Identificação da gaiola                        |                  |
+| subm     | Identificação da submissão                     |                  |
+| fish     | Número do peixe para cada caso                 |                  |
+| dz       | Status da doença (clínico)                     |                  |
+| histo    | Histologia                                     | 0 = negativo<br>1 = suspeito<br>2 = positivo |
+| histo_np | Histo neg/pos (pos=suspeito+positivo)          | 0/1              |
+| ifat1    | IFAT laboratório 1                             | 0-4              |
+| ifat1_np | IFAT-lab1 neg/pos (pos é 1)                    | 0/1              |
+| ifat2    | IFAT - laboratório 2                           | 0-4              |
+| ifat2_np | IFAT-lab2 neg/pos (pos é 2)                    | 0/1              |
+| pcr      | PCR                                            | 0/1              |
+| vi       | Isolamento de vírus                            | 0/1              |
+
+## ketosis
+
+| Contribuidor(es) | Tipo de Estudo              | # Registros | Unidade de Registro |
+|------------------|-----------------------------|-------------|---------------------|
+| N/A             | Coorte única (hipotética)  | 617        | Vaca               |
+
+**Referência(s)**  
+N/A
+
+**Descrição Breve**  
+Este é um conjunto de dados hipotético para avaliar a condição de uma vaca no parto em relação ao risco de cetose clínica. A condição corporal das vacas foi avaliada no parto e as vacas foram seguidas por 3 meses para observar a ocorrência de cetose clínica.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| bcs     | Pontuação de condição corporal                 | 0 = normal (bcs<4)<br>1 = gorda (bcs>=4) |
+| ketosis | Cetose clínica                                 | 0/1              |
+
+## lympho e lympho_mo
+
+| Contribuidor(es) | Tipo de Estudo             | # Registros | Unidade de Registro |
+|------------------|----------------------------|-------------|---------------------|
+| Ian Dohoo       | Ensaio clínico (hipotético)| 300        | Cão                |
+
+**Referência(s)**  
+N/A
+
+**Descrição Breve**  
+Esses dados são de um ensaio clínico fictício de dois tratamentos para linfossarcoma em cães. O estudo foi (hipoteticamente) conduzido como um ensaio controlado multicêntrico (n=10 clínicas). Cães que atendiam aos critérios de elegibilidade para entrada no ensaio (n=2000) tiveram o tumor removido cirurgicamente (apenas cães com tumores que pudessem ser removidos cirurgicamente eram elegíveis) e então foram aleatoriamente designados para um de quatro grupos de tratamento: nenhum tratamento, apenas radiação, apenas quimioterapia e ambos radiação e quimioterapia. Os cães foram aleatoriamente designados dentro de cada centro, de modo que o número total de cães em cada grupo de tratamento não é exatamente igual para todos os tratamentos. Cada cão foi seguido desde o momento do tratamento até morrer de uma recaída do linfossarcoma ou ser perdido para acompanhamento (por exemplo, morreu de outras causas, o dono se mudou para longe do local do estudo) e o tempo até a ocorrência de qualquer um desses eventos foi registrado.
+
+**Tabela de Variáveis — lympho**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| id      | Número de identificação do cão                 |                  |
+| clinic  | Número de identificação da clínica             |                  |
+| age_dx  | Idade no diagnóstico (anos)                    | Anos             |
+| rad     | Terapia de radiação                            | 0/1              |
+| chemo   | Quimioterapia                                  | 0/1              |
+| died    | Morreu de linfossarcoma ou censurada           | 0 = censurada<br>1 = morreu |
+| days    | Tempo desde o diagnóstico até a morte (ou censura) | Dias         |
+
+As mesmas variáveis estão presentes em lympho_mo, mas neste conjunto de dados a variável de tempo é em meses em vez de dias.
+
+## meta_parasite
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Javier Sanchez  | Meta-análise  | 75         | Grupos de vacas    |
+
+**Referência(s)**  
+Sanchez J, Dohoo I, Carrier J, DesCôteaux L. Uma meta-análise da resposta de produção de leite após tratamento anthelmíntico em vacas leiteiras adultas naturalmente infectadas. Prev Vet Med. 2004; 63: 237-56.
+
+**Descrição Breve**  
+Uma revisão sistemática da literatura sobre o efeito do tratamento anthelmíntico na produção de leite em bovinos leiteiros foi realizada. Dados de 75 ensaios foram recuperados e esses ensaios usaram uma ampla variedade de medidas de produção de leite. Houve também considerável variabilidade em como os tratamentos foram administrados e em outros aspectos do design do ensaio.
+
+**Tabela de Variáveis**
+
+| Variável   | Descrição                                      | Códigos/Unidades |
+|------------|------------------------------------------------|------------------|
+| std_num   | Número do estudo                               |                  |
+| pubyear   | Ano de publicação                              |                  |
+| study_lbl1 - 3 | 3 maneiras diferentes de rotular o estudo para vários gráficos | |
+| mlkmeas   | Medida de produção de leite                    | 12 categorias    |
+| tx_n      | Tamanho da amostra do grupo tratado            |                  |
+| tx_mean   | Resposta do tratamento                         |                  |
+| tx_sd     | D.P. da resposta do tratamento                 |                  |
+| ctrl_n    | Tamanho da amostra do grupo placebo            |                  |
+| ctrl_mean | Resposta do placebo                            |                  |
+| ctrl_sd   | D.P. da resposta do placebo                    |                  |
+| md_n      | Tamanho da amostra                             |                  |
+| md        | Efeito do tratamento                           |                  |
+| md_se     | E.P. (diferença média)                         |                  |
+| md_lci    | IC inferior (diferença média)                  |                  |
+| md_uci    | IC superior (diferença média)                  |                  |
+| rand      | O ensaio clínico foi randomizado               | 0/1              |
+| trblind   | Administração do tratamento cega               | 0/1              |
+| clrout    | Resultado claramente definido                  | 0/1              |
+| critpar   | Critérios de elegibilidade para participantes  | 0/1              |
+| pubtype   | Tipo de publicação                             | 1 = jornal<br>2 = resumo<br>3 = artigo em anais<br>4 = jornal não indexado |
+| nbrhrd    | Número de fazendas                             |                  |
+| drug      | Droga: 17 categorias                           |                  |
+| hrdtx     | Tratamento de todo o rebanho                   | 0/1              |
+| nbrtx     | Número de tratamentos                          | 1-28             |
+| parity    | Paridade                                       | 0 = 1ª<br>1 = 2ª<br>2 = todas combinadas |
+| tx_cat    | Categoria de tratamento                        | 0 = seco-parto<br>1 = meio da lactação<br>2 = estratégico |
+| endecto   | Tratamento endectocida                         | 0/1              |
+
+## nocardia
+
+| Contribuidor(es)  | Tipo de Estudo | # Registros | Unidade de Registro |
+|-------------------|----------------|-------------|---------------------|
+| Lynn Ferns, Ian Dohoo | Caso-controle | 108        | Rebanho            |
+
+**Referência(s)**  
+Ferns L, Dohoo I, Donald A. Um estudo caso-controle de mastite por Nocardia em rebanhos leiteiros de Nova Escócia. Can Vet J. 1991; 32: 673-7.
+
+**Descrição Breve**  
+Este conjunto de dados contém um subconjunto dos dados obtidos de um estudo caso-controle de rebanhos leiteiros de Nova Escócia com e sem mastite por Nocardia. Houve um aumento dramático na incidência de mastite por Nocardia no Canadá desde 1987 e este estudo foi realizado para identificar fatores de risco associados à ocorrência dessa doença. Um total de 54 rebanhos casos e 54 rebanhos controles foram visitados para fins de coleta de dados durante o verão de 1989.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| id      | Número de identificação do rebanho             |                  |
+| casecont| Status caso/controle do rebanho                | 0 = controle<br>1 = caso |
+| numcow  | Número de vacas ordenhadas                     |                  |
+| prod    | Produção média de leite para o rebanho         | kg/vaca/dia      |
+| bscc    | SCC médio do tanque de leite a granel nos primeiros 6 meses de 1988 | '000s de células/ml |
+| dbarn   | Tipo de estábulo onde vacas secas são mantidas | 1 = freestall<br>2 = tiestall<br>3 = outro |
+| dout    | Tipo de área externa usada para vacas secas    | 1 = pastagem<br>2 = pátio/lote seco<br>3 = nenhuma<br>4 = outro |
+| dcprep  | Método de preparação da ponta do teto antes da administração de terapia para vacas secas | 1 = sem preparo<br>2 = apenas lavado<br>3 = lavado e desinfetado<br>4 = terapia para vacas secas não usada |
+| dcpct   | Percentual de vacas secas tratadas com terapia para vacas secas | %            |
+| dneo    | Produto para vacas secas contendo neomicina usado na fazenda no último ano | 0/1     |
+| dclox   | Produto para vacas secas contendo cloxacilina usado na fazenda no último ano | 0/1    |
+| doth    | Outros produtos para vacas secas usados (ex: baseados em penicilina ou novobiocina) usados na fazenda no último ano | 0/1 |
+
+## pgtrial
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Jeff Wichtel    | Ensaio clínico | 319        | Vaca               |
+
+**Referência(s)**  
+Nenhuma
+
+**Descrição Breve**  
+Um ensaio clínico do efeito da administração de prostaglandina no início do período de reprodução foi realizado em três rebanhos leiteiros da Carolina do Norte. Em cada uma das três fazendas, o produtor determinou quando estava pronto para começar a inseminar as vacas em seu rebanho e, naquele momento, as vacas foram aleatoriamente designadas para receber uma única injeção de prostaglandina ou placebo. Essas vacas foram então seguidas (até um máximo de 346 dias) até conceberem (confirmado por exame retal) ou serem descartadas. Além de avaliar o efeito do tratamento no desempenho reprodutivo, três outros fatores foram considerados (paridade, pontuação de condição corporal e rebanho).
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| herd    | Número de identificação do rebanho             |                  |
+| cow     | Número de identificação da vaca                |                  |
+| tx      | Tratamento                                     | 0/1              |
+| lact    | Número de lactação                             |                  |
+| thin    | Condição corporal                              | 0 = normal<br>1 = magra |
+| dar     | Dias em risco                                  | Dias             |
+| preg    | Prenhe ou censurada                            | 0 = censurada<br>1 = prenhe |
+
+## pig_adg
+
+| Contribuidor(es)  | Tipo de Estudo  | # Registros | Unidade de Registro |
+|-------------------|-----------------|-------------|---------------------|
+| Theresa Bernardo | Transversal    | 341        | Porco              |
+
+**Referência(s)**  
+Bernardo TM, Dohoo IR, Donald A. Efeito da ascaridíase e doenças respiratórias nas taxas de crescimento em suínos. Can J Vet Res. 1990; 54: 278-84.
+
+**Descrição Breve**  
+Esses são dados sobre o desempenho de crescimento e achados de abatedouro de porcos de uma seleção de fazendas da Ilha do Príncipe Eduardo, Canadá. Os dados foram coletados para estudar as inter-relações entre doenças respiratórias (rinite atrófica e pneumonia enzoótica), níveis de ascarídeos e ganho de peso diário. A pontuação de rinite atrófica foi determinada dividindo o focinho e medindo o espaço ventral aos cornetos. Um ajuste na pontuação foi feito se o septo nasal estava desviado. Pontuações pulmonares foram registradas em uma escala de 0 a 3 (negativo a pneumonia grave) e então convertidas para presença ou ausência de pneumonia. Cargas parasitárias foram avaliadas usando contagens de ovos fecais, contagens de vermes adultos no intestino e avaliação visual do fígado para trilhas de ascarídeos. Dados de produção foram registrados monitorando os porcos nas fazendas de origem desde o nascimento até o abate.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| farm    | Número de identificação da fazenda             |                  |
+| pig     | Número de identificação do porco               |                  |
+| sex     | Sexo do porco                                  | 0 = fêmea<br>1 = castrado |
+| dtm     | Dias até o mercado (do nascimento ao abate)    | Dias             |
+| adg     | Ganho de peso diário médio                     | g                |
+| mm      | Medida do espaço no focinho                    | mm               |
+| ar      | Pontuação de rinite atrófica                   | 0-5              |
+| lu      | Pontuação pulmonar para pneumonia enzoótica    | 0 = negativo<br>1 = leve<br>2 = moderado<br>3 = grave |
+| pn      | Pneumonia (lu>0)                               | 0/1              |
+| epg5    | Contagem de ovos de nematoides gastrointestinais fecais no momento do abate | Ovos/5 g |
+| worms   | Contagem de nematoides no intestino delgado no momento do abate | |
+| li      | Pontuação do fígado (baseada no número de 'manchas brancas' induzidas por parasitas) | 0 = negativo<br>1 = leve<br>2 = grave |
+| ar2     | Rinite atrófica grave (ar>4)                   | 0/1              |
+
+## pig_farm
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro |
+|------------------|----------------|-------------|---------------------|
+| Dan Hurnik      | Transversal   | 69         | Fazenda            |
+
+**Referência(s)**  
+Hurnik D, Dohoo I, Bate L. Tipos de gerenciamento de fazenda como fatores de risco para doença respiratória suína. Prev Vet Med. 1994a; 20: 147-57.  
+Hurnik D, Dohoo I, Donald A, Robinson N. Análise fatorial de práticas de gerenciamento de fazendas suínas na Ilha do Príncipe Eduardo. Prev Vet Med. 1994b; 20: 135-46.
+
+**Descrição Breve**  
+Um estudo transversal de fazendas de porcos na Ilha do Príncipe Eduardo (Canadá) foi realizado para investigar fatores de risco para doenças respiratórias (pneumonia enzoótica e pleurite). A prevalência de cada doença foi determinada no abate a partir de avaliações rotineiras de vísceras torácicas. Dados sobre fatores de risco foram coletados pelo investigador durante visitas a cada fazenda. Dados sobre uma ampla variedade de fatores foram coletados e o desafio foi classificar as relações entre esses fatores e entre eles e as doenças respiratórias, dado um tamanho de amostra muito limitado.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| farm_id | Identificação da fazenda                       |                  |
+| pneu    | Prevalência de pneumonia                       |                  |
+| pncode  | Pneumonia - categórica (3 níveis)              | 0 < 10%<br>1 = 10-40%<br>2 > 40% |
+| pleur   | Prevalência de pleurite                        |                  |
+| plcode  | Pleurite - categórica (3 níveis)               | 0 = 0%<br>1 = 0-8%<br>2 > 8% |
+| num     | Número de porcos examinados no abate           |                  |
+| size    | Tamanho do rebanho                             |                  |
+| growth  | Ganho diário médio                             | g/dia            |
+| cmpfd   | Porcos alimentados com ração mista completa    | 0/1              |
+| suppl   | Suplemento adicionado à ração                  | 0/1              |
+| prmx    | Premix alimentado                              | 0/1              |
+| strmed  | Ração inicial medicada                         | 0/1              |
+| selenium| Selênio adicionado à ração                     | 0/1              |
+| dryfd   | Ração alimentada seca (vs úmida)               | 0 = úmida<br>1 = seca |
+| flrfd   | Porcos alimentados no chão                     | 0/1              |
+| rooms   | Número de salas separadas no estábulo          |                  |
+| m3pig   | Volume de ar por porco                         | m³               |
+| shipm2  | Densidade (porcos enviados por m²)             | Porcos/m²        |
+| exhaust | Capacidade do ventilador de exaustão (proporção da recomendação) | |
+| inlet   | Tamanho da entrada de ar (proporção da recomendação) | |
+| maninlt | Ajuste manual das entradas de ar               | 0/1              |
+| mixmnr  | Esterco misturado entre baias                  | 0/1              |
+| straw   | Palha usada como cama                          | 0/1              |
+| washpns | Frequência de lavagens de baias (por ano)      |                  |
+| strdnst | Espaço no chão - porcos iniciais (m²)          | m²               |
+| grwdnst | Espaço no chão - porcos em crescimento (m²)    | m²               |
+| fnrdnst | Espaço no chão - porcos de acabamento (m²)     | m²               |
+| lqdmnr  | Esterco manuseado como líquido                 | 0/1              |
+| floor   | Chão com ripas                                 | 0/1              |
+| sldprtn | Partições sólidas entre algumas baias          | 0/1              |
+| hlfsld  | Partições semi-sólidas entre algumas baias     | 0/1              |
+| pigwtr  | Porcos por mamilo de água                      |                  |
+| numpen  | Número de baias                                |                  |
+| mixgrp  | Porcos de múltiplos grupos misturados          | 0/1              |
+| hldbck  | Porcos de crescimento lento retidos do abate   | 0/1              |
+| dstfrm  | Distância (km) para a fazenda de porcos mais próxima | km        |
+| hmrsd   | Todos os porcos criados na própria fazenda     | 0/1              |
+| nmbsrc  | Número de fontes de porcos                     |                  |
+| mnlds   | Apenas porcos com doença mínima criados        | 0/1              |
+| vet     | Visitas veterinárias por ano                   |                  |
+| feedsls | Visitas de vendedores de ração por ano         |                  |
+| neighbr | Visitas de vizinhos por ano                    |                  |
+| pigprdc | Visitas de produtores de porcos por ano        |                  |
+| trucker | Visitas de caminhoneiros por ano               |                  |
+| you     | Dono trabalha no estábulo                      | 0/1              |
+| family  | Membros da família trabalham no estábulo       | 0/1              |
+| hrdhlp  | Ajuda contratada trabalha no estábulo          | 0/1              |
+| exprnce | Anos de experiência                            | Anos             |
+
+## prew_mort
+
+| Contribuidor(es)   | Tipo de Estudo | # Registros | Unidade de Registro |
+|--------------------|----------------|-------------|---------------------|
+| Jette Christensen | Transversal   | 6552       | Ninhada            |
+
+**Referência(s)**  
+Christensen J, Svensmark B. Avaliação das causas de mortalidade pré-desmame registradas pelos produtores em rebanhos de porcas dinamarquesas. Prev Vet Med. 1997; 32: 155-64.
+
+**Descrição Breve**  
+Esses dados são um subconjunto de 16 rebanhos de um conjunto de dados coletado por Jette Christensen na Dinamarca para estudar fatores que afetam a mortalidade pré-desmame em porcos. Esses dados têm três níveis na hierarquia (ninhadas (n=6552) dentro de porcas (n=3162) dentro de fazendas (n=16)):  
+O resultado principal de interesse é a mortalidade pré-desmame, com uma ninhada classificada como tendo mortalidade pré-desmame ou não se um ou mais leitões morreram antes do desmame.
+
+**Tabela de Variáveis**
+
+| Variável    | Descrição                                      | Códigos/Unidades |
+|-------------|------------------------------------------------|------------------|
+| herd       | ID único do rebanho                            |                  |
+| sowid      | ID único da porca                              |                  |
+| litter     | ID único da ninhada                            |                  |
+| lmort      | Mortalidade pré-desmame na ninhada             | 0/1              |
+| herdtype   | Tipo de rebanho                                | 0 = produção<br>1 = rebanho de reprodução |
+| year       | Ano                                            |                  |
+| month      | Mês (jan = 1, dez = 12)                        |                  |
+| quarter    | Trimestre do ano                               | 1 = jan-mar<br>2 = abr-jun<br>3 = jul-set<br>4 = out-dez |
+| sow_parity | Paridade da porca                              |                  |
+| sow_tx     | Porca necessitou tratamento (2 dias antes a 7 dias após o parto) | 0/1 |
+| dead       | Número de leitões mortos na ninhada            |                  |
+| lsize      | Tamanho da ninhada                             |                  |
+| n          | Número em risco na ninhada                     |                  |
+| stillb     | Número de natimortos                           |                  |
+
+## reu_cc
+
+| Contribuidor(es)      | Tipo de Estudo | # Registros | Unidade de Registro |
+|-----------------------|----------------|-------------|---------------------|
+| Emmanuel Tillard, Ian Dohoo | Coorte única | 2509       | Lactação           |
+
+**Referência(s)**  
+Dohoo IR, Tillard E, Stryhn H, Faye B. O uso de modelos multinível para avaliar fontes de variação no desempenho reprodutivo em bovinos leiteiros na Ilha da Reunião. Prev Vet Med. 2001; 50: 127-44.
+
+**Descrição Breve**  
+Esses dados foram coletados como parte de um programa de pesquisa em andamento sobre fertilidade de bovinos leiteiros realizado na Ilha da Reunião (um departamento ultramarino francês localizado no Oceano Índico) por pesquisadores do CIRAD (Centre de Coopération Internationale en Recherche Agronomique pour le Développement). Dois conjuntos de dados separados foram compilados. Este contém dados sobre o intervalo do parto à concepção, enquanto o segundo tem dados sobre o intervalo do parto ao primeiro serviço e o sucesso do primeiro serviço. Os dados têm uma hierarquia de 4 níveis (lactações (n=2509) dentro de vacas (n=1345) dentro de rebanhos (n=50) dentro de regiões geográficas (n=5)).
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades |
+|-----------|------------------------------------------------|------------------|
+| region   | Região geográfica                              |                  |
+| herd     | Número do rebanho                              |                  |
+| cow      | Número único da vaca                           |                  |
+| obs      | Número único da observação                     |                  |
+| lact     | Número de lactação                             |                  |
+| cc       | Intervalo do parto à concepção                 | Dias             |
+| lncc     | Intervalo do parto à concepção - log transformado |              |
+| lncfs_ct | Intervalo do parto ao primeiro serviço - log transformado e centralizado | |
+| heifer   | Idade                                          | 0 = multípara<br>1 = primípara |
+| ai       | Tipo de inseminação no primeiro serviço        | 0 = natural<br>1 = IA |
+
+## reu_cfs
+
+| Contribuidor(es)      | Tipo de Estudo | # Registros | Unidade de Registro |
+|-----------------------|----------------|-------------|---------------------|
+| Emmanuel Tillard, Ian Dohoo | Coorte única | 3027       | Lactação           |
+
+**Referência(s)**  
+Dohoo IR, Tillard E, Stryhn H, Faye B. O uso de modelos multinível para avaliar fontes de variação no desempenho reprodutivo em bovinos leiteiros na Ilha da Reunião. Prev Vet Med. 2001; 50: 127-44.
+
+**Descrição Breve**  
+Mesmo estudo que reu_cc, exceto que este conjunto de dados contém dados sobre o intervalo do parto ao primeiro serviço e se o primeiro serviço resultou em concepção ou não. Os dados têm uma hierarquia de 4 níveis (lactações (n=3027) dentro de vacas (n=1575) dentro de rebanhos (n=50) dentro de regiões geográficas (n=5)).  
+Um segundo conjunto de dados contendo apenas a primeira lactação registrada em cada vaca foi salvo como reu_cfs_1lact.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| region  | Região geográfica                              |                  |
+| herd    | Número do rebanho                              |                  |
+| cow     | Número único da vaca                           |                  |
+| obs     | Número único da observação                     |                  |
+| lact    | Número de lactação                             |                  |
+| cfs     | Intervalo do parto ao primeiro serviço         | Dias             |
+| lncfs   | Intervalo do parto ao primeiro serviço - log transformado | |
+| fscr    | Concepção no primeiro serviço                  | 0/1              |
+| heifer  | Idade                                          | 0 = multípara<br>1 = primípara |
+| ai      | Tipo de inseminação no primeiro serviço        | 0 = natural<br>1 = IA |
+
+## sal_outbrk
+
+| Contribuidor(es) | Tipo de Estudo       | # Registros | Unidade de Registro |
+|------------------|----------------------|-------------|---------------------|
+| Tine Hald       | Caso-controle pareado | 112        | Indivíduo (pessoa) |
+
+**Referência(s)**  
+Molbak K, Hald D. Um surto de Salmonella typhimurium no condado de Funen durante o final do verão. Um estudo caso-controle. Ugeskr Laeger. 1997; 159: 36.
+
+**Descrição Breve**  
+Os dados são de uma investigação de um surto de Salmonella no condado de Funen, Dinamarca, em 1996. Os dados consistiam em 39 casos de Salmonella typhimurium fago tipo 12 e 73 controles pareados por idade, sexo e município de residência. Dados sobre numerosas exposições alimentares foram registrados e um pequeno subconjunto desses dados está incluído no conjunto de dados -sal_outbrk-.
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades |
+|-----------|------------------------------------------------|------------------|
+| match-grp| Identificador do par caso-controle             |                  |
+| date     | Data da entrevista                             |                  |
+| age      | Idade                                          | Anos             |
+| gender   | Gênero                                         | 0 = masculino<br>1 = feminino |
+| casecontrol | Status caso-controle                       | 0/1              |
+| eatbeef  | Comeu carne bovina nas últimas 72 horas        | 0/1              |
+| eatpork  | Comeu carne suína nas últimas 72 horas         | 0/1              |
+| eatveal  | Comeu vitela nas últimas 72 horas              | 0/1              |
+| eatlamb  | Comeu cordeiro nas últimas 72 horas            | 0/1              |
+| eatpoul  | Comeu aves nas últimas 72 horas                | 0/1              |
+| eatcold  | Comeu carnes frias fatiadas nas últimas 72 horas | 0/1            |
+| eatveg   | Comeu vegetais nas últimas 72 horas            | 0/1              |
+| eatfruit | Comeu frutas nas últimas 72 horas              | 0/1              |
+| eateggs  | Comeu ovos nas últimas 72 horas                | 0/1              |
+| slt_a    | Comeu carne suína processada no abatedouro A   | 0/1              |
+| dlr_a    | Comeu carne suína comercializada pelo atacadista A | 0/1        |
+| dlr_b    | Comeu carne suína comercializada pelo atacadista B | 0/1        |
+
+## scc_40
+
+| Contribuidor(es)                          | Tipo de Estudo | # Registros                  | Unidade de Registro          |
+|-------------------------------------------|----------------|------------------------------|------------------------------|
+| Jens Agger e Organização Dinamarquesa de Gado, Paul Bartlett, Henrik Stryhn | Longitudinal | 14.357                      | Observações de dia de teste  |
+
+**Referência(s)**  
+Stryhn H, Andersen JS, Bartlett PC, Agger JFA. Produção de leite em vacas estudada por modelos lineares mistos. Proc. de simpósio em estatística aplicada, Copenhague, janeiro de 2001. Proceedings (ed. Jensen NE, Linde P): 1-10.
+
+**Descrição Breve**  
+Esses dados são um subconjunto muito pequeno de um grande conjunto de dados de mastite coletado por Jens Agger e a Organização Dinamarquesa de Gado. Este conjunto de dados contém registros de 14.357 observações de dias de teste em 2.178 vacas de 40 rebanhos. Pesos de leite (registros de produção) foram coletados aproximadamente mensalmente, e apenas registros de uma única lactação para cada vaca foram incluídos neste conjunto de dados. Fatores que podem ter afetado a contagem de células somáticas (SCC) também foram registrados. O objetivo principal deste estudo foi determinar se a relação entre a contagem de células somáticas e a produção de leite varia para vacas com diferentes características (idade, raça, pastoreio ou não, etc.). Um subconjunto desses dados chamado -scc40_2level- foi criado pegando apenas a primeira observação para cada vaca, reduzindo assim o conjunto de dados para dois níveis (rebanhos e vacas).
+
+**Tabela de Variáveis**
+
+| Variável  | Descrição                                      | Códigos/Unidades |
+|-----------|------------------------------------------------|------------------|
+| herdid   | ID do rebanho                                  |                  |
+| cowid    | ID da vaca                                     |                  |
+| test     | Mês aproximado de lactação                     | 0 a 10           |
+| h_size   | Tamanho médio do rebanho                       |                  |
+| c_heifer | Paridade da vaca                               | 1 = novilha<br>0 = multípara |
+| t_season | Estação do dia de teste                        | 1 = jan-mar<br>2 = abr-jun<br>3 = jul-set<br>4 = out-dez |
+| t_dim    | Dias em leite no dia de teste                  | Dias             |
+| t_lnscc  | Log da contagem de células somáticas no dia de teste | |
+
+## scc_heifer
+
+| Contribuidor(es) | Tipo de Estudo | # Registros | Unidade de Registro     |
+|------------------|----------------|-------------|-------------------------|
+| Sarne de Vliegher | Coorte única  | 10996      | Observação de dia de teste |
+
+**Referência(s)**  
+De Vliegher S, Barkema HW, Stryhn H, Opsomer G, de Kruif A. Impacto da contagem de células somáticas no início da lactação em novilhas nas contagens de células somáticas ao longo da primeira lactação. J Dairy Sci. 2004; 87: 3672-82.
+
+**Descrição Breve**  
+Esses dados são um subconjunto pequeno de um conjunto de dados sobre novilhas coletado em rebanhos belgas durante os anos de 2000-2001. O objetivo da pesquisa foi explorar e quantificar o poder preditivo de medir uma contagem de células somáticas no início da lactação (dias em leite 5-14) para o rendimento e qualidade do leite ao longo da lactação. As novilhas foram seguidas por gravações aproximadamente mensais até a secagem. No entanto, este conjunto de dados inclui apenas um único registro para cada novilha obtido durante 76-105 dias em leite, para um total de 10.996 novilhas em 3.095 rebanhos. O preditor de interesse principal foi assim o log (natural) da SCC no início da lactação (-lnsccel-), e o resultado de interesse foi a SCC log medida (-lnscc-) no período de 76-105 dias.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| herd    | ID do rebanho                                  |                  |
+| cow     | ID da vaca                                     |                  |
+| lnsccel | Log da contagem de células somáticas no início da lactação (centralizado) | |
+| lnscc   | Log da contagem de células somáticas no dia de teste (do período 76-105 dias) | |
+
+## stdize, stdize_dir, stdize_ind
+
+| Contribuidor(es) | Tipo de Estudo              | # Registros     | Unidade de Registro |
+|------------------|-----------------------------|-----------------|---------------------|
+| Ian Dohoo       | Transversal (hipotético)   | 4 contagens de frequência | |
+
+**Referência(s)**  
+N/A
+
+**Descrição Breve**  
+Esses três pequenos conjuntos de dados são dados hipotéticos usados para demonstrar a padronização direta e indireta de taxas no Capítulo 4.
+
+**Tabela de Variáveis (stdize)**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| region  | Região                                         |                  |
+| type    | Tipo de gado                                   |                  |
+| cases   | # de rebanhos encontrados com TB               |                  |
+| hy      | Anos-rebanho em risco                          |                  |
+
+## tac_mca
+
+| Contribuidor(es)     | Tipo de Estudo | # Registros | Unidade de Registro |
+|----------------------|----------------|-------------|---------------------|
+| Ahmed ElMoselmany, Greg Keefe | Coorte única | 69         | Rebanho            |
+
+**Referência(s)**  
+Elmoslemany AM, Keefe GP, Dohoo IR, Jayarao BM. Fatores de risco para a qualidade bacteriológica do leite de tanque a granel em rebanhos leiteiros da Ilha do Príncipe Eduardo. Parte 1: fatores de risco gerais. J Dairy Sci. 2009a; 92: 2634-43.  
+Elmoslemany AM, Keefe GP, Dohoo IR, Jayarao BM. Fatores de risco para a qualidade bacteriológica do leite de tanque a granel em rebanhos leiteiros da Ilha do Príncipe Eduardo. Parte 2: fatores de risco específicos para contagem de bactérias. J Dairy Sci. 2009b; 92: 2644-52.
+
+**Descrição Breve**  
+A qualidade do leite cru de tanque a granel foi avaliada em todos os rebanhos leiteiros da Ilha do Príncipe Eduardo (n=235) ao longo de um período de 2 anos (março de 2005 a março de 2007). Contagens totais de bactérias aeróbias (TAC) quinzenais foram realizadas usando um sistema de cultura Petrifilm. Um rebanho foi classificado como caso TAC quando o rebanho teve pelo menos 4 contagens TAC altas das últimas 6 análises para cada teste, respectivamente. Rebanhos controles tiveram contagens baixas nas últimas 6 análises para cada teste no grupo caso correspondente. Rebanhos casos e controles foram visitados por técnicos treinados e uma ampla gama de dados no nível do rebanho relevantes para a saúde da glândula mamária e qualidade do leite foram registrados. Apenas um subconjunto selecionado de variáveis (aquelas significativas na análise original) foi retido neste conjunto de dados.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| tac     | Caso ou controle baseado na contagem total aeróbia | 0 = controle<br>1 = caso |
+| X1      | Pré-imerção das tetas (fator de risco = não pré-imerção) | 0/1 |
+| X2      | Aparagem de pelos da úbere (fator de risco = não aparagem) | 0/1 |
+| X3      | Lavagem vs secagem de úberes (fator de risco = lavagem) | 0/1 |
+| X4      | Limpeza da ponta do teto (fator de risco = sujo) | 0/1 |
+| X5      | Higiene da vaca (flanco do úbere e perna) (fator de risco = sujo) | 0/1 |
+| X6      | Alcalinidade da água de lavagem da tubulação (fator de risco = alta alcalinidade) | 0/1 |
+
+## tb_real
+
+| Contribuidor(es)  | Tipo de Estudo       | # Registros | Unidade de Registro |
+|-------------------|----------------------|-------------|---------------------|
+| Ian Dohoo, Fonda Munroe | Coorte retrospectiva | 134        | Grupos de animais  |
+
+**Referência(s)**  
+Munroe FA, Dohoo IR, McNab WB. Estimativas de taxas de incidência dentro do rebanho de Mycobacterium bovis em bovinos e cervídeos canadenses entre 1985 e 1994. Prev Vet Med. 2000; 45: 247-56.  
+Munroe FA, Dohoo IR, McNab WB, Spangler L. Fatores de risco para a disseminação entre rebanhos de Mycobacterium bovis em bovinos e cervídeos canadenses entre 1985 e 1994. Prev Vet Med. 1999; 41: 119-33.
+
+**Descrição Breve**  
+Uma avaliação retrospectiva de todos os surtos (n=9) de tuberculose em animais domésticos (gado leiteiro e de corte, cervídeos e bisões) no Canadá entre os anos de 1985 e 1994 foi realizada para investigar fatores de risco para a disseminação da tuberculose dentro e entre rebanhos. Registros detalhados da investigação epidemiológica de todos os surtos (incluindo registros de todos os rebanhos de contato) foram revisados e um resumo de cada surto foi preparado. Este conjunto de dados contém dados apenas de rebanhos nos quais a tuberculose foi observada. Em cada rebanho, a data mais provável em que a infecção entrou no rebanho foi determinada e o número de novos casos surgindo dentro do rebanho foi determinado a partir dos resultados de teste do rebanho. O número de animais em cada grupo de idade, sexo e tipo foi determinado e o número de dias-animal em risco foi computado. Os efeitos da idade (três grupos), sexo (dois grupos) e tipo de animal (cinco grupos) na taxa de incidência de novas infecções foram investigados. Nota: Para atender a preocupações de confidencialidade e regulatórias, esses dados foram deliberadamente falsificados.
+
+**Tabela de Variáveis**
+
+| Variável | Descrição                                      | Códigos/Unidades |
+|----------|------------------------------------------------|------------------|
+| obs     | Número da observação                           |                  |
+| farm_id | Identificação da fazenda                       |                  |
+| type    | Tipo de animal                                 | 1 = gado leiteiro<br>2 = gado de corte<br>3 = cervídeo<br>4 = outro |
+| sex     | Sexo                                           | 1 = fêmea<br>2 = macho |
+| age     | Categoria de idade                             | 1 = 0-12 meses<br>2 = 12-24 meses<br>3 = >24 meses |
+| reactors| Número de positivos/reatores no grupo          |                  |
+| par     | Dias-animal em risco no grupo                  |                  |
+
+## vietnam (vários arquivos)
+
+| Contribuidor(es) | Tipo de Estudo   | # Registros | Unidade de Registro |
+|------------------|------------------|-------------|---------------------|
+| Dirk Pfeiffer   | Dados de vigilância | 134       | Grupos de animais  |
+
+**Referência(s)**  
+Pfeiffer DU, Minh PQ, Martin V, Epprecht M, Otte MJ. Uma análise dos padrões espaciais e temporais da ocorrência de influenza aviária altamente patogênica no Vietnã usando dados de vigilância nacional. Vet J. 2007; 174: 302-9.
+
+**Descrição Breve**  
+Dados foram coletados por meio de vigilância regular para surtos de influenza aviária altamente patogênica sorotipo H5N1 entre aves domésticas em uma região do norte do Vietnã no nível administrativo de comuna entre 2004 e 2006. Uma variedade de arquivos (alguns em formato Stata e alguns em formato R) são fornecidos em uma pasta zipada. Um exemplo do conteúdo de um arquivo é mostrado abaixo.
+
+**Tabela de Variáveis - viet_commune_centroid**
+
+| Variável   | Descrição                                      | Códigos/Unidades |
+|------------|------------------------------------------------|------------------|
+| id        | ID da comuna                                   |                  |
+| x_coord   | Coordenada X do centróide da comuna            | Localização do ponto |
+| y_coord   | Coordenada Y do centróide da comuna            | Localização do ponto |
+| infected  | Comuna infectada com IA                        |                  |
+| inf_2003_4| Comuna infectada com IA em 2003/04             |                  |
+| inf_2004_5| Comuna infectada com IA em 2004/05             |                  |
+| inf_2005_6| Comuna infectada com IA em 2005/06             |                  |
+
+Alguns dos outros arquivos de dados incluem:  
+• viet_district_centroid - Esta camada de dados geográficos representa dados no nível de comuna agregados no nível de distrito.  
+• viet_district_poly - Esta camada de dados geográficos representa dados no nível de comuna agregados no nível de distrito.  
+• viet_region_poly - Esta camada de dados geográficos representa o limite da região no norte do Vietnã para a qual os dados foram analisados.
