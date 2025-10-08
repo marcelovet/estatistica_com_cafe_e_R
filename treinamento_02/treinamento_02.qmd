@@ -16,7 +16,7 @@ abstract: >
   Relatório do segundo treinamento onde foi apresentado como importar dados e manipulá-los no R, bem como as principais estatísticas descritivas univariadas e multivariadas.
 keywords:
   - statistical analysis
-license: "CC0"
+license: "CC BY-NC"
 copyright: 
   holder: Marcelo Paiva
   year: 2025
@@ -66,6 +66,7 @@ library(gridExtra)
 library(plotly)
 library(gt)
 library(tidyverse)
+library(kableExtra)
 
 # Tema personalizado para gráficos
 tema_didatico <- theme_minimal() +
@@ -160,16 +161,20 @@ pacotes <- c("ggplot2", "dplyr", "tidyr")
 x <- lapply(pacotes, library, character.only = TRUE, quietly = TRUE)
 ```
 
-Além dessas funções para instalação e carregamento de pacotes, também temos funções para atualizar e remover um pacote, obter sua descrição, versão e obter a forma recomendada pelo seus autores de citação quando usada em uma publicação.
+Além dessas funções para instalação e carregamento de pacotes, também outras funções que devem ser conhecidas na rotina são as de atualização (`update.packages()`) e remoção (`remove.packages()`) de pacotes, descrição (`packageDescription()`), versão (`packageVersion()`) e forma recomendada pelo seus autores de citação (`citation()`) quando usada em uma publicação.
 
 ```{r}
+#| eval: false
+
 # Atualização de pacotes
 update.packages()  # todos
 update.packages(ask = FALSE)  # todos, mas exige confirmação
 
 # apagar um pacote
 remove.packages("nome_pacote")
+```
 
+```{r}
 # descrição e versão
 packageDescription("ggplot2")
 packageVersion("ggplot2")
@@ -177,4 +182,169 @@ packageVersion("ggplot2")
 # forma de citação
 citation("ggplot2")
 ```
+
+Algo a se ter em mente é que nada impede de vários pacotes terem o mesmo nome para funções com finalidades diferentes. Nesse caso, ao carregar esses pacotes, o último a ser carregado irá mascarar o nome da anterior no seu ambiente. Assim, para evitar conflitos, ou o uso da função errada, recomenda-se usar a função seguindo o padrão `nome_do_pacote::nome_da_função`.
+
+## Leitura de datasets externos ao R
+
+A importação de dados é o primeiro passo em qualquer análise. O R oferece múltiplos pacotes especializados para diferentes formatos de arquivos, mas iremos focar nos pacotes de leitura dos arquivos provenientes dos softwares Excel, SAS, Stata e SPSS. Para isso, utilizaremos os pacotes `readxl` e `haven`.
+
+```{r}
+#| results: hide
+
+# mini rotina para instalar um pacote se ainda não estiver instalado
+instala_se_nao_existe <- function(nome_do_pacote){
+  if(nome_do_pacote %in% rownames(installed.packages())) return()
+  install.packages(nome_do_pacote)
+}
+lapply(c("readxl", "haven"), instala_se_nao_existe)
+
+# Carregar pacotes
+library(readxl)    # Excel
+library(haven)     # SAS, SPSS, STATA
+```
+
+### Importando dados do Excel
+
+Para leitura de arquivos do Excel nos formatos .xls e .xlsx usaremos o pacote `readxl`, o qual faz parte do conjunto de pacotes do `tidyverse`. Dele podemos usar as funções `read_excel()`, `read_xls()` ou `read_xlsx()`, os quais recebem argumentos semelhantes, com a diferença que os dois últimos são específicos ao formato do arquivo.
+
+O primeiro e mais importante argumento a ser fornecido para essa função é o `path`, o local onde o arquivo se encontra no seu computador. Esse caminho pode ser absoluto (desde a raiz, normalmente `/` no linux ou `C:` no windows, até o local) ou relativo ao diretório de trabalho (que pode ser verificado usando a função `getwd()`).
+
+Como os arquivos do Excel aceitam múltiplas planilhas (em diferentes abas), o argumento de `sheet` do `read_excel()` permite escolher qual aba se pretende carregar. Caso seja necessário verificar primeiro o nome das abas disponíveis no arquivo, use `excel_sheets(path)`.
+
+Outro problema comum em arquivos do Excel são planilhas que não iniciam na linha 1 ou que apresentam um conjunto de colunas que não pretendemos usar (sem conteúdo ou preenchido com informações que não fazem parte do dateset). Para contornar esses obstáculos, podemos usar o argumento `skip` com o número de linhas iniciais que não devem ser lidas, ou usar o `range` com um `character` indicando a primeira e última células que delimitam seus dados (por exemplo, `range = "B2:D20"` indica que devem ser lidas as colunas B, C e D, das linhas 2 até a 20).
+
+Por padrão, essas funções buscam adivinhar o tipo de dados presente em cada coluna da planilha, mas é possível declarar o tipo usando o argumento col_types com um vetor com comprimento igual ao número de colunas que irá importar. Esse vetor deve, para cada coluna, usar uma das opções:
+
+- "skip": remove a coluna do dataset
+- "guess": deixa para a função escolher o tipo
+- "logical": booleano
+- "numeric": numérico
+- "date": data
+- "text": character
+- "list": lista
+
+Também por padrão, a primeira linha é usada para obter os nomes de cada coluna. Se você não possui nomes das colunas na sua planilha use `col_names = FALSE` na função ou passe um vetor dos nomes das colunas para o argumento `col_names`.
+
+Um aspecto importante de qualquer conjunto de dados é saber como foram codificados os dados ausentes. O argumento `na` permite passar um vetor de `character` com os códigos usados na planilha para declarar um dado ausente, o qual será convertido para `NA` no R.
+
+```{r}
+excel_sheets("../datasets/excel/ap2.xlsx")
+
+dados_excel <- read_excel("../datasets/excel/ap2.xlsx")
+head(dados_excel)
+
+# definir a planilha por nome ou índice
+dados_pela_aba <- read_excel("../datasets/excel/ap2.xlsx", sheet = "Data")
+dados_pela_aba <- read_excel("../datasets/excel/ap2.xlsx", sheet = 1)
+
+# carregar somente um intervalo de células, em que a linha 1 não é header
+dados_pelo_range <- read_excel(
+  "../datasets/excel/ap2.xlsx",
+  range = "A2:B100",
+  sheet = "Data",
+  col_names = FALSE
+)
+head(dados_pelo_range)
+
+# mesmo exemplo, mas definindo os nomes das colunas
+dados_pelo_range <- read_excel(
+  "../datasets/excel/ap2.xlsx",
+  range = "A2:B100",
+  sheet = "Data",
+  col_names = c('fazenda', 'lote')
+)
+head(dados_pelo_range)
+
+# declarando os tipos de colunas
+dados_tipos <- read_excel(
+  "../datasets/excel/ap2.xlsx",
+  col_types = c("text", "numeric", rep("text", 19))
+)
+head(dados_tipos)
+
+# definir os códigos usados na planilha para dados ausentes
+dados_na <- read_excel(
+  "../datasets/excel/ap2.xlsx",
+  na = c("", "NA", "N/A", "-")
+)
+```
+
+
+### Importando dados do Stata
+
+Para leitura de arquivos do Stata no formato .dta usaremos o pacote `heaven`, o qual possui funções para leitura de arquivos do Stata, SPSS e SAS. Nesse treinamento vamos focar na função `read_dta()` para leitura dos arquivos do Stata (superiores a versão 13.0).
+
+Assim como no `read_excel()`, o primeiro argumento de `read_dta()` deve ser a localização do arquivo. Além disso, a função aceita como argumentos `encoding`, a codificação de carácteres usada, `skip` para remover um certo número de linhas, `col_select` para definir quais colunas serão selecionadas e `n_max` para declarar o número máximo de linhas que devem ser importadas.
+
+Um diferença importante entre arquivos do Excel e do Stata é que no segundo o dataset e as suas variáveis podem conter metadados ("notes" e "labels") com informações sobre esses dados. Essas informações podem ser acessadas na função `attr()`.
+
+```{r}
+dados_stata <- read_dta("../datasets/stata/ap2.dta")
+head(dados_stata)
+
+dados_stata_com_encoding <- read_dta(
+  "../datasets/stata/ap2.dta",
+  encoding = "UTF-8"
+)
+
+# tranformar colunas labelled em factor
+dados_stata_como_factor <- read_dta(
+  "../datasets/stata/ap2.dta",
+  encoding = "UTF-8"
+) |> as_factor()
+head(dados_stata_como_factor)
+
+# Notas do Stata
+attr(dados_stata, "notes")
+# Labels das variáveis
+labels <- sapply(dados_stata, function(x) attr(x, "label"))
+kable(
+  tibble(var=names(labels), metadata=labels),
+  col.names = c("Variável", "Label")
+)
+```
+
+### Verificação e diagnóstico dos dados importados
+
+Uma vez carregados os dados, é importante avaliar a estrutura desse conjunto de dados importado. Para uma exploração inicial, será interessante avaliar, no mínimo, as dimensões desses dados (número de observações e variáveis), quais os tipos das variáveis no R, resumos estatísticos simples, quantidade de valores ausentes por variável.
+
+```{r}
+verificar_dados <- function(dados) {
+  cat("Dimensões:", dim(dados), "\n")
+  cat("Tipos de variáveis:\n")
+  print(sapply(dados, class))
+  cat("\nPrimeiras linhas:\n")
+  print(head(dados, 3))
+  cat("\nResumo estatístico:\n")
+  print(summary(dados))
+  cat("\nValores missing por coluna:\n")
+  print(colSums(is.na(dados)))
+  cat("\nStructura dos dados:\n")
+  str(dados)
+}
+
+# Aplicar a qualquer dataset importado
+verificar_dados(dados_stata)
+```
+
+Por fim, em grandes datasets é comum que os dados sejam registrados em múltiplos arquivos (principalmente no Excel, por causa do limite de linhas). Nesse caso, para não ser necessário carregar cada um desses arquivos e depois construir um data.frame que uni todos, podemos usar recursos de programação funcional do pacote `purrr` para importar diretamente todos os arquivos em um único data.frame.
+
+```{r}
+library(purrr)
+# obter uma lista dos arquivos que serão importados e
+# mapear todos os arquivos para um unico data.frame
+dados <- list.files("datasets/csv", pattern = "\\.csv$", full.names = TRUE) |> map_df(read_csv2)
+```
+
+**Quadro Resumo das funções que podem ser usadas na importação de arquivos externos ao R** 
+
+| Formato | Pacote | Função |
+|---------|-------------------|------------------|
+| CSV | `readr` | `read_delim()`, `read_csv()`, `read_csv2()` |
+| Excel | `readxl` | `read_excel()`, `read_xls()`, `read_xlsx()` |
+| SAS | `haven` | `read_sas()` |
+| SPSS | `haven` | `read_sav()` |
+| Stata | `haven` | `read_stata()`, `read_dta()` |
+| Múltiplos | `rio` | `import()` |
 
