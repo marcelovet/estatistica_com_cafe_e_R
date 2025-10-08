@@ -1,6 +1,6 @@
 ---
 title: "Café com estatística e R"
-subtitle: "Treinamento 2 - Importação e manipulação de dados no R e estatística descritiva"
+subtitle: "Treinamento 2 - Importação e manipulação de dados no R e estatística descritiva: parte 1"
 date: last-modified
 author:
   - name: Marcelo Teixeira Paiva
@@ -21,7 +21,7 @@ copyright:
   holder: Marcelo Paiva
   year: 2025
 citation: 
-  container-title: "Café com estatística e R: Treinamento 2 - Importação e manipulação de dados no R e estatística descritiva"
+  container-title: "Café com estatística e R: Treinamento 2 - Importação e manipulação de dados no R e estatística descritiva, parte 1"
   volume: 1
   issue: 1
 funding: "The author received no specific funding for this work."
@@ -347,4 +347,499 @@ dados <- list.files("datasets/csv", pattern = "\\.csv$", full.names = TRUE) |> m
 | SPSS | `haven` | `read_sav()` |
 | Stata | `haven` | `read_stata()`, `read_dta()` |
 | Múltiplos | `rio` | `import()` |
+
+# Estatística descritiva
+
+Estatísticas descritivas fazem parte de todo trabalho de análise de dados. Podemos ver ela como um passo inicial, em que você utiliza técnicas de análise exploratória para entender melhor o comportamento dos seus dados considerando o todo, por meio de tabelas, gráficos e medidas-resumo. Entretanto, antes de obter tais estatísticas precisamos aprender como manipular os dados no R.
+
+## Manipulação de dados com os pacotes do `tidyverse`
+
+O **tidyverse** é uma coleção de pacotes R voltados para a ciência de dados, que compatilham uma mesma filosofia, gramática e estruturas de dados. Ele é composto dos seguintes pacotes:
+
+- tibble: extensão do `data.frame`;
+- dplyr: funções na forma de verbos que fornece a gramática para a manipulação dos dados;
+- tidyr: funções para obtenção dos dados que seguem a filosia dos "dados arrumados";
+- readr: importação de dados tabulares (csv, tsv, fwf);
+- purrr: programação funcional;
+- stringr: manipulação de strings (`character`);
+- forcats: manipulação de fatores (`factor`);
+- lubridate: manipulação de datas (`date`);
+- ggplot2: criação de gráficos.
+
+```{r}
+# Carregar todo o conjunto de pacotes
+library(tidyverse)
+
+# Ou carregar pacotes individuais
+library(dplyr)
+library(tidyr)
+library(readr)
+```
+
+Como já mencionado, o `tidyverse` segue a filosofia de "dados arrumados" (*tidy data*), o que basicamente significa que:
+
+- **cada variável forma uma coluna;**
+- **cada unidade observacional (unidade amostral) forma uma linha;**
+- **cada célula é uma observação e um único valor**
+
+Esse padrão facilita análises posteriores:
+
+```{r}
+set.seed(42)
+dados_tidy <- tibble(
+  animal_id = 1:6,
+  especie = rep(c("cão", "gato"), 3),
+  peso_kg = round(rnorm(6, mean = 15, sd = 5), 1),
+  idade_anos = sample(1:10, 6, replace = TRUE)
+)
+dados_tidy
+```
+
+O `tibble` facilita a compreensão dos seus dados, uma vez que sua impressão (com `print`) apresenta o tipo de cada variável, não imprime o conjunto completo (somente as primeiras linhas) e não faz conversões automáticas de variáveis `character` para `factor`. Além disso, ele aceita nomes não sintáticos do R para as variáveis (usando \`\`).
+
+Uma diferença importante entre `tibble` e `data.frame` está na forma como você extrai uma variável do conjunto. No `data.frame` usamos os padrões `nome_do_dataframe["nome_da_coluna"]`, `nome_do_dataframe[indice_da_coluna]` ou `nome_do_dataframe$nome_da_coluna`. No `tibble` usamos os padrões `nome_do_tibble$nome_da_coluna`, `nome_do_tibble[[indice_da_coluna]]`, `nome_do_tibble[["nome_da_coluna"]]` ou, ainda, extrair por meio do pipe com `nome_do_tibble %>% .$nome_da_coluna`, `nome_do_tibble %>% .[["nome_da_coluna"]]` ou `nome_do_tibble |> pull("nome_da_coluna")`.
+
+```{r}
+# extraindo uma variável do tibble
+dados_tidy %>% .$idade_anos
+dados_tidy %>% .[["idade_anos"]]
+dados_tidy |> pull("idade_anos")
+```
+
+### O pipe (%>% e |>)
+
+O pipe permite agrupar em um código que parece ser uma única operação múltiplas operações (chamadas de funções), em que o resultado de uma operação e fornecido como o primeiro argumento da subsequente. Isso torna o código mais legível.
+
+```{r}
+# Sem pipe, com funções aninhadas
+resultado <- summarise(
+  group_by(
+    filter(dados_tidy, peso_kg > 10),
+    especie
+  ),
+  peso_medio = mean(peso_kg)
+)
+# ou criando várias etapas
+dados_filtrados <- filter(dados_tidy, peso_kg > 10)
+dados_agrupados <- group_by(dados_filtrados, especie)
+resultado <- summarise(dados_agrupados, peso_medio = mean(peso_kg))
+
+# Com pipe do tidyverse (%>%)
+resultado <- dados_tidy %>%
+  filter(peso_kg > 10) %>%
+  group_by(especie) %>%
+  summarise(peso_medio = mean(peso_kg))
+
+# com pipe nativo do R 4.1+ (|>)
+resultado <- dados_tidy |>
+  filter(peso_kg > 10) |>
+  group_by(especie) |>
+  summarise(peso_medio = mean(peso_kg))
+```
+
+### Manipulação dos dados com o `dplyr`
+
+Usamos o `select()` para obter um subconjunto do nosso dataset com somente as variáveis de interesse.
+
+```{r}
+df_exemplo <- tibble(
+  id = 1:100,
+  especie = sample(c("cão", "gato", "coelho"), 100, replace = TRUE),
+  idade = round(runif(100, 1, 15), 1),
+  peso = round(rnorm(100, 15, 5), 2),
+  vacinado = sample(c(TRUE, FALSE), 100, replace = TRUE),
+  data_consulta = seq(as.Date("2023-01-01"), by = "day", length.out = 100),
+  temperatura = round(rnorm(100, 38.5, 0.5), 1)
+)
+```
+
+```{r}
+#| eval: false
+
+# seleção de colunas pelo nome ou com vetor de caractéres
+df_exemplo %>%
+  select(id, especie, peso)
+df_exemplo %>%
+  select(c("id", "especie", "peso"))
+
+# Seleção com funções helpers
+# starts_with para as colunas que iniciam com certo valor
+df_exemplo %>%
+  select(starts_with("data"))
+# ends_with para as colunas que terminam com certo valor
+df_exemplo %>%
+  select(ends_with("do"))
+# contains para as colunas que possuem um certo valor
+df_exemplo %>%
+  select(contains("ac"))
+# where para colunas que correspondem a TRUE para alguma função de retorno lógico
+df_exemplo %>%
+  select(where(is.numeric))
+# usando padrão de fórmula para múltiplas condições
+df_exemplo %>%
+  select(where(~ is.numeric(.x) && min(.x) > 10))
+
+# Seleção pela exclusão de determinadas colunas
+df_exemplo %>%
+  select(-id, -data_consulta)
+df_exemplo %>%
+  select(-c("id", "data_consulta"))
+
+# Seleção com renomeação de determinadas colunas
+df_exemplo %>%
+  select(
+    identificador = id,
+    tipo_animal = especie,
+    everything()
+  )
+```
+
+Usamos o `filter()` para obter um subconjunto do nosso dataset com somente as observações que atendem a uma determinada condição.
+
+```{r}
+#| eval: false
+
+# Filtro básico
+df_exemplo %>%
+  filter(especie == "cão")
+
+# Múltiplas condições
+# AND - , ou &
+df_exemplo %>%
+  filter(especie == "gato", peso > 10, vacinado == TRUE)
+df_exemplo %>%
+  filter(especie == "gato" & peso > 10 & vacinado == TRUE)
+
+# OR - |
+df_exemplo %>%
+  filter(especie == "cão" | especie == "gato")
+
+# agrupando os OR de == com %in%
+df_exemplo %>%
+  filter(especie %in% c("cão", "gato"))
+
+# Filtros com funções
+# between para min <= x <= max
+df_exemplo %>%
+  filter(between(idade, 5, 10))
+
+df_exemplo %>%
+  filter(!is.na(temperatura))
+```
+
+Usamos o `mutate()` para criar ou modificar variáveis.
+
+```{r}
+#| eval: false
+
+# criar colunas
+# case_when para construir uma variável baseado em condições das demais
+df_exemplo %>%
+  mutate(
+    score_inventado = peso / (idade ^ 0.5),
+    categoria_idade = case_when(
+      idade < 1 ~ "Filhote",
+      idade < 7 ~ "Adulto",
+      TRUE ~ "Idoso"
+    )
+  ) %>%
+  select(id, especie, idade, categoria_idade, score_inventado)
+
+# modificar colunas
+df_exemplo %>%
+  mutate(
+    peso = round(peso, 0),
+    temperatura = temperatura * 9/5 + 32
+  )
+
+# transformações em várias colunas
+# scale centraliza a variável (desvio / desvio-padrão)
+# cuidado para multiplos across no mutate, a ordem importa
+df_exemplo %>%
+  mutate(
+    across(where(is.numeric), ~round(.x, 1)),
+    across(c(peso, temperatura), ~scale(.x)[,1], .names = "{.col}_z")
+  )
+df_exemplo %>%
+  mutate(
+    across(c(peso, temperatura), ~scale(.x)[,1], .names = "{.col}_z"),
+    across(where(is.numeric), ~round(.x, 1))
+  )
+
+# transmute() - mantém apenas as colunas criadas
+df_exemplo %>%
+  transmute(
+    id,
+    peso_libras = peso * 2.205,
+    idade_meses = idade * 12
+  )
+```
+
+Usamos o `arrange()` para ordenar as variáveis por uma ou mais variáveis.
+
+```{r}
+#| eval: false
+
+# Ordenação crescente por uma variável
+df_exemplo %>%
+  arrange(peso)
+
+# Ordenação decrescente por uma variável
+df_exemplo %>%
+  arrange(desc(peso))
+
+# Ordenação múltipla
+df_exemplo %>%
+  arrange(especie, desc(idade), peso)
+
+# Ordenação com NA
+df_exemplo %>%
+  arrange(desc(is.na(temperatura)), temperatura)
+```
+
+Para criar agregações (resumos estatíticos) usamos `summarise()` e o `group_by()` caso esse resumo deva ser calculado para cada categoria de determinada variável.
+
+```{r}
+#| eval: false
+
+# Resumo simples
+df_exemplo %>%
+  summarise(
+    n_animais = n(),
+    peso_medio = mean(peso, na.rm = TRUE),
+    peso_dp = sd(peso, na.rm = TRUE),
+    peso_mediana = median(peso, na.rm = TRUE),
+    peso_min = min(peso, na.rm = TRUE),
+    peso_max = max(peso, na.rm = TRUE)
+  )
+
+# Agrupamento e resumo
+df_exemplo %>%
+  group_by(especie) %>%
+  summarise(
+    n = n(),
+    idade_media = mean(idade, na.rm = TRUE),
+    prop_vacinados = mean(vacinado, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Agrupamento por múltiplas variáveis
+df_exemplo %>%
+  group_by(especie, vacinado) %>%
+  summarise(
+    n = n(),
+    peso_medio = mean(peso, na.rm = TRUE),
+    temp_media = mean(temperatura, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(especie, vacinado)
+
+# Criando colunas baseado nas informações do grupo (categoria)
+df_exemplo %>%
+  group_by(especie) %>%
+  transmute(
+    especie,
+    peso,
+    peso_padronizado = (peso - mean(peso)) / sd(peso),
+    peso_centralizado = scale(peso)[,1],
+    rank_peso = rank(peso)
+  ) %>%
+  ungroup() %>%
+  arrange(rank_peso)
+```
+
+Para obter um subconjunto de observações também podemos usar funções da família `slice_*`.
+
+```{r}
+#| eval: false
+
+# Primeiras ou últimas n observações
+df_exemplo %>% slice_head(n = 5)
+df_exemplo %>% slice_tail(n = 5)
+
+# Linhas específicas
+df_exemplo %>% slice(c(1, 5, 10))
+
+# Amostragem "aleatória"
+df_exemplo %>% slice_sample(n = 10)
+df_exemplo %>% slice_sample(prop = 0.1)
+
+# Extremos por grupo
+df_exemplo %>%
+  group_by(especie) %>%
+  slice_max(peso, n = 3) # 3 maiores valores
+df_exemplo %>%
+  group_by(especie) %>%
+  slice_min(idade, n = 2) # 2 menores valores
+# retornando exatamente o valor n
+df_exemplo %>%
+  group_by(especie) %>%
+  slice_min(idade, n = 2, with_ties = FALSE)
+```
+
+Para obter os valores únicos de uma ou mais variáveis usamos `distinct()`.
+
+```{r}
+#| eval: false
+
+# Valores únicos de uma coluna
+df_exemplo %>%
+  distinct(especie)
+
+# Combinações únicas
+# .keep_all = TRUE para manter as outras colunas
+df_exemplo %>%
+  distinct(especie, vacinado, .keep_all = TRUE)
+
+# Remover duplicatas
+df_exemplo %>%
+  distinct()
+```
+
+Para contagem de ocorrências usamos `count()` e `add_count()`.
+
+```{r}
+#| eval: false
+
+# quantidade de observações por categoria
+df_exemplo %>%
+  count(especie, sort = TRUE, name = "Amostra")
+
+# Contagem com peso
+df_exemplo %>%
+  count(especie, wt = peso, name = "peso_total")
+# mesmo que agrupar e agregar para a soma
+df_exemplo %>%
+  group_by(especie) %>%
+  summarise(
+    peso_total = sum(peso)
+  )
+
+# Adicionar contagem sem agregar
+df_exemplo %>%
+  add_count(especie, name = "n_por_especie") %>%
+  add_count(especie, wt = peso, name = "peso_por_especie") %>%
+  select(id, especie, n_por_especie, peso_por_especie)
+```
+
+### Reestruturação dos dados com o `tidyr`
+
+Algumas vezes os dados importados apresentam um conjunto de colunas que precisam ser transformadas em uma única com seu valor e outra com a categoria, ou o contrário. Para conseguir isso usamos as funções `pivot_longer()` e `pivot_wider()`. `pivot_longer()` retorna um dataset com mais observações e menos colunas, usando os nomes das colunas alvo para construir uma variável e o valor de cada coluna para construir outra. `pivot_wider()` retorna um dataset com mais colunas e menos observações, usando os valores de uma ou mais colunas alvo para criar novas variáveis e outra coluna para extrair os valores.
+
+```{r}
+dados_wide <- tibble(
+  id = 1:100,
+  especie = sample(c("cão", "gato"), 100, replace = TRUE),
+  peso_2021 = round(rnorm(100, 13, 5), 2),
+  peso_2022 = round(rnorm(100, 15.1, 2), 2),
+  peso_2023 = round(rnorm(100, 11.3, 5), 2),
+)
+
+# Converter para long
+dados_long <- dados_wide %>%
+  pivot_longer(
+    cols = starts_with("peso"),
+    names_to = "ano",
+    values_to = "peso",
+    names_prefix = "peso_",
+    names_transform = list(ano = as.integer)
+  )
+
+dados_long %>% slice_sample(n = 4)
+```
+
+```{r}
+dados_wide_novo <- dados_long %>%
+  pivot_wider(
+    names_from = ano,
+    values_from = peso,
+    names_prefix = "peso_"
+  )
+
+# exemplo mais complexo
+medidas_long <- tibble(
+  animal_id = rep(1:3, each = 6),
+  momento = rep(c("antes", "depois"), each = 3, times = 3),
+  parametro = rep(c("peso", "temperatura", "frequencia"), times = 6),
+  valor = round(runif(18, 10, 40), 1)
+)
+medidas_wide <- medidas_long %>%
+  pivot_wider(
+    names_from = c(parametro, momento),
+    values_from = valor,
+    names_sep = "_"
+  ) %>%
+  select(animal_id, starts_with("peso"), starts_with("temperatura"), starts_with("frequencia"))
+nomes_tabela <- c("Animal", "Peso (antes)", "Peso (depois)", "Temp (antes)", "Temp (depois)", "Freq (antes)", "Freq (depois)")
+kable(medidas_wide, col.names = nomes_tabela)
+```
+
+Também é possível separar os valores de uma variável em novas variáveis usando o `separate()` ou unir os valores de diferentes variáveis em uma única usando o `unite()`.
+
+```{r}
+df_exemplo_2 <- tibble(
+  id = 1:5,
+  info = c(
+    "cão_macho_5anos",
+    "gato_femea_3anos",
+    "cão_femea_8anos",
+    "gato_macho_2anos",
+    "coelho_macho_1anos"
+  )
+)
+
+# Separar em múltiplas colunas
+dados_separados <- df_exemplo_2 %>%
+  separate(
+    info,
+    into = c("especie", "sexo", "idade"),
+    sep = "_",
+    convert = TRUE
+  ) %>%
+  mutate(idade = as.integer(str_remove(idade, "anos")))
+
+# Unir colunas
+dados_unidos <- dados_separados %>%
+  unite("descricao", especie, sexo, sep = ", ", remove = FALSE)
+
+# separate_rows() separa em múltiplas linhas
+dados_unidos <- tibble(
+    veterinario = c("Dr. Fulano", "Dra. Sicrano"),
+    especialidades = c("cirurgia,clinica", "clinica,dermatologia,cardiologia")
+  ) %>%
+  separate_rows(especialidades, sep = ",")
+```
+
+Quando temos dados ausentes (`NA`) em variáveis do nosso conjunto de dados, normalmente, algum tratamento será necessário para lidar com essas observações, seja removendo elas ou substituindo por outro valor. `fill()` substitui os valores `NA` das variáveis alvo por valores anteriores e posteriores àquela observação no conjunto de dados, enquanto `replace_na()` substitui os valores `NA` por um valor padrão. Já o `drop_na()` remove a unidade observacional inteira que apresente um `NA` nas variáveis alvo.
+
+```{r}
+#| eval: false
+
+dados_na <- tibble(
+  dia = 1:7,
+  temperatura = c(38.5, NA, 38.7, NA, NA, 39.0, 38.6),
+  medicacao = c("A", NA, NA, "B", NA, NA, "C")
+)
+
+# fill() - mais útil para dados temporais
+dados_na %>%
+  fill(temperatura, .direction = "down")
+dados_na %>%
+  fill(everything(), .direction = "up")
+dados_na %>%
+  fill(everything(), .direction = "updown")
+
+# replace_na()
+dados_na %>%
+  replace_na(list(
+    temperatura = 38.5,
+    medicacao = "Nenhuma"
+  ))
+
+# drop_na()
+dados_na %>%
+  drop_na()
+dados_na %>%
+  drop_na(temperatura)
+```
 
