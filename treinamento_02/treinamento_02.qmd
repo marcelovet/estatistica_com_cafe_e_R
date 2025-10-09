@@ -310,6 +310,8 @@ kable(
 Uma vez carregados os dados, é importante avaliar a estrutura desse conjunto de dados importado. Para uma exploração inicial, será interessante avaliar, no mínimo, as dimensões desses dados (número de observações e variáveis), quais os tipos das variáveis no R, resumos estatísticos simples, quantidade de valores ausentes por variável.
 
 ```{r}
+#| eval: false
+
 verificar_dados <- function(dados) {
   cat("Dimensões:", dim(dados), "\n")
   cat("Tipos de variáveis:\n")
@@ -348,11 +350,7 @@ dados <- list.files("datasets/csv", pattern = "\\.csv$", full.names = TRUE) |> m
 | Stata | `haven` | `read_stata()`, `read_dta()` |
 | Múltiplos | `rio` | `import()` |
 
-# Estatística descritiva
-
-Estatísticas descritivas fazem parte de todo trabalho de análise de dados. Podemos ver ela como um passo inicial, em que você utiliza técnicas de análise exploratória para entender melhor o comportamento dos seus dados considerando o todo, por meio de tabelas, gráficos e medidas-resumo. Entretanto, antes de obter tais estatísticas precisamos aprender como manipular os dados no R.
-
-## Manipulação de dados com os pacotes do `tidyverse`
+# Manipulação de dados com os pacotes do `tidyverse`
 
 O **tidyverse** é uma coleção de pacotes R voltados para a ciência de dados, que compatilham uma mesma filosofia, gramática e estruturas de dados. Ele é composto dos seguintes pacotes:
 
@@ -406,7 +404,7 @@ dados_tidy %>% .[["idade_anos"]]
 dados_tidy |> pull("idade_anos")
 ```
 
-### O pipe (%>% e |>)
+## O pipe (%>% e |>)
 
 O pipe permite agrupar em um código que parece ser uma única operação múltiplas operações (chamadas de funções), em que o resultado de uma operação e fornecido como o primeiro argumento da subsequente. Isso torna o código mais legível.
 
@@ -437,7 +435,7 @@ resultado <- dados_tidy |>
   summarise(peso_medio = mean(peso_kg))
 ```
 
-### Manipulação dos dados com o `dplyr`
+## Manipulação dos dados com o `dplyr`
 
 Usamos o `select()` para obter um subconjunto do nosso dataset com somente as variáveis de interesse.
 
@@ -722,7 +720,7 @@ df_exemplo %>%
   select(id, especie, n_por_especie, peso_por_especie)
 ```
 
-### Reestruturação dos dados com o `tidyr`
+## Reestruturação dos dados com o `tidyr`
 
 Algumas vezes os dados importados apresentam um conjunto de colunas que precisam ser transformadas em uma única com seu valor e outra com a categoria, ou o contrário. Para conseguir isso usamos as funções `pivot_longer()` e `pivot_wider()`. `pivot_longer()` retorna um dataset com mais observações e menos colunas, usando os nomes das colunas alvo para construir uma variável e o valor de cada coluna para construir outra. `pivot_wider()` retorna um dataset com mais colunas e menos observações, usando os valores de uma ou mais colunas alvo para criar novas variáveis e outra coluna para extrair os valores.
 
@@ -843,3 +841,286 @@ dados_na %>%
   drop_na(temperatura)
 ```
 
+Por vezes em nossa análise chegamos em um ponto onde é necessário dividir nosso dataset em multiplos conjuntos, baseado em alguma categoria, seja para aplicar algum teste ou ajustar um modelo. Esse processo, normalmente, envolveria criar várias variáveis cada uma com o dataset filtrado para a categoria de interesse e depois aplicar o teste a cada uma desses subconjuntos. Entretanto, o `tidyr` oferece uma estratégia mais elegante para esse processo por meio do aninhamento usando o `nest()`. O `nest()` permite criar um novo `tibble` em que, em uma coluna do tipo lista, cada observação se torna um `tibble` filtrado para a categoria de interesse, assim, podemos aplicar o teste de forma iterativa em cada um, por meio de funções de programação funcional do `purrr`, mantendo também o resultado em formato de lista para cada observação.
+
+```{r}
+dados_aninhados <- df_exemplo %>%
+  group_by(especie) %>%
+  nest() %>%
+  mutate(
+    n_observacoes = map_int(data, nrow),
+    modelo = map(data, ~lm(peso ~ idade, data = .x)),
+    teste_media_peso_vacinado = map(data, ~t.test(peso ~ vacinado, data = .x))
+  )
+
+dados_desaninhados <- dados_aninhados %>%
+  select(-modelo) %>%
+  unnest(data) %>%
+  ungroup()
+
+# resultados de gato
+summary(dados_aninhados$modelo[[1]])
+dados_aninhados$teste_media_peso_vacinado[[1]]
+```
+
+## Unindo diferentes tabelas com `dplyr`
+
+Outra situação com que se depara na análise de dados é a necessidade de importar dados de diferentes planilhas (tabelas), as quais depois precisamos unir em um único dataset, baseado na informação de alguma variável que ocorre em ambas as tabelas. Isso é particularmente comum quando trabalhamos com dados importados de bancos de dados relacionais, onde temos uma tabela que possui uma coluna de chave primária (valores únicos) e outra com chave estrangeira que indica que aquele registro se refere à observação única daquela outra tabela.
+
+Para unir essas tabelas usamos `joins`, uma operação derivada do SQL, uma linguagem de consulta de banco de dados relacionais. `joins` guardam uma semelhança com a teoria de conjuntos (união, diferença, intersercção).
+
+![Tipos de joins do `dplyr`](joins.png "Title: Tipos de joins")
+
+```{r}
+#| eval: false
+
+animais <- tibble(
+  id = 1:5,
+  nome = c("Rex", "Mia", "Bob", "Luna", "Max"),
+  especie = c("cão", "gato", "cão", "gato", "coelho")
+)
+
+consultas <- tibble(
+  id_animal = c(1, 2, 1, 3, 6),  # id 6 não existe no tibble animais
+  data = as.Date(c(
+    "2023-01-10", "2023-01-15", "2023-02-01",
+    "2023-02-10", "2023-02-15"
+  )),
+  motivo = c("vacina", "checkup", "checkup", "vacina", "emergência")
+)
+
+# inner_join - mantém apenas registros com correspondência
+inner <- animais %>%
+  inner_join(consultas, by = c("id" = "id_animal"))
+
+# left_join - mantém todos da esquerda
+left <- animais %>%
+  left_join(consultas, by = c("id" = "id_animal"))
+
+# right_join - mantém todos da direita
+right <- animais %>%
+  right_join(consultas, by = c("id" = "id_animal"))
+
+# full_join - mantém todos
+full <- animais %>%
+  full_join(consultas, by = c("id" = "id_animal"))
+
+# semi_join - mantém linhas de L que têm match em R
+animais_com_consulta <- animais %>%
+  semi_join(consultas, by = c("id" = "id_animal"))
+
+# anti_join - mantém linhas de L que NÃO têm match em R
+animais_sem_consulta <- animais %>%
+  anti_join(consultas, by = c("id" = "id_animal"))
+```
+
+## Manipulando texto, datas e fatores com `stringr`, `lubridate` e `forcats`
+
+Quando nosso dataset possui variáveis que representam um texto, por exemplo, uma resposta aberta, é normal ter que manipular essa variável para padronizá-la antes de uma análise. O `stringr` oferece um conjunto de funções que permitem manipular dados do tipo `character`, que inclui meios de tranformar o texto em maiúsculas ou minúsculas, detectar certas palavras, contar o número de ocorrências de uma palavra, remover ou substituir uma palavra por outra ou, ainda, usar expressões regulares (*REGEX*) para tranformar seus dados iniciais.
+
+```{r}
+#| eval: false
+
+exemplo <- tibble(
+  id = 1:5,
+  descricao = c(
+    "  Infecção respiratória AGUDA  ",
+    "dermatite alérgica crônica",
+    "FRATURA do fêmur esquerdo",
+    "gastroenterite viral",
+    "Otite média bilateral"
+  )
+)
+
+# Funções básicas
+diagnosticos_limpos <- exemplo %>%
+  mutate(
+    # Remover espaços extras no inicio e fim do texto
+    descricao_limpa = str_trim(descricao),
+    
+    # Converter para minúsculas
+    descricao_lower = str_to_lower(descricao_limpa),
+    
+    # Converter para título ("Um Texto Dessa Forma")
+    descricao_title = str_to_title(descricao_limpa),
+    
+    # Detectar padrões
+    tem_infeccao = str_detect(descricao_lower, "infec"),
+    
+    # Extrair palavras
+    primeira_palavra = str_extract(descricao_limpa, "^\\w+"),
+    
+    # Substituir
+    descricao_mod = str_replace(descricao_lower, "aguda|crônica", "***"),
+    
+    # Contar palavras
+    n_palavras = str_count(descricao_limpa, "\\w+")
+  )
+
+diagnosticos_limpos
+
+# Expressões regulares
+telefones <- c("(11) 1234-5678", "11-98765.4321", "1112345678", "11 1234 5678")
+telefones_limpos <- telefones %>%
+  str_remove_all("[^0-9]") %>%  # Remove tudo exceto números
+  str_replace("^(\\d{2})(\\d{4,5})(\\d{4})$", "(\\1) \\2-\\3")
+
+telefones_limpos
+```
+
+O `lubridate` por sua vez permite trabalhar com dados temporais (data e tempo). Com ele você converter dados para os tipos `Date` e `POSIXct` (*date-time*), usar aritméticas entre datas, adcionar ou remover *timezones*, além de criar períodos, durações e intervalos.
+
+```{r}
+#| eval: false
+
+datas_texto <- c("01/03/2023", "15-06-2023", "2023-12-25")
+
+datas <- tibble(
+  texto = datas_texto,
+  data_dmy = dmy(c("01/03/2023", "15/06/2023", "25/12/2023")),
+  data_dmy_hm = dmy_hm(c("01/03/2023 15:20", "15/06/2023 08:12", "25/12/2023 17:30")),
+  data_ymd = ymd("2023-12-25")
+)
+
+class(df_exemplo$data_consulta)
+
+# obter os componentes da data
+consultas_datas <- df_exemplo %>%
+  mutate(
+    ano = year(data_consulta),
+    mes = month(data_consulta, label = TRUE),
+    dia = day(data_consulta),
+    dia_semana = wday(data_consulta, label = TRUE),
+    semana_epidemio = epiweek(data_consulta),
+    trimestre = quarter(data_consulta),
+    dia_ano = yday(data_consulta)
+  )
+
+intervencoes <- tibble(
+  inicio = ymd(c("2023-01-01", "2023-03-15", "2023-06-01")),
+  fim = ymd(c("2023-01-15", "2023-04-01", "2023-06-30"))
+) %>%
+  mutate(
+    duracao_dias = as.numeric(fim - inicio),
+    duracao_semanas = as.numeric(difftime(fim, inicio, units = "weeks")),
+    meio_periodo = inicio + days(as.integer(duracao_dias / 2))
+  )
+
+# criando periodos
+intervencoes$inicio + years(1)
+# criando durações
+intervencoes$inicio + dyears(1)
+# criando intervalos
+intevalo_um_ano <- interval(
+  intervencoes$inicio, intervencoes$inicio + years(1)
+)
+# testando se uma data está dentro de um intervalo
+(intervencoes$inicio[1] + days(20)) %within% intevalo_um_ano
+
+# Sequências de datas
+calendario_vacinacao <- tibble(
+  data = seq(ymd("2023-01-01"), ymd("2023-12-31"), by = "month"),
+  tipo = "Vacinação mensal"
+)
+
+# Arredondar datas
+agora <- now()
+tibble(
+  original = agora,
+  hora = floor_date(agora, "hour"), # floor arredonda para baixo
+  dia = round_date(agora, "day"), # round arredonda para o mais próximo
+  semana = ceiling_date(agora, "week"), # ceiling arredonda para cima
+  mes = floor_date(agora, "month")
+)
+```
+
+Para finalizar nossa seção sobre o `tidyverse` temos o pacote `forcats` para manipulação de fatores. Ele possui ferramentas para alterar ou reordenar os fatores de uma variável de forma simples.
+
+```{r}
+#| eval: false
+
+dados_fatores <- df_exemplo %>%
+  mutate(
+    especie_fator = factor(especie),
+    especie_freq = fct_infreq(especie_fator), # Reordenar níveis por frequência
+    especie_peso = fct_reorder(especie_fator, peso, mean), # Reordenar por outra variável
+    
+    # Recodificar níveis
+    especie_pt = fct_recode(
+      especie_fator,
+      "Canino" = "cão", # padrão "Novo nome" = "Antigo nome"
+      "Felino" = "gato",
+      "Lagomorfo" = "coelho"
+    ),
+    
+    # Agrupar níveis raros
+    especie_agrup = fct_lump_min(
+      especie_fator, min = 30, other_level = "Outros"
+    )
+  )
+
+levels(dados_fatores$especie_fator)
+levels(dados_fatores$especie_freq)
+
+dados_fatores %>%
+  group_by(especie) %>%
+  summarise(media = mean(peso)) %>%
+  arrange(media)
+levels(dados_fatores$especie_peso)
+
+levels(dados_fatores$especie_pt)
+levels(dados_fatores$especie_agrup)
+```
+
+Os pacotes apresentados possuem uma grande gama de ferramentas, e nem todas serão apresentadas no nosso treinamento. Caso queira aprender mais sobre elas, recomendo o livro [R para Ciência de Dados](https://r4ds.hadley.nz/), o qual possui uma versão online de acesso aberto ou a documentação dos pacotes do `tidyverse` que podem ser encontrados em [https://www.tidyverse.org/packages/]().
+
+# Estatística descritiva
+
+Estatísticas descritivas fazem parte de todo trabalho de análise de dados. Podemos ver ela como um passo inicial, em que você utiliza técnicas de análise exploratória para entender melhor o comportamento dos seus dados considerando o todo, por meio de tabelas, gráficos e medidas-resumo. Entretanto, antes de obter tais estatísticas precisamos aprender como manipular os dados no R.
+
+
+- Estatística descritiva univariada
+    - Tabela de distribuição de frequências
+        - Tabela de distribuição de frequências para variáveis qualitativas
+        - Tabela de distribuição de frequências para dados discretos
+        - Tabela de distribuição de frequências para dados contínuos agrupados em classes
+    - Representação gráfica dos dados
+    - Representação gráfica para variáveis qualitativas
+        - Gráfico de barras
+        - Gráfico de setores ou pizza
+        - Diagrama de Pareto
+    - Representação gráfica para variáveis quantitativas
+        - Gráfico de linhas
+        - Gráfico de pontos ou dispersão
+        - Histograma
+        - Gráfico de ramo-e-folhas
+        - Boxplot ou diagrama de caixa
+    - Medidas-resumo
+        - Medidas de posição ou localização
+            - Medidas de tendência central
+            - Medidas separatrizes
+            - Identificação de existência de outliers univariados
+        - Medidas de dispersão ou variabilidade
+            - Amplitude
+            - Desvio-médio
+            - Variância
+            - Desvio-padrão
+            - Erro-padrão
+            - Coeficiente de variação
+    - Medidas de forma
+        - Medidas de assimetria
+        - Medidas de curtose
+
+- Estatística descritiva bivariada
+    - Associação entre duas variáveis qualitativas
+        - Tabelas de distribuição conjunta de frequências
+    - Medidas de associação
+        - Estatística qui-quadrado
+        - Outras medidas de associação baseadas no qui-quadrado
+        - coeficiente de Spearman
+    - Correlação entre duas variáveis quantitativas
+        - Tabelas de distribuição conjunta de frequências
+        - Representação gráfica por meio de um diagrama de dispersão
+    - Medidas de correlação
+        - Covariância
+        - Coeficiente de correlação de Pearson
