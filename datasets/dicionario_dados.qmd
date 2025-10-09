@@ -1121,3 +1121,30 @@ Alguns dos outros arquivos de dados incluem:
 • viet_district_centroid - Esta camada de dados geográficos representa dados no nível de comuna agregados no nível de distrito.  
 • viet_district_poly - Esta camada de dados geográficos representa dados no nível de comuna agregados no nível de distrito.  
 • viet_region_poly - Esta camada de dados geográficos representa o limite da região no norte do Vietnã para a qual os dados foram analisados.
+
+## AirQualityUCI
+
+| Contribuidor(es) | Tipo de Estudo   | # Registros | Unidade de Registro |
+|------------------|------------------|-------------|---------------------|
+| Saverio Vito   | Longitudinal (série temporal) | 9358       | Hora  |
+
+**Referência(s)**  
+S. D. Vito, E. Massera, M. Piga, L. Martinotto, G. Francia. Calibração em campo de um nariz eletrônico para estimativa de benzeno em um cenário de monitoramento de poluição urbana. Sensors and Actuators B: Chemical. 2008.
+
+**Descrição Breve**  
+O conjunto de dados contém 9.358 instâncias de respostas médias horárias de um conjunto de 5 sensores químicos de óxido metálico incorporados em um Dispositivo Multissensor Químico de Qualidade do Ar. O dispositivo estava localizado em campo, em uma área significativamente poluída, ao nível de uma estrada, em uma cidade italiana. Os dados foram registrados de março de 2004 a fevereiro de 2005 (um ano), representando os registros mais longos disponíveis gratuitamente de respostas de dispositivos de sensores químicos de qualidade do ar implantados em campo. As concentrações médias horárias do Ground Truth para CO, Hidrocarbonetos Não Metânicos, Benzeno, Óxidos de Nitrogênio Totais (NOx) e Dióxido de Nitrogênio (NO2) foram fornecidas por um analisador de referência certificado e localizado. Para esse material, foram mantidas somente as medidas do analisador de referência.
+
+**Tabela de Variáveis**
+
+| Variável   | Descrição                                      | Códigos/Unidades |
+|------------|------------------------------------------------|------------------|
+| Date         | Data | dd/mm/yyyy |
+| Time         | Hora | hh.mm.ss |
+| CO(GT)       | Concentração média horária de CO | $mg/m^3$ |
+| NMHC(GT)     | Concentração média horária de hidrocarbonetos não metânicos | $microg/m^3$ |
+| C6H6(GT)     | Concentração média horária de benzeno | $microg/m^3$ |
+| NOx(GT)      | Concentração média horária de óxidos de nitrogênio totais | ppb |
+| NO2(GT)      | Concentração média horária de dióxido de nitrogênio | $microg/m^3$ |
+| T            | Temperatura | °C |
+| RH           | Umidade relativa | % |
+| AH           | Umidade absoluta | $g/m^3$ |
