@@ -1076,51 +1076,337 @@ Os pacotes apresentados possuem uma grande gama de ferramentas, e nem todas ser�
 
 # Estatística descritiva
 
-Estatísticas descritivas fazem parte de todo trabalho de análise de dados. Podemos ver ela como um passo inicial, em que você utiliza técnicas de análise exploratória para entender melhor o comportamento dos seus dados considerando o todo, por meio de tabelas, gráficos e medidas-resumo. Entretanto, antes de obter tais estatísticas precisamos aprender como manipular os dados no R.
+Estatísticas descritivas fazem parte de todo trabalho de análise de dados. Podemos ver ela como um passo inicial, em que você utiliza técnicas de análise exploratória para entender melhor o comportamento dos seus dados considerando o todo, por meio de tabelas, gráficos e medidas-resumo. Na estatística descritiva univariada buscamos o comportamento de uma variável isolada das demais do conjunto de dados, enquanto nas estatísticas bivariada ou multivariada exploramos o comportamento em conjunto de duas ou mais variáveis.
 
+O tipo de variável em estudo irá influenciar na técnica que você escolhe para analisá-la, assim, podemos sintetizar as possibilidades de análise da seguinte forma para estatísticas univariadas:
 
-- Estatística descritiva univariada
-    - Tabela de distribuição de frequências
-        - Tabela de distribuição de frequências para variáveis qualitativas
-        - Tabela de distribuição de frequências para dados discretos
-        - Tabela de distribuição de frequências para dados contínuos agrupados em classes
-    - Representação gráfica dos dados
-    - Representação gráfica para variáveis qualitativas
-        - Gráfico de barras
-        - Gráfico de setores ou pizza
-        - Diagrama de Pareto
-    - Representação gráfica para variáveis quantitativas
-        - Gráfico de linhas
-        - Gráfico de pontos ou dispersão
-        - Histograma
-        - Gráfico de ramo-e-folhas
-        - Boxplot ou diagrama de caixa
-    - Medidas-resumo
-        - Medidas de posição ou localização
-            - Medidas de tendência central
-            - Medidas separatrizes
-            - Identificação de existência de outliers univariados
-        - Medidas de dispersão ou variabilidade
-            - Amplitude
-            - Desvio-médio
-            - Variância
-            - Desvio-padrão
-            - Erro-padrão
-            - Coeficiente de variação
-    - Medidas de forma
-        - Medidas de assimetria
-        - Medidas de curtose
+```{mermaid}
+%%| label: fig1_diagrama_analises_univ_tipo
+%%| fig-cap: "Estatísticas descritivas univariadas para variáveis qualitativas. Fonte: adaptado de Favaro *et al*. (2017)"
 
-- Estatística descritiva bivariada
-    - Associação entre duas variáveis qualitativas
-        - Tabelas de distribuição conjunta de frequências
-    - Medidas de associação
-        - Estatística qui-quadrado
-        - Outras medidas de associação baseadas no qui-quadrado
-        - coeficiente de Spearman
-    - Correlação entre duas variáveis quantitativas
-        - Tabelas de distribuição conjunta de frequências
-        - Representação gráfica por meio de um diagrama de dispersão
-    - Medidas de correlação
-        - Covariância
-        - Coeficiente de correlação de Pearson
+flowchart TD
+    A[Tipo de Variável]
+
+    A --> B[Qualitativa]
+    %% Qualitativa
+    B --> B1[Tabelas]
+    B1 --> B11[Distribuição de frequências]
+
+    B --> B2[Gráficos]
+    B2 --> B21["Barras (horizontal e vertical)"]
+    B2 --> B22[Setores ou Pizzas]
+    B2 --> B23[Diagrama de Pareto]
+```
+
+```{mermaid}
+%%| label: fig2_diagrama_analises_univ_tipo
+%%| fig-cap: "Estatísticas descritivas univariadas para variáveis quantitativas (tabelas e medidas-resumo). Fonte: adaptado de Favaro *et al*. (2017)"
+
+flowchart TD
+  classDef groupBox fill:#f2f7ff;
+  
+  A[Tipo de<br>Variável]
+  C[Quantitativa]
+  A--> C
+  C --> M[Medidas‑resumo]
+  C --> T[Tabelas] --> T1[Distribuição de frequências]
+  M --> P["Posição ou<br>Localização"]
+  M --> D["Dispersão ou<br>Variabilidade"]
+  M --> F[Forma]
+
+  %% Posição/Localização: coluna vertical
+  subgraph POS[" "]
+    direction TB
+    P0[Tendência<br>Central]
+    P1[Média]
+    P2["Moda*"]
+    P3[Mediana]
+
+    %% Empilhar verticalmente sem setas “hierárquicas”
+    P0 --- P1
+    P1 --- P2
+    P2 --- P3
+  end
+
+  %% Conectar o rótulo principal a este grupo
+  P --> P0
+
+  %% Dispersão (mantém horizontal, só como contexto)
+  subgraph DISP[" "]
+    direction TB
+    D0[Dispersão ou<br>Variabilidade]
+    D1[Amplitude]
+    D2[Desvio‑médio]
+    D3[Variância]
+    D4[Desvio‑padrão]
+    D5[Erro‑padrão]
+    D6[Coef. variação]
+    D0 --- D1
+    D1 --- D2
+    D2 --- D3
+    D3 --- D4
+    D4 --- D5
+    D5 --- D6
+  end
+  D --> D0
+
+  subgraph FORMA[" "]
+    direction TB
+    F0[Forma]
+    F1[Assimetria]
+    F2[Curtose]
+    F0 --- F1
+    F1 --- F2
+  end
+  F --> F0
+
+  class POS,DISP,FORMA groupBox
+```
+
+```{mermaid}
+%%| label: fig3_diagrama_analises_univ_tipo
+%%| fig-cap: "Estatísticas descritivas univariadas para variáveis quantitativas (gráficos). Fonte: adaptado de Favaro *et al*. (2017)"
+
+flowchart TD
+    A[Tipo de Variável]
+
+    A --> C[Quantitativa]
+
+    %% Quantitativa - Tabelas e Gráficos
+    C --> C2[Gráficos]
+    C2 --> C21[Linhas]
+    C2 --> C22[Pontos ou Dispersão]
+    C2 --> C23[Histograma]
+    C2 --> C24[Ramo-e-folhas]
+    C2 --> C25[Boxplot]
+```
+
+## Tabela de distribuição de frequências
+
+Tabelas de frequências representam o número absoluto ou relativo de ocorrências de uma categoria (variáveis qualitativas), valor (variáveis quantitativas discretas) ou intervalo de valores (variáveis quantitativas contínuas).
+
+Assim, a tabela será composta dos possíveis valores:
+
+- Frequência absoluta ($F_i$): contagem das observações na classe $i$;
+- Frequência relativa ($Fr_i$): contagem das observações na classe $i$ em relação ao total de observações da variável;
+- Frequência acumulada ($F_{ac_i}$): soma das observações na classe $i$ e nas anteriores a ela (só faz sentido se há noção de ordem nos dados);
+- Frequência acumulada relativa ($Fr_{ac_i}$): soma das frequências relativas até a classe $i$ (inclusive);
+
+No caso de variáveis contínuas, para criarmos tabelas de frequências delas, primeiro criamos classes representado intervalos de valores, depois contamos o número de observações em cada intervalo. O número de classes e o intervalo de cada classe é arbitrário, entretanto, Bussab e Morettin (2011) sugerem o seguinte algoritmo para construção da tabela:
+
+1. Ordenar os dados do menor ao maior;
+2. Calcular o número de classes ($k$) por
+  - $k=1+1,33 \times \log_{10}{n}$ (Equação de Sturges)
+  - $k=\sqrt{n}$
+  - $n$ é o número de observações e k deve ser arredondado para o inteiro mais próximo;
+3. Calcular o intervalo das classes, $\Delta_{h}$, como $\Delta_{h} = \frac{A}{k}$, em que $A$ é a amplitude (máximo valor menos o mínimo);
+4. Construa os intervalos iniciando pelo menor valor como primeiro limite inferior e somando $\Delta_{h}$ ao limite inferior de cada classe para obter os limites superiores. Cada intervalo, exceto o primeiro, será aberto (exclui) no limite inferior e fechado (inclui) no superior, e o limite inferior das classes após a primeira serão o limite superior da anterior (ex.: {[1, 11], ]11, 21], ]21, 31], ]31, 41]});
+5. Conte o número de observações que possuem valores dentro de cada intervalo para construir a tabela de frequências.
+
+No R, as tabelas de frequências podem ser obtidas da seguinte forma:
+
+```{r}
+ap2 <- read_dta(
+  "../datasets/stata/ap2.dta",
+  encoding = "UTF-8"
+  ) %>%
+  as_factor() %>%
+  mutate(
+    vacc_mp = fct_recode(
+      vacc_mp,
+      "Vacinado" = "vac",
+      "Não vacinado" = "not vac."
+    )
+  )
+
+# Qualitativa
+tab_frequencias_qualitativa <- ap2 %>%
+  count(vacc_mp, name = "Fi") %>%
+  mutate(
+    Fri = scales::percent(Fi / sum(Fi), accuracy = .1),
+    Fac = cumsum(Fi),
+    Frac = scales::percent(cumsum(Fi / sum(Fi)), accuracy = .1)
+  )
+
+# Quantitativa discreta
+tab_frequencias_discreta <- ap2 %>%
+  count(parity, name = "Fi") %>%
+  mutate(
+    Fri = scales::percent(Fi / sum(Fi), accuracy = .1),
+    Fac = cumsum(Fi),
+    Frac = scales::percent(cumsum(Fi / sum(Fi)), accuracy = .1)
+  )
+
+# Quantitativa contínua
+classes_k <- round(1 + 3.322 * log10(length(ap2$w_age_t)))
+breaks <- floor(seq(min(ap2$w_age_t), max(ap2$w_age_t), length.out = classes_k + 1))
+breaks[length(breaks)] <- ceiling(max(ap2$w_age_t))
+
+tab_frequencias_continua <- ap2 %>%
+  mutate(
+    w_age_t_classificado = cut(w_age_t, breaks = breaks, right = TRUE, include.lowest = TRUE)
+  ) %>%
+  count(w_age_t_classificado, name = "Fi") %>%
+  mutate(
+    Fri = scales::percent(Fi / sum(Fi), accuracy = .1),
+    Fac = cumsum(Fi),
+    Frac = scales::percent(cumsum(Fi / sum(Fi)), accuracy = .1)
+  )
+```
+
+```{r}
+#| label: tbl_freq_qualitativa
+#| tbl-cap: "Distribuição de frequências de uma variável qualitativa"
+#| tbl-cap-location: top
+tabela_headers <- c("Classe", "$F_i$", "$Fr_i$", "$F_{ac_i}$", "$Fr_{ac_i}$")
+
+kable(tab_frequencias_qualitativa, col.names = tabela_headers)
+```
+
+```{r}
+#| label: tbl_freq_discreta
+#| tbl-cap: "Distribuição de frequências de uma variável quantitativa discreta"
+#| tbl-cap-location: top
+kable(tab_frequencias_discreta, col.names = tabela_headers)
+```
+
+```{r}
+#| label: tbl_freq_continua
+#| tbl-cap: "Distribuição de frequências de uma variável quantitativa contínua"
+#| tbl-cap-location: top
+kable(tab_frequencias_continua, col.names = tabela_headers)
+```
+
+## Representação gráfica dos dados
+
+Os gráficos hoje são insdispensáveis na estatística e análise de dados, servindo como uma ponte entre os dados brutos e seu comportamento em conjunto. Normalmente os usamos para detectar padrões, tendências, anomalias e relações que não seriam percebidos em tabelas ou medidas resumo.
+
+Na análise exploratória de dados (EDA), histogramas, boxplots e gráficos de dispersão permitem identificar a forma da distribuição, detectar outliers e avaliar a simetria. Também usamos gráficos para auxiliar na verificação de suposições de modelos estatísticos, por exemplo, quando criamos um gráfico Q-Q para identificar desvios da normalidade.
+
+Além disso, os gráficos são ferramentas para a comunicação estatística, os quais usamos para traduzir conceitos complexos em representações visuais mais intuitivas e didáticas que facilitem a compreensão por um público que não necessariamente possui um conhecimento formal de estatística, mas que podem ser o alvo dos nossos resultados, por exemplo, um gestor público ou de uma empresa cujas nossas análises poderiam (ou deveriam) trazer uma informações relevantes para aumentar a eficácia de sua administração.
+
+Em contextos como epidemiologia veterinária, um gráfico de série temporal pode sugerir surtos epidêmicos ou sazonalidade de doenças, mapas de calor espaciais podem revelar clusters de casos, indicando os locais para intensificar as ações de defesa sanitária.
+
+Em nossos treinamentos, a maioria dos gráficos serão construídos usando o pacote `ggplot2` do `tidyverse`. Existem muitas fontes de informação para o aprendizado do `ggplot2` e da criação de gráficos no R, porém, deixo aqui duas recomendações que considero como um "guia de bolso" para criação de gráficos no R, que são o livro [*R Graphics Cookbook*](https://r-graphics.org/) do Winston Chang (2025), um livro online de acesso aberto com várias explicações sobre a criação de gráficos com o `ggplot2`, e o site [The R Graph Gallery](https://r-graph-gallery.com/) onde você encontra explicações e exemplos de código para a criação dos mais variados gráficos no R.
+
+### Criação de gráficos no `ggplot2`
+
+O ggplot2 implementa os conceitos da [*Grammar of Graphics*](https://link.springer.com/book/10.1007/0-387-28695-0) de Leland Wilkinson, onde gráficos são construídos através de **camadas semânticas**, as quais são combinadas de forma modular e sistemática. Seus principais aspectos são:
+
+- **Decomposição**: Todo gráfico pode ser decomposto em componentes independentes;
+- **Composição**: Componentes são combinados usando o operador `+`;
+- **Declarativo**: Você descreve O **QUE** quer, não **COMO** desenhar.
+
+Todo gráfico criado com o `ggplot2` vai depender da seguinte estrutura mínima:
+
+```r
+ggplot(
+  data = <DATA>,            # 1. Dados (fonte da informação para o gráfico)
+  mapping = aes(<MAPPINGS>) # 2. Mapeamentos estéticos (quais variáveis serão usadas e onde)
+  ) +
+  <GEOM_FUNCTION>()         # 3. Geometria (o que será desenhado)
+```
+
+Assim, `ggplot()` inicia a construção do gráfico, indicando às camadas posteriores de construção qual o dataset fonte das variáveis (argumento `data`) e, em geral, como serão mapeadas as variáveis para o gráfico (quem será o eixo das ordenadas? e das abscissas? exitem variáveis categóricas que gostaríamos de usar como fonte para as cores do que será apresentado, ou seja, criar subconjuntos?). Iniciado o `ggplot()`, que podemos pensar como um quadro em branco, passamos a de fato desenhar nosso gráfico com `geom_*()` e outras camadas de estilização.
+
+Além desses componentes primários, outros que costumam ser usados na construção de gráficos são:
+
+- **Facets**: Divisão em subgráficos
+- **Statistics (stat)**: Transformações estatísticas
+- **Coordinates (coord)**: Sistema de coordenadas
+- **Themes**: Aparência não relacionada aos dados
+- **Scales**: Controle de mapeamentos
+
+Vamos então observar na prática como é construção do gráfico no `ggplot2`. Iniciamos com `ggplot(data=dados)`, o que gera somente o nosso painel, sem qualquer escala ainda.
+
+```{r}
+#| label: tutorial_ggplot2_1
+#| fig-cap: "Chamada de `ggplot` somente com argumento data" 
+
+set.seed(42)
+
+dados <- data.frame(
+  x = rnorm(100, mean = 10, sd = 2),
+  y = rnorm(100, mean = 15, sd = 3),
+  grupo = sample(c("A", "B", "C"), 100, replace = TRUE),
+  tamanho = runif(100, 1, 10)
+)
+
+p_base <- ggplot(dados)
+p_base  # Produz apenas o painel vazio
+```
+
+O `aes()` pode ser informado no próprio `ggplot`, caso esse mapeamento vá ser usado da mesma forma por todas as demais camadas, ou pode ser informado a cada `geom_*()`, caso seja algo específico daquela geometria. Os principais elementos estéticos definidos no `aes()` são: `x` (eixo das abscissas), `y` (eixo das ordenadas), `color` (cor de delimitação), `fill` (cor de preenchimento), `size` (tamanho), `alpha` (transparência), `shape` (forma), `linetype` (tipo de linha).
+
+```{r}
+p_base <- ggplot(dados, aes(x = x, y = y))
+
+# Mapeamento geral
+p1 <- ggplot(dados, aes(x = x, y = y)) +
+  geom_point()
+
+# Mapeamento local (na geometria)
+p2 <- ggplot(dados) +
+  geom_point(aes(x = x, y = y))
+
+# Mapeamentos múltiplos
+p3 <- ggplot(dados, aes(x = x, y = y)) +
+  geom_point(aes(color = grupo, size = tamanho), alpha = 0.6)  # alpha fixo (não mapeado)
+```
+
+```{r}
+#| label: tutorial_ggplot2_2
+#| fig-cap: "Uso do `aes()`"
+#| fig-subcap:
+#|  - "Chamada de `ggplot(dados, aes(x = x, y = y))` sem uma geometria"
+#|  - "Chamada de `ggplot(dados, aes(x = x, y = y))` com uma geometria de pontos"
+#|  - "`aes()` definidos na geometria"
+#|  - "`aes()` em diferentes camadas"
+#| layout-ncol: 2
+p_base
+p1
+p2
+p3
+```
+
+Como já falado, o `ggplot2` segue um sistema de camadas, então cada operação após o `+` adiciona uma nova feição sobre o gráfico e pode inclusive sobrescrever geometrias definidas em operações anteriores, então é importante verificar a ordem em que são declarados os aspectos visuais do gráfico. Observe abaixo, como alterar a ordem de declaração das geometrias "esconde" certos pontos no gráfico da esquerda em relação ao da direita.
+
+```{r}
+#| label: tutorial_ggplot2_3
+#| fig-cap: "Importância de definir a ordem correta das geometrias no seu gráfico."
+#| fig-subcap:
+#|  - "Chamada de `ggplot() + geom_smooth() + geom_point()`"
+#|  - "Chamada de `ggplot() + geom_point() + geom_smooth()`"
+#| layout-ncol: 2
+
+p_ordem1 <- ggplot(dados, aes(x, y)) +
+  geom_smooth(method = "lm", se = TRUE, color = "blue", linewidth = 4) +
+  geom_point(size = 4, color = "black")  # Pontos sobre a linha
+
+p_ordem2 <- ggplot(dados, aes(x, y)) +
+  geom_point(size = 4, color = "black") +
+  geom_smooth(method = "lm", se = TRUE, color = "blue", linewidth = 4)  # Linha sobre pontos
+
+p_ordem1
+p_ordem2
+```
+
+Quando definimos um `aes()` na chamada de `ggplot()`, ele será herdado pelas demais camadas, porém, ao usarmos ele em uma geometria, ele só será usado nela.
+
+```{r}
+#| label: tutorial_ggplot2_4
+#| fig-cap: "Herança de `aes()` definido no `ggplot()`."
+#| layout-ncol: 2
+
+p_heranca <- ggplot(dados, aes(x, y, color = grupo)) +  # color global
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE)
+
+p_sem_heranca <- ggplot(dados, aes(x, y)) +
+  geom_point(size = 3, aes(color = grupo)) +
+  geom_smooth(method = "lm", se = FALSE)
+
+p_heranca
+p_sem_heranca
+```
+
