@@ -1395,18 +1395,277 @@ Quando definimos um `aes()` na chamada de `ggplot()`, ele será herdado pelas de
 
 ```{r}
 #| label: tutorial_ggplot2_4
-#| fig-cap: "Herança de `aes()` definido no `ggplot()`."
+#| fig-cap: "Herança de `aes()` no `ggplot2`."
+#| fig-subcap:
+#|  - "`ggplot() + geom_smooth() + geom_point()` com herança de `aes()` do `ggplot()`"
+#|  - "Chamada de `ggplot() + geom_point() + geom_smooth()` com `aes()` específico para `geom_point()`"
 #| layout-ncol: 2
+#| warning: false
 
 p_heranca <- ggplot(dados, aes(x, y, color = grupo)) +  # color global
-  geom_point(size = 3) +
-  geom_smooth(method = "lm", se = FALSE)
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_point(size = 3)
 
 p_sem_heranca <- ggplot(dados, aes(x, y)) +
-  geom_point(size = 3, aes(color = grupo)) +
-  geom_smooth(method = "lm", se = FALSE)
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_point(size = 3, aes(color = grupo))
 
 p_heranca
 p_sem_heranca
+```
+
+Quando queremos criar múltiplos gráficos da mesma geometria, segundo uma variável alvo, podemos usar o `facet_*()` para criação de vários subpainéis. 
+
+Com `facet_wrap(~ variavel_alvo)` os painéis são dispostos horizontalmente considerando o número de categorias. Por padrão, os painéis serão dispostos em uma tabela quadrada, mas essa disposição pode ser alterada usando os argumentos `nrow` para o número de linhas e `ncol` para o número de colunas.
+
+```{r}
+#| label: tutorial_ggplot2_5
+#| fig-cap: "Múltiplos painéis no `ggplot2` com `facet_wrap`."
+#| warning: false
+
+p_wrap <- ggplot(dados, aes(x, y)) +
+  geom_point(color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  facet_wrap(~ grupo, ncol = 2)
+
+p_wrap
+```
+
+Observe na figura acima que o nome das categorias são exibidas como *headers* de cada painel, assim, se queremos alterar o título da categoria de cada painel, seria necessário alterar a própria variável (usando por exemplo o `recode()` se for um dado do tipo `factor`). O argumento `labeller = label_both` faz com que o título do painel também apresente o nome da variável. Aspectos visuais do título serão alterados na camada de `theme()` do gráfico no `ggplot2`, a qual será apresentada mais adiante no treinamento, mas podemos alterar tanto características do texto (`strip.text`) quanto do fundo do título (`strip.background`).
+
+```{r}
+#| label: tutorial_ggplot2_6
+#| fig-cap: "Alterando os *headers* de painéis do `facet_*()`."
+#| warning: false
+
+p_wrap <- dados %>%
+  mutate(rcd_grupo = recode(grupo, "A" = "Tratamento 1", "B" = "Tratamento 2", "C" = "Tratamento 3")) %>%
+  ggplot(aes(x, y)) +
+  geom_point(color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  facet_wrap(~ rcd_grupo, labeller = label_both) +
+  theme(
+    strip.text = element_text(face = "italic", size = rel(1.2)),
+    strip.background = element_rect(fill = "#7688d6bb", colour = "black", linewidth = .7)
+  )
+
+p_wrap
+```
+
+Já o `facet_grid(variavel_alvo_linha ~ variavel_alvo_coluna)` permite criar painéis a partir de subconjuntos de uma variável para as colunas e outra para as linhas do gráfico. As mesmas técnicas de estilização do `facet_wrap` se aplicam ao `facet_grid`.
+
+```{r}
+#| label: tutorial_ggplot2_7
+#| fig-cap: "Múltiplos painéis no `ggplot2` com `facet_grid`."
+#| warning: false
+
+# facet_grid: duas variáveis
+dados$categoria <- sample(c("Categoria 1", "Categoria 2"), 100, replace = TRUE)
+
+p_grid <- ggplot(dados, aes(x, y)) +
+  geom_point(aes(color = tamanho)) +
+  facet_grid(categoria ~ grupo) +
+  theme(
+    strip.text = element_text(face = "italic", size = rel(1.2)),
+    strip.background = element_rect(fill = "#7688d6bb", colour = "black", linewidth = .7)
+  )
+
+p_grid
+```
+
+Para controlar a escala das estéticas mapeadas no gráfico do `ggplot2` usamos as funções da família `scale_*`. `scale_*` segue um padrão de nome onde primeiro declaramos qual estética queremos controlar (x, y, size...) e em seguida a forma ou transformação que consideramos para a variável mapeada.
+
+Para escalas de posição (eixos x e y), usamos `scale_*_continuous` para controlar a escala que varia em um intervalo contínuo e `scale_*_discrete` se queremos que cada valor único da variável mapeada seja tratada como uma categoria.
+
+Com `scale_*_continuous` podemos controlar os limites do eixo alvo com `limits = c(minimo, maximo)` e suas marcações com `breaks` e `minor_breaks`. `breaks` e `minor_breaks` recebe um vetor das posições das marcações ou uma função que, a partir dos limites do eixo, calculará as posições das marcações. Além disso, podemos usar o argumento `transform` para transformações dos dados naquela escala, por exemplo, aplicando a raiz quadrada ou o log, e podemos usar `labels` para alterar o texto exibido em cada marcação do eixo.
+
+```{r}
+#| label: tutorial_ggplot2_8
+#| fig-cap: "Manipulando escalas no `ggplot2` com `scale_*_continuous`."
+#| warning: false
+
+p_scales <- ggplot(dados, aes(x, y, color = tamanho)) +
+  geom_point(size = 3) +
+  scale_x_continuous(
+    name = "X",
+    limits = c(5, 15),
+    breaks = seq(5, 15, length.out = 3),
+    labels = c("pequeno", "grande", "muito grande")
+  ) +
+  scale_y_continuous(
+    name = "sqrt(Y)",
+    transform = "sqrt"
+  )
+
+p_scales
+```
+
+Com `scale_*_discrete` podemos também definir o nome do eixo, o texto das marcações e outras características como no `scale_*_continuous`.
+
+```{r}
+#| label: tutorial_ggplot2_9
+#| fig-cap: "Manipulando escalas no `ggplot2` com `scale_*_discrete`."
+#| warning: false
+
+ggplot(dados, aes(x = grupo)) +
+  geom_bar(aes(y = after_stat(prop), group = 1), fill = "#ac565693", color= "black") +
+  scale_y_continuous(
+    name = "Frequência relativa (%)",
+    labels = scales::label_percent(),
+    limits = c(.0, .65),
+    breaks = scales::breaks_width(width = .05),
+    minor_breaks =  scales::breaks_width(width = .025),
+  ) +
+  scale_x_discrete(
+    name = "Grupos",
+    labels = c("Tratamento 1", "Tratamento 2", "Controle")
+  )
+```
+
+Em ambos, `limits` define o próprio limite para os dados mapeados, então, devemos tomar cuidado, principalmente em gráficos que calculam estatísticas para sua construção, já que dados fora desses limites serão desconsiderados
+
+```{r}
+#| label: tutorial_ggplot2_10
+#| fig-cap: "Perda de dados ao usar `limits` no `scale_*_`."
+#| fig-subcap:
+#|  - "Original sem perda"
+#|  - "Usando limites nas ordenadas e nas abscissas"
+#| layout-ncol: 2
+
+p_cat <- ggplot(dados, aes(grupo, y)) +
+  geom_boxplot()
+
+p_cat_scales <- ggplot(dados, aes(grupo, y)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(NA, 20)) +
+  scale_x_discrete(limits = c("A", "B"))
+
+p_cat
+p_cat_scales
+```
+
+Se queremos limitar nossa escala no gráfico, sem alterar esse mapeamento e, consequentemente, haver perda de dados, podemos usar `coord_cartesian` e definir nossos limites para as ordenadas com `ylim` e as abscissas com `xlim`.
+
+```{r}
+#| label: tutorial_ggplot2_11
+#| fig-cap: "Alterando as escalas dos eixos com `coord_cartesian`."
+
+p_cat <- ggplot(dados, aes(grupo, y)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(11, 20), xlim = c(1, 2))
+
+p_cat
+```
+
+Para alterar escalas de cores e preenchimentos usamos `scale_color_*` e `scale_fill_*`. Para criar um gradiente contínuo podemos usar `scale_*_gradient`, o qual aceita os parâmetros `low` e `high` como os valores das cores a usar para criar seu gradiente de cores. Então, se usados ambos, será criado uma escala com um gradiente de cores variando entre a cor em `low` (menor valor dos dados e maior intensidade da cor declara em `low`) e a cor em `high` (maior valor dos dados e maior intensidade da cor declara em `high`). Se declarado somente `low`, teremos um gradiente criado a partir de uma única cor, com a maior intensidade no menor valor.
+
+Para criar uma escala de cor divergente (gradiente com três cores, com um delas indicando um ponto central), podemos usar `scale_*_gradient2`. Além disso, podemos criar um gradiente com *n* cores com `scale_*_gradientn⁠` (nesse caso, deve ser fornecido um vetor dos nomes de cores a usar no gradiente).
+
+```{r}
+#| label: tutorial_ggplot2_12
+#| fig-cap: "Alterando as escalas de cores com `scale_*_gradient`."
+#| fig-subcap: 
+#|  - "`scale_color_gradient` definindo somente `low`"
+#|  - "`scale_color_gradient` definindo `low` e `high`"
+#|  - "`scale_color_gradient2`"
+#|  - "`scale_color_gradientn` com 4 cores"
+#| layout-ncol: 2
+
+ggplot(dados, aes(x, y, color = tamanho, size = tamanho)) +
+  geom_point() +
+  scale_color_gradient(low = "blue")
+
+ggplot(dados, aes(x, y, color = tamanho, size = tamanho)) +
+  geom_point() +
+  scale_color_gradient(low = "blue", high = "red")
+
+ggplot(dados, aes(x, y, color = tamanho, size = tamanho)) +
+  geom_point() +
+  scale_color_gradient2(
+    low = "blue",
+    mid = "white",
+    high = "red",
+    midpoint = mean(dados$tamanho)
+  )
+
+ggplot(dados, aes(x, y, color = tamanho, size = tamanho)) +
+  geom_point() +
+  scale_color_gradientn(colors = c("blue", "red", "grey", "green"))
+```
+
+Para escalas de cores discretas, por exemplo, para diferenciar categorias, podemos usar `scale_*_manual` com o vetor de cores de cada categoria.
+
+Para escalas de tamanho (`size`) podemos alterar o comportamento com `scale_radius()` se queremos uma escala contínua de variação, ou `scale_size_binned()` se queremos criar quebras.
+
+```{r}
+#| label: tutorial_ggplot2_13
+#| fig-cap: "Alterando as escalas de cores discretas com `scale_*_discrete` e tamanhos com `scale_radius` e `scale_size_binned`."
+#| fig-subcap: 
+#|  - "`scale_radius`"
+#|  - "`scale_size_binned`"
+#| layout-ncol: 2
+#| warning: false
+
+ggplot(dados, aes(x, y, color = grupo, size = tamanho)) +
+  geom_point() +
+  scale_color_manual(values = c("red", "blue", "black")) +
+  scale_radius(limits = c(0, NA))
+
+ggplot(dados, aes(x, y, color = grupo, size = tamanho)) +
+  geom_point() +
+  scale_color_manual(values = c("red", "blue", "black")) +
+  scale_size_binned() + 
+  guides(
+    size = guide_bins(
+      show.limits = TRUE,
+      title = "Tamanho",
+      axis.colour = "blue",
+      axis.arrow = arrow(
+        length = unit(.05, "inches"),
+        ends = "first",
+        type = "closed"
+      )
+    )
+  )
+```
+
+Embora seja possível definir manualmente as cores que queremos usar nas escalas, a escolha de cores interfere em muito em como o público conseguirá identificar padrões no gráfico. Por isso, recomendo usar funções que já fornecem paletas de cores criadas com uma finalidade específica como as do ColorBrewer com `scale_*_brewer` ou do pacote `paletteer`. ColorBrewer possui um [site](https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3) onde é possível testar a paleta de cores que queremos usar. Usando o `scale_*_brewer`, definimos o tipo de paleta (seq" para sequencial, "div" para divergente ou "qual" para qualitativo) e o nome da paleta.
+
+```{r}
+#| label: tutorial_ggplot2_14
+#| fig-cap: "Alterando as escalas de cores com `scale_*_brewer`."
+#| fig-subcap: 
+#|  - '`scale_fill_brewer(type = "qual")`'
+#|  - '`scale_fill_brewer(palette = "Pastel1")`'
+#| warning: false
+
+ggplot(dados, aes(grupo, fill = grupo)) +
+  geom_bar() +
+  scale_fill_brewer(type = "qual")
+
+ggplot(dados, aes(grupo, fill = grupo)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Pastel1")
+```
+
+O pacote `paletter` também possui um [site](https://r-graph-gallery.com/color-palette-finder) para escolher sua paleta. Para usá-lo precisamos instalar o pacote e depois utilizar as funções adequadas ao tipo de dados (`scale_*_paletteer_c` para contínuas e `scale_*_paletteer_d` para discretas).
+
+```{r}
+#| label: tutorial_ggplot2_15
+#| fig-cap: "Alterando as escalas de cores com `scale_*_paletteer`."
+#| fig-subcap: 
+#|  - "`scale_color_paletteer_c para paletas contínuas`"
+#|  - "`scale_fill_paletteer_d para paletas discretas`"
+#| warning: false
+
+require(paletteer)
+
+ggplot(dados, aes(x, y, color = tamanho)) +
+  geom_point() +
+  scale_color_paletteer_c("pals::coolwarm")
+
+ggplot(dados, aes(grupo, fill = grupo)) +
+  geom_bar() +
+  scale_fill_paletteer_d("nbapalettes::supersonics_holiday")
 ```
 
