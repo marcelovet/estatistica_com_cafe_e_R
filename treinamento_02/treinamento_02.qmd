@@ -1287,7 +1287,7 @@ Além disso, os gráficos são ferramentas para a comunicação estatística, os
 
 Em contextos como epidemiologia veterinária, um gráfico de série temporal pode sugerir surtos epidêmicos ou sazonalidade de doenças, mapas de calor espaciais podem revelar clusters de casos, indicando os locais para intensificar as ações de defesa sanitária.
 
-Em nossos treinamentos, a maioria dos gráficos serão construídos usando o pacote `ggplot2` do `tidyverse`. Existem muitas fontes de informação para o aprendizado do `ggplot2` e da criação de gráficos no R, porém, deixo aqui duas recomendações que considero como um "guia de bolso" para criação de gráficos no R, que são o livro [*R Graphics Cookbook*](https://r-graphics.org/) do Winston Chang (2025), um livro online de acesso aberto com várias explicações sobre a criação de gráficos com o `ggplot2`, e o site [The R Graph Gallery](https://r-graph-gallery.com/) onde você encontra explicações e exemplos de código para a criação dos mais variados gráficos no R.
+Em nossos treinamentos, a maioria dos gráficos serão construídos usando o pacote `ggplot2` do `tidyverse`. Existem muitas fontes de informação para o aprendizado do `ggplot2` e da criação de gráficos no R, porém, deixo aqui duas recomendações que considero como um "guia de bolso" para criação de gráficos no R, que são o livro [*R Graphics Cookbook*](https://r-graphics.org/) do Winston Chang (2025), um livro online de acesso aberto com várias explicações sobre a criação de gráficos com o `ggplot2`, e o site [The R Graph Gallery](https://r-graph-gallery.com/) onde você encontra explicações e exemplos de código para a criação dos mais variados gráficos no R. Agora, se você quer um conteúdo avançado sobre o `ggplot2`, o livro online [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/) é o que você procura.
 
 ### Criação de gráficos no `ggplot2`
 
@@ -1656,6 +1656,7 @@ O pacote `paletter` também possui um [site](https://r-graph-gallery.com/color-p
 #| fig-subcap: 
 #|  - "`scale_color_paletteer_c para paletas contínuas`"
 #|  - "`scale_fill_paletteer_d para paletas discretas`"
+#| layout-ncol: 2
 #| warning: false
 
 require(paletteer)
@@ -1669,3 +1670,133 @@ ggplot(dados, aes(grupo, fill = grupo)) +
   scale_fill_paletteer_d("nbapalettes::supersonics_holiday")
 ```
 
+Para finalizar nossa introdução à criação de gráficos com o `ggplot2` vamos ver como personalizar nosso gráfico. A camada de legendas e títulos do gráfico podem ser alteradas com `labs()`. Os argumentos `title`, `subtitle` e `caption` criam textos para o título, subtítulo e nota de rodapé do gráfico, respectivamente. Outros elementos como as legendas e nomes dos eixos são representados pelo nome do argumento usado no `aes()`, por exemplo, o argumento `color` declara o título da legenda que representa as categorias dessa estética no gráfico. Caso queira remover o título de uma legenda ou eixo atribua o valor `element_blank()`, que indica ao `ggplot2` para não desenhar nada para aquele elemento.
+
+```{r}
+#| label: tutorial_ggplot2_16
+#| fig-cap: "Alterando títulos e legendas em `labs()`."
+#| warning: false
+
+p_base <- ggplot(
+  dados,
+  aes(x, y, color = grupo, size = tamanho, shape = categoria)
+  ) +
+  geom_point() +
+  labs(
+    title = "Gráfico de dispersão de X por Y",
+    subtitle = "Um subtítulo para esse gráfico",
+    x = "Título do eixo X",
+    y = "Título do eixo Y",
+    shape = "Legenda de shape",
+    color = "Legenda de color",
+    size = "Legenda de size",
+    caption = "Uma nota explicativa ao conteúdo do gráfico"
+  )
+p_base
+```
+
+Além do padrão temático inicial contruído no `ggplot2`, o pacote fornece alguns temas já contruídos que podemos usar em nosso gráfico como modelo de estilo e ir adicionando novas personalizações conforme a necessidade. Os seguintes temas estão disponíveis: `theme_gray`, `theme_bw`, `theme_linedraw`, `theme_light`, `theme_dark`, `theme_minimal`, `theme_classic` e `theme_void`.
+
+```{r}
+#| label: tutorial_ggplot2_17
+#| fig-cap: "Aplicando temas predefinidos."
+#| fig-subcap: 
+#|  - "`theme_gray`"
+#|  - "`theme_bw`"
+#|  - "`theme_linedraw`"
+#|  - "`theme_light`"
+#|  - "`theme_dark`"
+#|  - "`theme_minimal`"
+#|  - "`theme_classic`"
+#|  - "`theme_void`"
+#| layout-ncol: 2
+#| warning: false
+
+p_base + theme_gray()
+p_base + theme_bw()
+p_base + theme_linedraw()
+p_base + theme_light()
+p_base + theme_dark()
+p_base + theme_minimal()
+p_base + theme_classic()
+p_base + theme_void()
+```
+
+Cada um desses temas predefinidos possuem argumentos para certo controle de sua aparência (verifique os argumentos na documentação deles com `help(nome_do_tema)`), porém, quando queremos alterar algum elemento de aparência do gráfico, normalmente usaremos `theme()`. `theme()` permite personalizar todos componentes não definidos pelos seus dados. Sua utilização envolve declarar um argumento com o nome do componente que queremos modificar e fornecer um objeto do tipo `element_*`. `element_*` representam elementos temáticos: `element_blank` para declarar que o componente não deve ser desenhado, `element_rect` para bordas e planos de fundo, `element_line` para linhas, `element_text` para componentes de texto, `element_polygon` para polígonos e `element_point` para pontos.
+
+Então, por exemplo, para personalizar o texto do título e subtítulo podemos usar em `theme()` o `plot.title = element_text(args)` e `plot.subtitle = element_text(args)`, para alterar a legenda dos eixos usar o `axis.title = element_text(args)`, para alterar as linhas de guia no gráfico usar `panel.grid.major = element_rect()` e `panel.grid.minor = element_rect()`. Além disso, alguns argumentos de `theme` não recebem `element_`, como o `legend.position`, no qual você declara onde as legendas serão alocadas (topo, abaixo, esquerda ou direita).
+
+```{r}
+#| label: tutorial_ggplot2_18
+#| fig-cap: "Personalizando temas em `theme()`."
+#| warning: false
+require(showtext)
+font_add_google("Alegreya")
+font_add_google("IBM Plex Serif")
+showtext_auto()
+
+p_base +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(
+      family = "Alegreya", face = "bold", size = 12
+    ),
+    plot.subtitle = element_text(
+      family = "Alegreya", face = "italic", size = 9
+    ),
+    axis.title = element_text(
+      family = "IBM Plex Serif", color = "#e60e3dff", size = 9
+    ),
+    panel.grid.major = element_line(
+      color = "black", linetype = "solid", linewidth = .5
+    ),
+    panel.grid.minor = element_line(
+      color = "black", linetype = "dashed", linewidth = .2
+    ),
+    legend.position = "top"
+  )
+```
+
+Embora o `ggplot2` traga muitas possibilidades de criação de gráficos, há sempre espaço para inovações e especializações na comunidade do R, então recomendo o site [ggplot2 extensions](https://exts.ggplot2.tidyverse.org/gallery/) que traz uma série de pacotes baseados no `ggplot2`, mas com um "temperinho a mais" para determinados objetivos que poderiam ser particularmente difíceis ou tediosos de alcançar usando somente o `ggplot2` ("não reinvente a roda se ela já foi criada").
+
+- Estatística descritiva univariada
+    - Representação gráfica dos dados
+    - Representação gráfica para variáveis qualitativas
+        - Gráfico de barras
+        - Gráfico de setores ou pizza
+        - Diagrama de Pareto
+    - Representação gráfica para variáveis quantitativas
+        - Gráfico de linhas
+        - Gráfico de pontos ou dispersão
+        - Histograma
+        - Gráfico de ramo-e-folhas
+        - Boxplot ou diagrama de caixa
+    - Medidas-resumo
+        - Medidas de posição ou localização
+            - Medidas de tendência central
+            - Medidas separatrizes
+            - Identificação de existência de outliers univariados
+        - Medidas de dispersão ou variabilidade
+            - Amplitude
+            - Desvio-médio
+            - Variância
+            - Desvio-padrão
+            - Erro-padrão
+            - Coeficiente de variação
+    - Medidas de forma
+        - Medidas de assimetria
+        - Medidas de curtose
+
+- Estatística descritiva bivariada
+    - Associação entre duas variáveis qualitativas
+        - Tabelas de distribuição conjunta de frequências
+    - Medidas de associação
+        - Estatística qui-quadrado
+        - Outras medidas de associação baseadas no qui-quadrado
+        - coeficiente de Spearman
+    - Correlação entre duas variáveis quantitativas
+        - Tabelas de distribuição conjunta de frequências
+        - Representação gráfica por meio de um diagrama de dispersão
+    - Medidas de correlação
+        - Covariância
+        - Coeficiente de correlação de Pearson
