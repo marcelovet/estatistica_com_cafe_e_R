@@ -27,7 +27,7 @@ citation:
 funding: "The author received no specific funding for this work."
 lang: pt-BR
 toc: true
-toc-depth: 4
+toc-depth: 5
 toc-expand: true
 toc-title: "Índice"
 number-sections: true
@@ -1932,10 +1932,144 @@ ggplot(frequencias_dwg_fin) +
   plot_theme
 ```
 
+### Gráfico de setores ou pizza
+
+O gráfico de setores divide um círculo de raio arbitrário em $n$ partes ($n$ igual ao número de categorias), sendo a área de cada parte correspondente à frequência relativa da categoria. Em geral, não é um gráfico indicado quando temos muitas categorias ou diferenças muito pequenas entre as frequências de cada categoria, já que visualmente torna-se difícil detectar essas diferenças.
+
+```{r}
+#| label: est_descritiva_graficos_setores_1
+#| fig-cap: "Exemplo de gráfico de setores"
+#| warning: false
+
+contagem <- ap2 %>%
+  count(vacc_mp, name = "quantidade") %>%
+  mutate(prop = quantidade / sum(quantidade))
+
+
+ggplot(contagem, aes(x="", y=quantidade, fill=vacc_mp)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_void() +
+  geom_text(aes(label = scales::percent(prop, accuracy = 0.01)), position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Pastel1") +
+  labs(fill = "Estado Vacinal")
+```
+
+
+### Diagrama de Pareto
+
+O diagrama de Pareto é um gráfico de barras sobreposto por um gráfico de linhas e pontos. Nele as barras representam as frequências das categorias em ordem decrescente, enquanto as linhas representam a frequência acumulada. É uma ferramenta visual, normalmente, utilizada para avaliar as principais causas de problemas em linhas de produção.
+
+```{r}
+#| label: est_descritiva_graficos_pareto_1
+#| fig-cap: "Exemplo de gráfico de Pareto"
+#| warning: false
+
+mortalidade_producao <- tibble(
+  causa = c(
+    "Mortalidade neonatal",
+    "Pneumonia",
+    "Diarreia",
+    "Problemas de parto",
+    "Esmagamento",
+    "Síndrome MMA",
+    "Defeitos congênitos",
+    "Canibalismo",
+    "Problemas locomotores",
+    "Outras causas"
+  ),
+  frequencia = c(
+    rpois(1, 45),
+    rpois(1, 38),
+    rpois(1, 32),
+    rpois(1, 25),
+    rpois(1, 20),
+    rpois(1, 15),
+    rpois(1, 10),
+    rpois(1, 8),
+    rpois(1, 5),
+    rpois(1, 12)
+  )
+  ) %>%
+  arrange(desc(frequencia)) %>%
+  mutate(
+    freq_acumulada = cumsum(frequencia),
+    freq_total = sum(frequencia),
+    percentual = (frequencia / freq_total) * 100,
+    percentual_acumulado = (freq_acumulada / freq_total) * 100,
+    causa = factor(causa, levels = causa)
+  )
+
+max_freq <- max(mortalidade_producao$frequencia)
+fator_escala <- max_freq / 100
+
+ggplot(mortalidade_producao, aes(x = causa)) +
+  geom_col(
+    aes(y = frequencia), 
+    fill = "blue", 
+    alpha = 0.8,
+    color = "red",
+    linewidth = 0.5
+  ) +
+  geom_line(
+    aes(y = percentual_acumulado * fator_escala, group = 1),
+    color = "red",
+    linewidth = 1.2
+  ) +
+  geom_point(
+    aes(y = percentual_acumulado * fator_escala),
+    color = "red",
+    size = 3
+  ) +
+  geom_text(
+    aes(y = frequencia, label = frequencia),
+    vjust = -0.5,
+    size = 3
+  ) +
+  geom_text(
+    aes(
+      y = percentual_acumulado * fator_escala,
+      label = paste0(round(percentual_acumulado, 0), "%")
+    ),
+    vjust = -2,
+    size = 3,
+    color = "red"
+  ) +
+  geom_hline(
+    yintercept = 80 * fator_escala, 
+    linetype = "dashed", 
+    color = "gray40",
+    alpha = 0.7
+  ) +
+  scale_y_continuous(
+    name = "Frequência",
+    sec.axis = 
+    sec_axis(
+      ~ . / fator_escala,
+      name = "Porcentagem Acumulada (%)",
+      breaks = seq(0, 100, 20)
+    )
+  ) +
+  labs(
+    title = "Principais causas de mortalidade na granja",
+    x = ""
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+    axis.title.y.right = element_text(color = "red"),
+    axis.text.y.right = element_text(color = "red"),
+    plot.title = element_text(
+      size = 14, face = "bold", hjust = 0.5
+    ),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
 - Estatística descritiva univariada
     - Representação gráfica dos dados
     - Representação gráfica para variáveis qualitativas
-        - Gráfico de setores ou pizza
         - Diagrama de Pareto
     - Representação gráfica para variáveis quantitativas
         - Gráfico de linhas
