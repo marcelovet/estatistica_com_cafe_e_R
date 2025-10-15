@@ -346,7 +346,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Data de Publicação</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">14 de outubro de 2025</p>
+      <p class="date">15 de outubro de 2025</p>
     </div>
   </div>
   
@@ -3116,43 +3116,44 @@ mean in group FALSE  mean in group TRUE
 <span id="cb115-3"><a href="#cb115-3"></a></span>
 <span id="cb115-4"><a href="#cb115-4"></a><span class="fu">library</span>(ggtext)</span>
 <span id="cb115-5"><a href="#cb115-5"></a></span>
-<span id="cb115-6"><a href="#cb115-6"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
-<span id="cb115-7"><a href="#cb115-7"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(vacc_mp), <span class="at">fill =</span> <span class="st">"#72874EFF"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb115-8"><a href="#cb115-8"></a>  <span class="fu">labs</span>(</span>
-<span id="cb115-9"><a href="#cb115-9"></a>    <span class="at">title =</span> <span class="st">"Frequência absoluta dos porcos vacinados contra *M. hyopneumoniae*"</span>,</span>
-<span id="cb115-10"><a href="#cb115-10"></a>    <span class="at">x =</span> <span class="st">"Estado vacinal contra *M. hyopneumoniae*"</span>,</span>
-<span id="cb115-11"><a href="#cb115-11"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
-<span id="cb115-12"><a href="#cb115-12"></a>  ) <span class="sc">+</span></span>
-<span id="cb115-13"><a href="#cb115-13"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb115-14"><a href="#cb115-14"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">750</span>, <span class="dv">50</span>)</span>
-<span id="cb115-15"><a href="#cb115-15"></a>  ) <span class="sc">+</span></span>
-<span id="cb115-16"><a href="#cb115-16"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb115-17"><a href="#cb115-17"></a>  <span class="fu">theme</span>(</span>
-<span id="cb115-18"><a href="#cb115-18"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb115-19"><a href="#cb115-19"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_markdown</span>()</span>
-<span id="cb115-20"><a href="#cb115-20"></a>  )</span>
-<span id="cb115-21"><a href="#cb115-21"></a></span>
-<span id="cb115-22"><a href="#cb115-22"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
-<span id="cb115-23"><a href="#cb115-23"></a>  <span class="fu">geom_bar</span>(</span>
-<span id="cb115-24"><a href="#cb115-24"></a>    <span class="fu">aes</span>(vacc_mp, <span class="at">y =</span> <span class="fu">after_stat</span>(prop), <span class="at">group =</span> <span class="dv">1</span>),</span>
-<span id="cb115-25"><a href="#cb115-25"></a>    <span class="at">fill =</span> <span class="st">"#72874EFF"</span>,</span>
-<span id="cb115-26"><a href="#cb115-26"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
-<span id="cb115-27"><a href="#cb115-27"></a>  ) <span class="sc">+</span></span>
-<span id="cb115-28"><a href="#cb115-28"></a>  <span class="fu">labs</span>(</span>
-<span id="cb115-29"><a href="#cb115-29"></a>    <span class="at">title =</span> <span class="st">"Frequência relativa dos porcos vacinados contra *M. hyopneumoniae*"</span>,</span>
-<span id="cb115-30"><a href="#cb115-30"></a>    <span class="at">x =</span> <span class="st">"Estado vacinal contra *M. hyopneumoniae*"</span>,</span>
-<span id="cb115-31"><a href="#cb115-31"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa (%)"</span></span>
+<span id="cb115-6"><a href="#cb115-6"></a>plot_theme <span class="ot">&lt;-</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb115-7"><a href="#cb115-7"></a>  <span class="fu">theme</span>(</span>
+<span id="cb115-8"><a href="#cb115-8"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(<span class="at">size =</span> <span class="dv">16</span>),</span>
+<span id="cb115-9"><a href="#cb115-9"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb115-10"><a href="#cb115-10"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb115-11"><a href="#cb115-11"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_markdown</span>(<span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb115-12"><a href="#cb115-12"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_markdown</span>(<span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb115-13"><a href="#cb115-13"></a>  )</span>
+<span id="cb115-14"><a href="#cb115-14"></a></span>
+<span id="cb115-15"><a href="#cb115-15"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
+<span id="cb115-16"><a href="#cb115-16"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(vacc_mp), <span class="at">fill =</span> <span class="st">"#72874EFF"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb115-17"><a href="#cb115-17"></a>  <span class="fu">labs</span>(</span>
+<span id="cb115-18"><a href="#cb115-18"></a>    <span class="at">title =</span> <span class="st">"Frequência absoluta dos porcos vacinados contra *M. hyopneumoniae*"</span>,</span>
+<span id="cb115-19"><a href="#cb115-19"></a>    <span class="at">x =</span> <span class="st">"Estado vacinal contra *M. hyopneumoniae*"</span>,</span>
+<span id="cb115-20"><a href="#cb115-20"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
+<span id="cb115-21"><a href="#cb115-21"></a>  ) <span class="sc">+</span></span>
+<span id="cb115-22"><a href="#cb115-22"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb115-23"><a href="#cb115-23"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">750</span>, <span class="dv">50</span>)</span>
+<span id="cb115-24"><a href="#cb115-24"></a>  ) <span class="sc">+</span></span>
+<span id="cb115-25"><a href="#cb115-25"></a>  plot_theme</span>
+<span id="cb115-26"><a href="#cb115-26"></a></span>
+<span id="cb115-27"><a href="#cb115-27"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
+<span id="cb115-28"><a href="#cb115-28"></a>  <span class="fu">geom_bar</span>(</span>
+<span id="cb115-29"><a href="#cb115-29"></a>    <span class="fu">aes</span>(vacc_mp, <span class="at">y =</span> <span class="fu">after_stat</span>(prop), <span class="at">group =</span> <span class="dv">1</span>),</span>
+<span id="cb115-30"><a href="#cb115-30"></a>    <span class="at">fill =</span> <span class="st">"#72874EFF"</span>,</span>
+<span id="cb115-31"><a href="#cb115-31"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
 <span id="cb115-32"><a href="#cb115-32"></a>  ) <span class="sc">+</span></span>
-<span id="cb115-33"><a href="#cb115-33"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb115-34"><a href="#cb115-34"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
-<span id="cb115-35"><a href="#cb115-35"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
-<span id="cb115-36"><a href="#cb115-36"></a>  ) <span class="sc">+</span></span>
-<span id="cb115-37"><a href="#cb115-37"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb115-38"><a href="#cb115-38"></a>  <span class="fu">theme</span>(</span>
-<span id="cb115-39"><a href="#cb115-39"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb115-40"><a href="#cb115-40"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_markdown</span>()</span>
+<span id="cb115-33"><a href="#cb115-33"></a>  <span class="fu">labs</span>(</span>
+<span id="cb115-34"><a href="#cb115-34"></a>    <span class="at">title =</span> <span class="st">"Frequência relativa dos porcos vacinados contra *M. hyopneumoniae*"</span>,</span>
+<span id="cb115-35"><a href="#cb115-35"></a>    <span class="at">x =</span> <span class="st">"Estado vacinal contra *M. hyopneumoniae*"</span>,</span>
+<span id="cb115-36"><a href="#cb115-36"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa (%)"</span></span>
+<span id="cb115-37"><a href="#cb115-37"></a>  ) <span class="sc">+</span></span>
+<span id="cb115-38"><a href="#cb115-38"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb115-39"><a href="#cb115-39"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
+<span id="cb115-40"><a href="#cb115-40"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
 <span id="cb115-41"><a href="#cb115-41"></a>  ) <span class="sc">+</span></span>
-<span id="cb115-42"><a href="#cb115-42"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb115-42"><a href="#cb115-42"></a>  plot_theme <span class="sc">+</span></span>
+<span id="cb115-43"><a href="#cb115-43"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell quarto-layout-panel" data-layout-ncol="1">
 <div class="quarto-layout-row">
@@ -3191,7 +3192,7 @@ mean in group FALSE  mean in group TRUE
 <span id="cb116-6"><a href="#cb116-6"></a>    <span class="at">x =</span> <span class="st">"Idade (dias)"</span>,</span>
 <span id="cb116-7"><a href="#cb116-7"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
 <span id="cb116-8"><a href="#cb116-8"></a>  ) <span class="sc">+</span></span>
-<span id="cb116-9"><a href="#cb116-9"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb116-9"><a href="#cb116-9"></a>  plot_theme</span>
 <span id="cb116-10"><a href="#cb116-10"></a></span>
 <span id="cb116-11"><a href="#cb116-11"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
 <span id="cb116-12"><a href="#cb116-12"></a>  <span class="fu">geom_bar</span>(</span>
@@ -3209,7 +3210,7 @@ mean in group FALSE  mean in group TRUE
 <span id="cb116-24"><a href="#cb116-24"></a>    <span class="at">x =</span> <span class="st">"Idade (dias)"</span>,</span>
 <span id="cb116-25"><a href="#cb116-25"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa (%)"</span></span>
 <span id="cb116-26"><a href="#cb116-26"></a>  ) <span class="sc">+</span></span>
-<span id="cb116-27"><a href="#cb116-27"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb116-27"><a href="#cb116-27"></a>  plot_theme</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell quarto-layout-panel" data-layout-ncol="1">
 <div class="quarto-layout-row">
@@ -3262,57 +3263,42 @@ mean in group FALSE  mean in group TRUE
 <span id="cb117-20"><a href="#cb117-20"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
 <span id="cb117-21"><a href="#cb117-21"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
 <span id="cb117-22"><a href="#cb117-22"></a>  ) <span class="sc">+</span></span>
-<span id="cb117-23"><a href="#cb117-23"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb117-24"><a href="#cb117-24"></a>  <span class="fu">theme</span>(</span>
-<span id="cb117-25"><a href="#cb117-25"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb117-26"><a href="#cb117-26"></a>  )</span>
-<span id="cb117-27"><a href="#cb117-27"></a></span>
-<span id="cb117-28"><a href="#cb117-28"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
-<span id="cb117-29"><a href="#cb117-29"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fri), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
-<span id="cb117-30"><a href="#cb117-30"></a>  <span class="fu">labs</span>(</span>
-<span id="cb117-31"><a href="#cb117-31"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
-<span id="cb117-32"><a href="#cb117-32"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
-<span id="cb117-33"><a href="#cb117-33"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa"</span></span>
-<span id="cb117-34"><a href="#cb117-34"></a>  ) <span class="sc">+</span></span>
-<span id="cb117-35"><a href="#cb117-35"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb117-36"><a href="#cb117-36"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
-<span id="cb117-37"><a href="#cb117-37"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
-<span id="cb117-38"><a href="#cb117-38"></a>  ) <span class="sc">+</span></span>
-<span id="cb117-39"><a href="#cb117-39"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb117-40"><a href="#cb117-40"></a>  <span class="fu">theme</span>(</span>
-<span id="cb117-41"><a href="#cb117-41"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb117-42"><a href="#cb117-42"></a>  )</span>
-<span id="cb117-43"><a href="#cb117-43"></a></span>
-<span id="cb117-44"><a href="#cb117-44"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
-<span id="cb117-45"><a href="#cb117-45"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fac), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
-<span id="cb117-46"><a href="#cb117-46"></a>  <span class="fu">labs</span>(</span>
-<span id="cb117-47"><a href="#cb117-47"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
-<span id="cb117-48"><a href="#cb117-48"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
-<span id="cb117-49"><a href="#cb117-49"></a>    <span class="at">y =</span> <span class="st">"Frequência acumulada"</span></span>
-<span id="cb117-50"><a href="#cb117-50"></a>  ) <span class="sc">+</span></span>
-<span id="cb117-51"><a href="#cb117-51"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb117-52"><a href="#cb117-52"></a>  <span class="fu">theme</span>(</span>
-<span id="cb117-53"><a href="#cb117-53"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb117-54"><a href="#cb117-54"></a>  )</span>
-<span id="cb117-55"><a href="#cb117-55"></a></span>
-<span id="cb117-56"><a href="#cb117-56"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
-<span id="cb117-57"><a href="#cb117-57"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Frac), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
-<span id="cb117-58"><a href="#cb117-58"></a>  <span class="fu">labs</span>(</span>
-<span id="cb117-59"><a href="#cb117-59"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
-<span id="cb117-60"><a href="#cb117-60"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
-<span id="cb117-61"><a href="#cb117-61"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa acumulada"</span></span>
-<span id="cb117-62"><a href="#cb117-62"></a>  ) <span class="sc">+</span></span>
-<span id="cb117-63"><a href="#cb117-63"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb117-64"><a href="#cb117-64"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
-<span id="cb117-65"><a href="#cb117-65"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
-<span id="cb117-66"><a href="#cb117-66"></a>  ) <span class="sc">+</span></span>
-<span id="cb117-67"><a href="#cb117-67"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb117-68"><a href="#cb117-68"></a>  <span class="fu">theme</span>(</span>
-<span id="cb117-69"><a href="#cb117-69"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
-<span id="cb117-70"><a href="#cb117-70"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>, <span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb117-71"><a href="#cb117-71"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
-<span id="cb117-72"><a href="#cb117-72"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)</span>
-<span id="cb117-73"><a href="#cb117-73"></a>  )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb117-23"><a href="#cb117-23"></a>  plot_theme</span>
+<span id="cb117-24"><a href="#cb117-24"></a></span>
+<span id="cb117-25"><a href="#cb117-25"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
+<span id="cb117-26"><a href="#cb117-26"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fri), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
+<span id="cb117-27"><a href="#cb117-27"></a>  <span class="fu">labs</span>(</span>
+<span id="cb117-28"><a href="#cb117-28"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
+<span id="cb117-29"><a href="#cb117-29"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
+<span id="cb117-30"><a href="#cb117-30"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa"</span></span>
+<span id="cb117-31"><a href="#cb117-31"></a>  ) <span class="sc">+</span></span>
+<span id="cb117-32"><a href="#cb117-32"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb117-33"><a href="#cb117-33"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
+<span id="cb117-34"><a href="#cb117-34"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
+<span id="cb117-35"><a href="#cb117-35"></a>  ) <span class="sc">+</span></span>
+<span id="cb117-36"><a href="#cb117-36"></a>  plot_theme</span>
+<span id="cb117-37"><a href="#cb117-37"></a></span>
+<span id="cb117-38"><a href="#cb117-38"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
+<span id="cb117-39"><a href="#cb117-39"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fac), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
+<span id="cb117-40"><a href="#cb117-40"></a>  <span class="fu">labs</span>(</span>
+<span id="cb117-41"><a href="#cb117-41"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
+<span id="cb117-42"><a href="#cb117-42"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
+<span id="cb117-43"><a href="#cb117-43"></a>    <span class="at">y =</span> <span class="st">"Frequência acumulada"</span></span>
+<span id="cb117-44"><a href="#cb117-44"></a>  ) <span class="sc">+</span></span>
+<span id="cb117-45"><a href="#cb117-45"></a>  plot_theme</span>
+<span id="cb117-46"><a href="#cb117-46"></a></span>
+<span id="cb117-47"><a href="#cb117-47"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
+<span id="cb117-48"><a href="#cb117-48"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Frac), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
+<span id="cb117-49"><a href="#cb117-49"></a>  <span class="fu">labs</span>(</span>
+<span id="cb117-50"><a href="#cb117-50"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
+<span id="cb117-51"><a href="#cb117-51"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
+<span id="cb117-52"><a href="#cb117-52"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa acumulada"</span></span>
+<span id="cb117-53"><a href="#cb117-53"></a>  ) <span class="sc">+</span></span>
+<span id="cb117-54"><a href="#cb117-54"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb117-55"><a href="#cb117-55"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
+<span id="cb117-56"><a href="#cb117-56"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
+<span id="cb117-57"><a href="#cb117-57"></a>  ) <span class="sc">+</span></span>
+<span id="cb117-58"><a href="#cb117-58"></a>  plot_theme</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell quarto-layout-panel" data-layout-ncol="1">
 <div class="quarto-layout-row">
@@ -3357,7 +3343,7 @@ mean in group FALSE  mean in group TRUE
 </div>
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<p>Exemplos de gráficos de barras para variáveis discretas</p>
+<p>Exemplos de gráficos de barras para variáveis contínuas agrupadas</p>
 </div>
 </div>
 </div>
@@ -3439,7 +3425,7 @@ mean in group FALSE  mean in group TRUE
   title = {Café com estatística e R},
   volume = {1},
   number = {1},
-  date = {2025-10-14},
+  date = {2025-10-15},
   langid = {pt-BR},
   abstract = {Relatório do segundo treinamento onde foi apresentado como
     importar dados e manipulá-los no R, bem como as principais
@@ -3448,7 +3434,7 @@ mean in group FALSE  mean in group TRUE
 </code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">Por favor, cite este trabalho como:</div><div id="ref-teixeira_paiva2025" class="csl-entry quarto-appendix-citeas" role="listitem">
 Teixeira Paiva, Marcelo. 2025. <span>“Café com estatística e R.”</span>
 Café com estatística e R: Treinamento 2 - Importação e manipulação de
-dados no R e estatística descritiva, parte 1. October 14, 2025.
+dados no R e estatística descritiva, parte 1. October 15, 2025.
 </div></div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -5697,212 +5683,198 @@ dados no R e estatística descritiva, parte 1. October 14, 2025.
 <span id="cb118-1903"><a href="#cb118-1903"></a></span>
 <span id="cb118-1904"><a href="#cb118-1904"></a><span class="fu">library</span>(ggtext)</span>
 <span id="cb118-1905"><a href="#cb118-1905"></a></span>
-<span id="cb118-1906"><a href="#cb118-1906"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
-<span id="cb118-1907"><a href="#cb118-1907"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(vacc_mp), <span class="at">fill =</span> <span class="st">"#72874EFF"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb118-1908"><a href="#cb118-1908"></a>  <span class="fu">labs</span>(</span>
-<span id="cb118-1909"><a href="#cb118-1909"></a>    <span class="at">title =</span> <span class="st">"Frequência absoluta dos porcos vacinados contra *M. hyopneumoniae*"</span>,</span>
-<span id="cb118-1910"><a href="#cb118-1910"></a>    <span class="at">x =</span> <span class="st">"Estado vacinal contra *M. hyopneumoniae*"</span>,</span>
-<span id="cb118-1911"><a href="#cb118-1911"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
-<span id="cb118-1912"><a href="#cb118-1912"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1913"><a href="#cb118-1913"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb118-1914"><a href="#cb118-1914"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">750</span>, <span class="dv">50</span>)</span>
-<span id="cb118-1915"><a href="#cb118-1915"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1916"><a href="#cb118-1916"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb118-1917"><a href="#cb118-1917"></a>  <span class="fu">theme</span>(</span>
-<span id="cb118-1918"><a href="#cb118-1918"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb118-1919"><a href="#cb118-1919"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_markdown</span>()</span>
-<span id="cb118-1920"><a href="#cb118-1920"></a>  )</span>
-<span id="cb118-1921"><a href="#cb118-1921"></a></span>
-<span id="cb118-1922"><a href="#cb118-1922"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
-<span id="cb118-1923"><a href="#cb118-1923"></a>  <span class="fu">geom_bar</span>(</span>
-<span id="cb118-1924"><a href="#cb118-1924"></a>    <span class="fu">aes</span>(vacc_mp, <span class="at">y =</span> <span class="fu">after_stat</span>(prop), <span class="at">group =</span> <span class="dv">1</span>),</span>
-<span id="cb118-1925"><a href="#cb118-1925"></a>    <span class="at">fill =</span> <span class="st">"#72874EFF"</span>,</span>
-<span id="cb118-1926"><a href="#cb118-1926"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
-<span id="cb118-1927"><a href="#cb118-1927"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1928"><a href="#cb118-1928"></a>  <span class="fu">labs</span>(</span>
-<span id="cb118-1929"><a href="#cb118-1929"></a>    <span class="at">title =</span> <span class="st">"Frequência relativa dos porcos vacinados contra *M. hyopneumoniae*"</span>,</span>
-<span id="cb118-1930"><a href="#cb118-1930"></a>    <span class="at">x =</span> <span class="st">"Estado vacinal contra *M. hyopneumoniae*"</span>,</span>
-<span id="cb118-1931"><a href="#cb118-1931"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa (%)"</span></span>
+<span id="cb118-1906"><a href="#cb118-1906"></a>plot_theme <span class="ot">&lt;-</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb118-1907"><a href="#cb118-1907"></a>  <span class="fu">theme</span>(</span>
+<span id="cb118-1908"><a href="#cb118-1908"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(<span class="at">size =</span> <span class="dv">16</span>),</span>
+<span id="cb118-1909"><a href="#cb118-1909"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb118-1910"><a href="#cb118-1910"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb118-1911"><a href="#cb118-1911"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_markdown</span>(<span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb118-1912"><a href="#cb118-1912"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_markdown</span>(<span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb118-1913"><a href="#cb118-1913"></a>  )</span>
+<span id="cb118-1914"><a href="#cb118-1914"></a></span>
+<span id="cb118-1915"><a href="#cb118-1915"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
+<span id="cb118-1916"><a href="#cb118-1916"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(vacc_mp), <span class="at">fill =</span> <span class="st">"#72874EFF"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb118-1917"><a href="#cb118-1917"></a>  <span class="fu">labs</span>(</span>
+<span id="cb118-1918"><a href="#cb118-1918"></a>    <span class="at">title =</span> <span class="st">"Frequência absoluta dos porcos vacinados contra *M. hyopneumoniae*"</span>,</span>
+<span id="cb118-1919"><a href="#cb118-1919"></a>    <span class="at">x =</span> <span class="st">"Estado vacinal contra *M. hyopneumoniae*"</span>,</span>
+<span id="cb118-1920"><a href="#cb118-1920"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
+<span id="cb118-1921"><a href="#cb118-1921"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-1922"><a href="#cb118-1922"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb118-1923"><a href="#cb118-1923"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">750</span>, <span class="dv">50</span>)</span>
+<span id="cb118-1924"><a href="#cb118-1924"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-1925"><a href="#cb118-1925"></a>  plot_theme</span>
+<span id="cb118-1926"><a href="#cb118-1926"></a></span>
+<span id="cb118-1927"><a href="#cb118-1927"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
+<span id="cb118-1928"><a href="#cb118-1928"></a>  <span class="fu">geom_bar</span>(</span>
+<span id="cb118-1929"><a href="#cb118-1929"></a>    <span class="fu">aes</span>(vacc_mp, <span class="at">y =</span> <span class="fu">after_stat</span>(prop), <span class="at">group =</span> <span class="dv">1</span>),</span>
+<span id="cb118-1930"><a href="#cb118-1930"></a>    <span class="at">fill =</span> <span class="st">"#72874EFF"</span>,</span>
+<span id="cb118-1931"><a href="#cb118-1931"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
 <span id="cb118-1932"><a href="#cb118-1932"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1933"><a href="#cb118-1933"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb118-1934"><a href="#cb118-1934"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
-<span id="cb118-1935"><a href="#cb118-1935"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
-<span id="cb118-1936"><a href="#cb118-1936"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1937"><a href="#cb118-1937"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb118-1938"><a href="#cb118-1938"></a>  <span class="fu">theme</span>(</span>
-<span id="cb118-1939"><a href="#cb118-1939"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb118-1940"><a href="#cb118-1940"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_markdown</span>()</span>
+<span id="cb118-1933"><a href="#cb118-1933"></a>  <span class="fu">labs</span>(</span>
+<span id="cb118-1934"><a href="#cb118-1934"></a>    <span class="at">title =</span> <span class="st">"Frequência relativa dos porcos vacinados contra *M. hyopneumoniae*"</span>,</span>
+<span id="cb118-1935"><a href="#cb118-1935"></a>    <span class="at">x =</span> <span class="st">"Estado vacinal contra *M. hyopneumoniae*"</span>,</span>
+<span id="cb118-1936"><a href="#cb118-1936"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa (%)"</span></span>
+<span id="cb118-1937"><a href="#cb118-1937"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-1938"><a href="#cb118-1938"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb118-1939"><a href="#cb118-1939"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
+<span id="cb118-1940"><a href="#cb118-1940"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
 <span id="cb118-1941"><a href="#cb118-1941"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1942"><a href="#cb118-1942"></a>  <span class="fu">coord_flip</span>()</span>
-<span id="cb118-1943"><a href="#cb118-1943"></a><span class="in">```</span></span>
-<span id="cb118-1944"><a href="#cb118-1944"></a></span>
+<span id="cb118-1942"><a href="#cb118-1942"></a>  plot_theme <span class="sc">+</span></span>
+<span id="cb118-1943"><a href="#cb118-1943"></a>  <span class="fu">coord_flip</span>()</span>
+<span id="cb118-1944"><a href="#cb118-1944"></a><span class="in">```</span></span>
 <span id="cb118-1945"><a href="#cb118-1945"></a></span>
-<span id="cb118-1948"><a href="#cb118-1948"></a><span class="in">```{r}</span></span>
-<span id="cb118-1949"><a href="#cb118-1949"></a><span class="co">#| label: est_descritiva_graficos_barras_2</span></span>
-<span id="cb118-1950"><a href="#cb118-1950"></a><span class="co">#| fig-cap: "Exemplos de gráficos de barras para variáveis discretas"</span></span>
-<span id="cb118-1951"><a href="#cb118-1951"></a><span class="co">#| fig-subcap: </span></span>
-<span id="cb118-1952"><a href="#cb118-1952"></a><span class="co">#|  - "Frequência absoluta em gráfico de barras vertical de uma variável discreta"</span></span>
-<span id="cb118-1953"><a href="#cb118-1953"></a><span class="co">#|  - "Frequência relativa em gráfico de barras vertical de uma variável discreta"</span></span>
-<span id="cb118-1954"><a href="#cb118-1954"></a><span class="co">#| warning: false</span></span>
-<span id="cb118-1955"><a href="#cb118-1955"></a><span class="co">#| layout-ncol: 1</span></span>
-<span id="cb118-1956"><a href="#cb118-1956"></a></span>
-<span id="cb118-1957"><a href="#cb118-1957"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
-<span id="cb118-1958"><a href="#cb118-1958"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(age_t), <span class="at">fill =</span> <span class="st">"#476F84FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb118-1959"><a href="#cb118-1959"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) <span class="sc">+</span></span>
-<span id="cb118-1960"><a href="#cb118-1960"></a>  <span class="fu">labs</span>(</span>
-<span id="cb118-1961"><a href="#cb118-1961"></a>    <span class="at">title =</span> <span class="st">"Frequência absoluta das idades dos porcos na transferência do desmame para a unidade de acabamento"</span>,</span>
-<span id="cb118-1962"><a href="#cb118-1962"></a>    <span class="at">x =</span> <span class="st">"Idade (dias)"</span>,</span>
-<span id="cb118-1963"><a href="#cb118-1963"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
-<span id="cb118-1964"><a href="#cb118-1964"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1965"><a href="#cb118-1965"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb118-1966"><a href="#cb118-1966"></a></span>
-<span id="cb118-1967"><a href="#cb118-1967"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
-<span id="cb118-1968"><a href="#cb118-1968"></a>  <span class="fu">geom_bar</span>(</span>
-<span id="cb118-1969"><a href="#cb118-1969"></a>    <span class="fu">aes</span>(<span class="at">x =</span> age_t, <span class="at">y =</span> <span class="fu">after_stat</span>(prop), <span class="at">group =</span> <span class="dv">1</span>),</span>
-<span id="cb118-1970"><a href="#cb118-1970"></a>    <span class="at">fill =</span> <span class="st">"#476F84FF"</span>,</span>
-<span id="cb118-1971"><a href="#cb118-1971"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
-<span id="cb118-1972"><a href="#cb118-1972"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1973"><a href="#cb118-1973"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) <span class="sc">+</span></span>
-<span id="cb118-1974"><a href="#cb118-1974"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb118-1975"><a href="#cb118-1975"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
-<span id="cb118-1976"><a href="#cb118-1976"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
-<span id="cb118-1977"><a href="#cb118-1977"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1978"><a href="#cb118-1978"></a>  <span class="fu">labs</span>(</span>
-<span id="cb118-1979"><a href="#cb118-1979"></a>    <span class="at">title =</span> <span class="st">"Frequência relativa das idades dos porcos na transferência do desmame para a unidade de acabamento"</span>,</span>
-<span id="cb118-1980"><a href="#cb118-1980"></a>    <span class="at">x =</span> <span class="st">"Idade (dias)"</span>,</span>
-<span id="cb118-1981"><a href="#cb118-1981"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa (%)"</span></span>
-<span id="cb118-1982"><a href="#cb118-1982"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-1983"><a href="#cb118-1983"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb118-1984"><a href="#cb118-1984"></a><span class="in">```</span></span>
-<span id="cb118-1985"><a href="#cb118-1985"></a></span>
+<span id="cb118-1946"><a href="#cb118-1946"></a></span>
+<span id="cb118-1949"><a href="#cb118-1949"></a><span class="in">```{r}</span></span>
+<span id="cb118-1950"><a href="#cb118-1950"></a><span class="co">#| label: est_descritiva_graficos_barras_2</span></span>
+<span id="cb118-1951"><a href="#cb118-1951"></a><span class="co">#| fig-cap: "Exemplos de gráficos de barras para variáveis discretas"</span></span>
+<span id="cb118-1952"><a href="#cb118-1952"></a><span class="co">#| fig-subcap: </span></span>
+<span id="cb118-1953"><a href="#cb118-1953"></a><span class="co">#|  - "Frequência absoluta em gráfico de barras vertical de uma variável discreta"</span></span>
+<span id="cb118-1954"><a href="#cb118-1954"></a><span class="co">#|  - "Frequência relativa em gráfico de barras vertical de uma variável discreta"</span></span>
+<span id="cb118-1955"><a href="#cb118-1955"></a><span class="co">#| warning: false</span></span>
+<span id="cb118-1956"><a href="#cb118-1956"></a><span class="co">#| layout-ncol: 1</span></span>
+<span id="cb118-1957"><a href="#cb118-1957"></a></span>
+<span id="cb118-1958"><a href="#cb118-1958"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
+<span id="cb118-1959"><a href="#cb118-1959"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(age_t), <span class="at">fill =</span> <span class="st">"#476F84FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb118-1960"><a href="#cb118-1960"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb118-1961"><a href="#cb118-1961"></a>  <span class="fu">labs</span>(</span>
+<span id="cb118-1962"><a href="#cb118-1962"></a>    <span class="at">title =</span> <span class="st">"Frequência absoluta das idades dos porcos na transferência do desmame para a unidade de acabamento"</span>,</span>
+<span id="cb118-1963"><a href="#cb118-1963"></a>    <span class="at">x =</span> <span class="st">"Idade (dias)"</span>,</span>
+<span id="cb118-1964"><a href="#cb118-1964"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
+<span id="cb118-1965"><a href="#cb118-1965"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-1966"><a href="#cb118-1966"></a>  plot_theme</span>
+<span id="cb118-1967"><a href="#cb118-1967"></a></span>
+<span id="cb118-1968"><a href="#cb118-1968"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span></span>
+<span id="cb118-1969"><a href="#cb118-1969"></a>  <span class="fu">geom_bar</span>(</span>
+<span id="cb118-1970"><a href="#cb118-1970"></a>    <span class="fu">aes</span>(<span class="at">x =</span> age_t, <span class="at">y =</span> <span class="fu">after_stat</span>(prop), <span class="at">group =</span> <span class="dv">1</span>),</span>
+<span id="cb118-1971"><a href="#cb118-1971"></a>    <span class="at">fill =</span> <span class="st">"#476F84FF"</span>,</span>
+<span id="cb118-1972"><a href="#cb118-1972"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb118-1973"><a href="#cb118-1973"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-1974"><a href="#cb118-1974"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb118-1975"><a href="#cb118-1975"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb118-1976"><a href="#cb118-1976"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
+<span id="cb118-1977"><a href="#cb118-1977"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
+<span id="cb118-1978"><a href="#cb118-1978"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-1979"><a href="#cb118-1979"></a>  <span class="fu">labs</span>(</span>
+<span id="cb118-1980"><a href="#cb118-1980"></a>    <span class="at">title =</span> <span class="st">"Frequência relativa das idades dos porcos na transferência do desmame para a unidade de acabamento"</span>,</span>
+<span id="cb118-1981"><a href="#cb118-1981"></a>    <span class="at">x =</span> <span class="st">"Idade (dias)"</span>,</span>
+<span id="cb118-1982"><a href="#cb118-1982"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa (%)"</span></span>
+<span id="cb118-1983"><a href="#cb118-1983"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-1984"><a href="#cb118-1984"></a>  plot_theme</span>
+<span id="cb118-1985"><a href="#cb118-1985"></a><span class="in">```</span></span>
 <span id="cb118-1986"><a href="#cb118-1986"></a></span>
-<span id="cb118-1989"><a href="#cb118-1989"></a><span class="in">```{r}</span></span>
-<span id="cb118-1990"><a href="#cb118-1990"></a><span class="co">#| label: est_descritiva_graficos_barras_3</span></span>
-<span id="cb118-1991"><a href="#cb118-1991"></a><span class="co">#| fig-cap: "Exemplos de gráficos de barras para variáveis discretas"</span></span>
-<span id="cb118-1992"><a href="#cb118-1992"></a><span class="co">#| fig-subcap: </span></span>
-<span id="cb118-1993"><a href="#cb118-1993"></a><span class="co">#|  - "Frequência absoluta em gráfico de barras vertical de uma variável contínua agrupada"</span></span>
-<span id="cb118-1994"><a href="#cb118-1994"></a><span class="co">#|  - "Frequência relativa em gráfico de barras vertical de uma variável contínua agrupada"</span></span>
-<span id="cb118-1995"><a href="#cb118-1995"></a><span class="co">#|  - "Frequência absoluta acumulada em gráfico de barras vertical de uma variável contínua agrupada"</span></span>
-<span id="cb118-1996"><a href="#cb118-1996"></a><span class="co">#|  - "Frequência relativa acumulada em gráfico de barras vertical de uma variável contínua agrupada"</span></span>
-<span id="cb118-1997"><a href="#cb118-1997"></a><span class="co">#| warning: false</span></span>
-<span id="cb118-1998"><a href="#cb118-1998"></a><span class="co">#| layout-ncol: 1</span></span>
-<span id="cb118-1999"><a href="#cb118-1999"></a></span>
-<span id="cb118-2000"><a href="#cb118-2000"></a>classes_k <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fl">3.322</span> <span class="sc">*</span> <span class="fu">log10</span>(<span class="fu">length</span>(ap2<span class="sc">$</span>dwg_fin)))</span>
-<span id="cb118-2001"><a href="#cb118-2001"></a>breaks <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fu">seq</span>(<span class="fu">min</span>(ap2<span class="sc">$</span>dwg_fin), <span class="fu">max</span>(ap2<span class="sc">$</span>dwg_fin), <span class="at">length.out =</span> classes_k <span class="sc">+</span> <span class="dv">1</span>))</span>
-<span id="cb118-2002"><a href="#cb118-2002"></a>breaks[<span class="fu">length</span>(breaks)] <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(<span class="fu">max</span>(ap2<span class="sc">$</span>dwg_fin))</span>
-<span id="cb118-2003"><a href="#cb118-2003"></a></span>
-<span id="cb118-2004"><a href="#cb118-2004"></a>frequencias_dwg_fin <span class="ot">&lt;-</span> ap2 <span class="sc">%&gt;%</span></span>
-<span id="cb118-2005"><a href="#cb118-2005"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb118-2006"><a href="#cb118-2006"></a>    <span class="at">dwg_fin_classificado =</span> <span class="fu">cut</span>(dwg_fin, <span class="at">breaks =</span> breaks, <span class="at">right =</span> <span class="cn">TRUE</span>, <span class="at">include.lowest =</span> <span class="cn">TRUE</span>, <span class="at">dig.lab =</span> <span class="dv">4</span>)</span>
-<span id="cb118-2007"><a href="#cb118-2007"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb118-2008"><a href="#cb118-2008"></a>  <span class="fu">count</span>(dwg_fin_classificado, <span class="at">name =</span> <span class="st">"Fi"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb118-2009"><a href="#cb118-2009"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb118-2010"><a href="#cb118-2010"></a>    <span class="at">Fri =</span> Fi <span class="sc">/</span> <span class="fu">sum</span>(Fi),</span>
-<span id="cb118-2011"><a href="#cb118-2011"></a>    <span class="at">Fac =</span> <span class="fu">cumsum</span>(Fi),</span>
-<span id="cb118-2012"><a href="#cb118-2012"></a>    <span class="at">Frac =</span> <span class="fu">cumsum</span>(Fi <span class="sc">/</span> <span class="fu">sum</span>(Fi))</span>
-<span id="cb118-2013"><a href="#cb118-2013"></a>  )</span>
-<span id="cb118-2014"><a href="#cb118-2014"></a></span>
-<span id="cb118-2015"><a href="#cb118-2015"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
-<span id="cb118-2016"><a href="#cb118-2016"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fi), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
-<span id="cb118-2017"><a href="#cb118-2017"></a>  <span class="fu">labs</span>(</span>
-<span id="cb118-2018"><a href="#cb118-2018"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
-<span id="cb118-2019"><a href="#cb118-2019"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
-<span id="cb118-2020"><a href="#cb118-2020"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
-<span id="cb118-2021"><a href="#cb118-2021"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-2022"><a href="#cb118-2022"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb118-2023"><a href="#cb118-2023"></a>  <span class="fu">theme</span>(</span>
-<span id="cb118-2024"><a href="#cb118-2024"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb118-2025"><a href="#cb118-2025"></a>  )</span>
-<span id="cb118-2026"><a href="#cb118-2026"></a></span>
-<span id="cb118-2027"><a href="#cb118-2027"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
-<span id="cb118-2028"><a href="#cb118-2028"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fri), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
-<span id="cb118-2029"><a href="#cb118-2029"></a>  <span class="fu">labs</span>(</span>
-<span id="cb118-2030"><a href="#cb118-2030"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
-<span id="cb118-2031"><a href="#cb118-2031"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
-<span id="cb118-2032"><a href="#cb118-2032"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa"</span></span>
-<span id="cb118-2033"><a href="#cb118-2033"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-2034"><a href="#cb118-2034"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb118-2035"><a href="#cb118-2035"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
-<span id="cb118-2036"><a href="#cb118-2036"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
-<span id="cb118-2037"><a href="#cb118-2037"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-2038"><a href="#cb118-2038"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb118-2039"><a href="#cb118-2039"></a>  <span class="fu">theme</span>(</span>
-<span id="cb118-2040"><a href="#cb118-2040"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb118-2041"><a href="#cb118-2041"></a>  )</span>
-<span id="cb118-2042"><a href="#cb118-2042"></a></span>
-<span id="cb118-2043"><a href="#cb118-2043"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
-<span id="cb118-2044"><a href="#cb118-2044"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fac), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
-<span id="cb118-2045"><a href="#cb118-2045"></a>  <span class="fu">labs</span>(</span>
-<span id="cb118-2046"><a href="#cb118-2046"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
-<span id="cb118-2047"><a href="#cb118-2047"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
-<span id="cb118-2048"><a href="#cb118-2048"></a>    <span class="at">y =</span> <span class="st">"Frequência acumulada"</span></span>
-<span id="cb118-2049"><a href="#cb118-2049"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-2050"><a href="#cb118-2050"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb118-2051"><a href="#cb118-2051"></a>  <span class="fu">theme</span>(</span>
-<span id="cb118-2052"><a href="#cb118-2052"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb118-2053"><a href="#cb118-2053"></a>  )</span>
-<span id="cb118-2054"><a href="#cb118-2054"></a></span>
-<span id="cb118-2055"><a href="#cb118-2055"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
-<span id="cb118-2056"><a href="#cb118-2056"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Frac), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
-<span id="cb118-2057"><a href="#cb118-2057"></a>  <span class="fu">labs</span>(</span>
-<span id="cb118-2058"><a href="#cb118-2058"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
-<span id="cb118-2059"><a href="#cb118-2059"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
-<span id="cb118-2060"><a href="#cb118-2060"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa acumulada"</span></span>
-<span id="cb118-2061"><a href="#cb118-2061"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-2062"><a href="#cb118-2062"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb118-2063"><a href="#cb118-2063"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
-<span id="cb118-2064"><a href="#cb118-2064"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
-<span id="cb118-2065"><a href="#cb118-2065"></a>  ) <span class="sc">+</span></span>
-<span id="cb118-2066"><a href="#cb118-2066"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb118-2067"><a href="#cb118-2067"></a>  <span class="fu">theme</span>(</span>
-<span id="cb118-2068"><a href="#cb118-2068"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
-<span id="cb118-2069"><a href="#cb118-2069"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>, <span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb118-2070"><a href="#cb118-2070"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
-<span id="cb118-2071"><a href="#cb118-2071"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)</span>
-<span id="cb118-2072"><a href="#cb118-2072"></a>  )</span>
-<span id="cb118-2073"><a href="#cb118-2073"></a><span class="in">```</span></span>
-<span id="cb118-2074"><a href="#cb118-2074"></a></span>
-<span id="cb118-2075"><a href="#cb118-2075"></a><span class="ss">- </span>Estatística descritiva univariada</span>
-<span id="cb118-2076"><a href="#cb118-2076"></a><span class="ss">    - </span>Representação gráfica dos dados</span>
-<span id="cb118-2077"><a href="#cb118-2077"></a><span class="ss">    - </span>Representação gráfica para variáveis qualitativas</span>
-<span id="cb118-2078"><a href="#cb118-2078"></a><span class="ss">        - </span>Gráfico de barras</span>
-<span id="cb118-2079"><a href="#cb118-2079"></a><span class="ss">        - </span>Gráfico de setores ou pizza</span>
-<span id="cb118-2080"><a href="#cb118-2080"></a><span class="ss">        - </span>Diagrama de Pareto</span>
-<span id="cb118-2081"><a href="#cb118-2081"></a><span class="ss">    - </span>Representação gráfica para variáveis quantitativas</span>
-<span id="cb118-2082"><a href="#cb118-2082"></a><span class="ss">        - </span>Gráfico de linhas</span>
-<span id="cb118-2083"><a href="#cb118-2083"></a><span class="ss">        - </span>Gráfico de pontos ou dispersão</span>
-<span id="cb118-2084"><a href="#cb118-2084"></a><span class="ss">        - </span>Histograma</span>
-<span id="cb118-2085"><a href="#cb118-2085"></a><span class="ss">        - </span>Gráfico de ramo-e-folhas</span>
-<span id="cb118-2086"><a href="#cb118-2086"></a><span class="ss">        - </span>Boxplot ou diagrama de caixa</span>
-<span id="cb118-2087"><a href="#cb118-2087"></a><span class="ss">    - </span>Medidas-resumo</span>
-<span id="cb118-2088"><a href="#cb118-2088"></a><span class="ss">        - </span>Medidas de posição ou localização</span>
-<span id="cb118-2089"><a href="#cb118-2089"></a><span class="ss">            - </span>Medidas de tendência central</span>
-<span id="cb118-2090"><a href="#cb118-2090"></a><span class="ss">            - </span>Medidas separatrizes</span>
-<span id="cb118-2091"><a href="#cb118-2091"></a><span class="ss">            - </span>Identificação de existência de outliers univariados</span>
-<span id="cb118-2092"><a href="#cb118-2092"></a><span class="ss">        - </span>Medidas de dispersão ou variabilidade</span>
-<span id="cb118-2093"><a href="#cb118-2093"></a><span class="ss">            - </span>Amplitude</span>
-<span id="cb118-2094"><a href="#cb118-2094"></a><span class="ss">            - </span>Desvio-médio</span>
-<span id="cb118-2095"><a href="#cb118-2095"></a><span class="ss">            - </span>Variância</span>
-<span id="cb118-2096"><a href="#cb118-2096"></a><span class="ss">            - </span>Desvio-padrão</span>
-<span id="cb118-2097"><a href="#cb118-2097"></a><span class="ss">            - </span>Erro-padrão</span>
-<span id="cb118-2098"><a href="#cb118-2098"></a><span class="ss">            - </span>Coeficiente de variação</span>
-<span id="cb118-2099"><a href="#cb118-2099"></a><span class="ss">    - </span>Medidas de forma</span>
-<span id="cb118-2100"><a href="#cb118-2100"></a><span class="ss">        - </span>Medidas de assimetria</span>
-<span id="cb118-2101"><a href="#cb118-2101"></a><span class="ss">        - </span>Medidas de curtose</span>
-<span id="cb118-2102"><a href="#cb118-2102"></a></span>
-<span id="cb118-2103"><a href="#cb118-2103"></a><span class="ss">- </span>Estatística descritiva bivariada</span>
-<span id="cb118-2104"><a href="#cb118-2104"></a><span class="ss">    - </span>Associação entre duas variáveis qualitativas</span>
-<span id="cb118-2105"><a href="#cb118-2105"></a><span class="ss">        - </span>Tabelas de distribuição conjunta de frequências</span>
-<span id="cb118-2106"><a href="#cb118-2106"></a><span class="ss">    - </span>Medidas de associação</span>
-<span id="cb118-2107"><a href="#cb118-2107"></a><span class="ss">        - </span>Estatística qui-quadrado</span>
-<span id="cb118-2108"><a href="#cb118-2108"></a><span class="ss">        - </span>Outras medidas de associação baseadas no qui-quadrado</span>
-<span id="cb118-2109"><a href="#cb118-2109"></a><span class="ss">        - </span>coeficiente de Spearman</span>
-<span id="cb118-2110"><a href="#cb118-2110"></a><span class="ss">    - </span>Correlação entre duas variáveis quantitativas</span>
-<span id="cb118-2111"><a href="#cb118-2111"></a><span class="ss">        - </span>Tabelas de distribuição conjunta de frequências</span>
-<span id="cb118-2112"><a href="#cb118-2112"></a><span class="ss">        - </span>Representação gráfica por meio de um diagrama de dispersão</span>
-<span id="cb118-2113"><a href="#cb118-2113"></a><span class="ss">    - </span>Medidas de correlação</span>
-<span id="cb118-2114"><a href="#cb118-2114"></a><span class="ss">        - </span>Covariância</span>
-<span id="cb118-2115"><a href="#cb118-2115"></a><span class="ss">        - </span>Coeficiente de correlação de Pearson</span>
+<span id="cb118-1987"><a href="#cb118-1987"></a></span>
+<span id="cb118-1990"><a href="#cb118-1990"></a><span class="in">```{r}</span></span>
+<span id="cb118-1991"><a href="#cb118-1991"></a><span class="co">#| label: est_descritiva_graficos_barras_3</span></span>
+<span id="cb118-1992"><a href="#cb118-1992"></a><span class="co">#| fig-cap: "Exemplos de gráficos de barras para variáveis contínuas agrupadas"</span></span>
+<span id="cb118-1993"><a href="#cb118-1993"></a><span class="co">#| fig-subcap: </span></span>
+<span id="cb118-1994"><a href="#cb118-1994"></a><span class="co">#|  - "Frequência absoluta em gráfico de barras vertical de uma variável contínua agrupada"</span></span>
+<span id="cb118-1995"><a href="#cb118-1995"></a><span class="co">#|  - "Frequência relativa em gráfico de barras vertical de uma variável contínua agrupada"</span></span>
+<span id="cb118-1996"><a href="#cb118-1996"></a><span class="co">#|  - "Frequência absoluta acumulada em gráfico de barras vertical de uma variável contínua agrupada"</span></span>
+<span id="cb118-1997"><a href="#cb118-1997"></a><span class="co">#|  - "Frequência relativa acumulada em gráfico de barras vertical de uma variável contínua agrupada"</span></span>
+<span id="cb118-1998"><a href="#cb118-1998"></a><span class="co">#| warning: false</span></span>
+<span id="cb118-1999"><a href="#cb118-1999"></a><span class="co">#| layout-ncol: 1</span></span>
+<span id="cb118-2000"><a href="#cb118-2000"></a></span>
+<span id="cb118-2001"><a href="#cb118-2001"></a>classes_k <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fl">3.322</span> <span class="sc">*</span> <span class="fu">log10</span>(<span class="fu">length</span>(ap2<span class="sc">$</span>dwg_fin)))</span>
+<span id="cb118-2002"><a href="#cb118-2002"></a>breaks <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fu">seq</span>(<span class="fu">min</span>(ap2<span class="sc">$</span>dwg_fin), <span class="fu">max</span>(ap2<span class="sc">$</span>dwg_fin), <span class="at">length.out =</span> classes_k <span class="sc">+</span> <span class="dv">1</span>))</span>
+<span id="cb118-2003"><a href="#cb118-2003"></a>breaks[<span class="fu">length</span>(breaks)] <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(<span class="fu">max</span>(ap2<span class="sc">$</span>dwg_fin))</span>
+<span id="cb118-2004"><a href="#cb118-2004"></a></span>
+<span id="cb118-2005"><a href="#cb118-2005"></a>frequencias_dwg_fin <span class="ot">&lt;-</span> ap2 <span class="sc">%&gt;%</span></span>
+<span id="cb118-2006"><a href="#cb118-2006"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb118-2007"><a href="#cb118-2007"></a>    <span class="at">dwg_fin_classificado =</span> <span class="fu">cut</span>(dwg_fin, <span class="at">breaks =</span> breaks, <span class="at">right =</span> <span class="cn">TRUE</span>, <span class="at">include.lowest =</span> <span class="cn">TRUE</span>, <span class="at">dig.lab =</span> <span class="dv">4</span>)</span>
+<span id="cb118-2008"><a href="#cb118-2008"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb118-2009"><a href="#cb118-2009"></a>  <span class="fu">count</span>(dwg_fin_classificado, <span class="at">name =</span> <span class="st">"Fi"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb118-2010"><a href="#cb118-2010"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb118-2011"><a href="#cb118-2011"></a>    <span class="at">Fri =</span> Fi <span class="sc">/</span> <span class="fu">sum</span>(Fi),</span>
+<span id="cb118-2012"><a href="#cb118-2012"></a>    <span class="at">Fac =</span> <span class="fu">cumsum</span>(Fi),</span>
+<span id="cb118-2013"><a href="#cb118-2013"></a>    <span class="at">Frac =</span> <span class="fu">cumsum</span>(Fi <span class="sc">/</span> <span class="fu">sum</span>(Fi))</span>
+<span id="cb118-2014"><a href="#cb118-2014"></a>  )</span>
+<span id="cb118-2015"><a href="#cb118-2015"></a></span>
+<span id="cb118-2016"><a href="#cb118-2016"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
+<span id="cb118-2017"><a href="#cb118-2017"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fi), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
+<span id="cb118-2018"><a href="#cb118-2018"></a>  <span class="fu">labs</span>(</span>
+<span id="cb118-2019"><a href="#cb118-2019"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
+<span id="cb118-2020"><a href="#cb118-2020"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
+<span id="cb118-2021"><a href="#cb118-2021"></a>    <span class="at">y =</span> <span class="st">"Frequência absoluta"</span></span>
+<span id="cb118-2022"><a href="#cb118-2022"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-2023"><a href="#cb118-2023"></a>  plot_theme</span>
+<span id="cb118-2024"><a href="#cb118-2024"></a></span>
+<span id="cb118-2025"><a href="#cb118-2025"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
+<span id="cb118-2026"><a href="#cb118-2026"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fri), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
+<span id="cb118-2027"><a href="#cb118-2027"></a>  <span class="fu">labs</span>(</span>
+<span id="cb118-2028"><a href="#cb118-2028"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
+<span id="cb118-2029"><a href="#cb118-2029"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
+<span id="cb118-2030"><a href="#cb118-2030"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa"</span></span>
+<span id="cb118-2031"><a href="#cb118-2031"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-2032"><a href="#cb118-2032"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb118-2033"><a href="#cb118-2033"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
+<span id="cb118-2034"><a href="#cb118-2034"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
+<span id="cb118-2035"><a href="#cb118-2035"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-2036"><a href="#cb118-2036"></a>  plot_theme</span>
+<span id="cb118-2037"><a href="#cb118-2037"></a></span>
+<span id="cb118-2038"><a href="#cb118-2038"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
+<span id="cb118-2039"><a href="#cb118-2039"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Fac), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
+<span id="cb118-2040"><a href="#cb118-2040"></a>  <span class="fu">labs</span>(</span>
+<span id="cb118-2041"><a href="#cb118-2041"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
+<span id="cb118-2042"><a href="#cb118-2042"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
+<span id="cb118-2043"><a href="#cb118-2043"></a>    <span class="at">y =</span> <span class="st">"Frequência acumulada"</span></span>
+<span id="cb118-2044"><a href="#cb118-2044"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-2045"><a href="#cb118-2045"></a>  plot_theme</span>
+<span id="cb118-2046"><a href="#cb118-2046"></a></span>
+<span id="cb118-2047"><a href="#cb118-2047"></a><span class="fu">ggplot</span>(frequencias_dwg_fin) <span class="sc">+</span></span>
+<span id="cb118-2048"><a href="#cb118-2048"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> dwg_fin_classificado, <span class="at">y =</span> Frac), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FED789FF"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>)) <span class="sc">+</span></span>
+<span id="cb118-2049"><a href="#cb118-2049"></a>  <span class="fu">labs</span>(</span>
+<span id="cb118-2050"><a href="#cb118-2050"></a>    <span class="at">title =</span> <span class="st">"Ganho de peso diário entre *age_t* e *age_t6*"</span>,</span>
+<span id="cb118-2051"><a href="#cb118-2051"></a>    <span class="at">x =</span> <span class="st">"Intervalos de ganho de peso"</span>,</span>
+<span id="cb118-2052"><a href="#cb118-2052"></a>    <span class="at">y =</span> <span class="st">"Frequência relativa acumulada"</span></span>
+<span id="cb118-2053"><a href="#cb118-2053"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-2054"><a href="#cb118-2054"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb118-2055"><a href="#cb118-2055"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(),</span>
+<span id="cb118-2056"><a href="#cb118-2056"></a>    <span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">breaks_width</span>(<span class="at">width =</span> .<span class="dv">05</span>),</span>
+<span id="cb118-2057"><a href="#cb118-2057"></a>  ) <span class="sc">+</span></span>
+<span id="cb118-2058"><a href="#cb118-2058"></a>  plot_theme</span>
+<span id="cb118-2059"><a href="#cb118-2059"></a><span class="in">```</span></span>
+<span id="cb118-2060"><a href="#cb118-2060"></a></span>
+<span id="cb118-2061"><a href="#cb118-2061"></a><span class="ss">- </span>Estatística descritiva univariada</span>
+<span id="cb118-2062"><a href="#cb118-2062"></a><span class="ss">    - </span>Representação gráfica dos dados</span>
+<span id="cb118-2063"><a href="#cb118-2063"></a><span class="ss">    - </span>Representação gráfica para variáveis qualitativas</span>
+<span id="cb118-2064"><a href="#cb118-2064"></a><span class="ss">        - </span>Gráfico de barras</span>
+<span id="cb118-2065"><a href="#cb118-2065"></a><span class="ss">        - </span>Gráfico de setores ou pizza</span>
+<span id="cb118-2066"><a href="#cb118-2066"></a><span class="ss">        - </span>Diagrama de Pareto</span>
+<span id="cb118-2067"><a href="#cb118-2067"></a><span class="ss">    - </span>Representação gráfica para variáveis quantitativas</span>
+<span id="cb118-2068"><a href="#cb118-2068"></a><span class="ss">        - </span>Gráfico de linhas</span>
+<span id="cb118-2069"><a href="#cb118-2069"></a><span class="ss">        - </span>Gráfico de pontos ou dispersão</span>
+<span id="cb118-2070"><a href="#cb118-2070"></a><span class="ss">        - </span>Histograma</span>
+<span id="cb118-2071"><a href="#cb118-2071"></a><span class="ss">        - </span>Gráfico de ramo-e-folhas</span>
+<span id="cb118-2072"><a href="#cb118-2072"></a><span class="ss">        - </span>Boxplot ou diagrama de caixa</span>
+<span id="cb118-2073"><a href="#cb118-2073"></a><span class="ss">    - </span>Medidas-resumo</span>
+<span id="cb118-2074"><a href="#cb118-2074"></a><span class="ss">        - </span>Medidas de posição ou localização</span>
+<span id="cb118-2075"><a href="#cb118-2075"></a><span class="ss">            - </span>Medidas de tendência central</span>
+<span id="cb118-2076"><a href="#cb118-2076"></a><span class="ss">            - </span>Medidas separatrizes</span>
+<span id="cb118-2077"><a href="#cb118-2077"></a><span class="ss">            - </span>Identificação de existência de outliers univariados</span>
+<span id="cb118-2078"><a href="#cb118-2078"></a><span class="ss">        - </span>Medidas de dispersão ou variabilidade</span>
+<span id="cb118-2079"><a href="#cb118-2079"></a><span class="ss">            - </span>Amplitude</span>
+<span id="cb118-2080"><a href="#cb118-2080"></a><span class="ss">            - </span>Desvio-médio</span>
+<span id="cb118-2081"><a href="#cb118-2081"></a><span class="ss">            - </span>Variância</span>
+<span id="cb118-2082"><a href="#cb118-2082"></a><span class="ss">            - </span>Desvio-padrão</span>
+<span id="cb118-2083"><a href="#cb118-2083"></a><span class="ss">            - </span>Erro-padrão</span>
+<span id="cb118-2084"><a href="#cb118-2084"></a><span class="ss">            - </span>Coeficiente de variação</span>
+<span id="cb118-2085"><a href="#cb118-2085"></a><span class="ss">    - </span>Medidas de forma</span>
+<span id="cb118-2086"><a href="#cb118-2086"></a><span class="ss">        - </span>Medidas de assimetria</span>
+<span id="cb118-2087"><a href="#cb118-2087"></a><span class="ss">        - </span>Medidas de curtose</span>
+<span id="cb118-2088"><a href="#cb118-2088"></a></span>
+<span id="cb118-2089"><a href="#cb118-2089"></a><span class="ss">- </span>Estatística descritiva bivariada</span>
+<span id="cb118-2090"><a href="#cb118-2090"></a><span class="ss">    - </span>Associação entre duas variáveis qualitativas</span>
+<span id="cb118-2091"><a href="#cb118-2091"></a><span class="ss">        - </span>Tabelas de distribuição conjunta de frequências</span>
+<span id="cb118-2092"><a href="#cb118-2092"></a><span class="ss">    - </span>Medidas de associação</span>
+<span id="cb118-2093"><a href="#cb118-2093"></a><span class="ss">        - </span>Estatística qui-quadrado</span>
+<span id="cb118-2094"><a href="#cb118-2094"></a><span class="ss">        - </span>Outras medidas de associação baseadas no qui-quadrado</span>
+<span id="cb118-2095"><a href="#cb118-2095"></a><span class="ss">        - </span>coeficiente de Spearman</span>
+<span id="cb118-2096"><a href="#cb118-2096"></a><span class="ss">    - </span>Correlação entre duas variáveis quantitativas</span>
+<span id="cb118-2097"><a href="#cb118-2097"></a><span class="ss">        - </span>Tabelas de distribuição conjunta de frequências</span>
+<span id="cb118-2098"><a href="#cb118-2098"></a><span class="ss">        - </span>Representação gráfica por meio de um diagrama de dispersão</span>
+<span id="cb118-2099"><a href="#cb118-2099"></a><span class="ss">    - </span>Medidas de correlação</span>
+<span id="cb118-2100"><a href="#cb118-2100"></a><span class="ss">        - </span>Covariância</span>
+<span id="cb118-2101"><a href="#cb118-2101"></a><span class="ss">        - </span>Coeficiente de correlação de Pearson</span>
 </code><button title="Copiar para a área de transferência" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

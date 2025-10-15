@@ -1781,6 +1781,15 @@ Apresenta por meio de barras as frequências absolutas ou relativas de cada poss
 
 library(ggtext)
 
+plot_theme <- theme_minimal() +
+  theme(
+    plot.title = element_markdown(size = 16),
+    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_markdown(size = 14),
+    axis.title.y = element_markdown(size = 14),
+  )
+
 ggplot(ap2) +
   geom_bar(aes(vacc_mp), fill = "#72874EFF", color = "black") +
   labs(
@@ -1791,11 +1800,7 @@ ggplot(ap2) +
   scale_y_continuous(
     breaks = seq(0, 750, 50)
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_markdown(),
-    axis.title.x = element_markdown()
-  )
+  plot_theme
 
 ggplot(ap2) +
   geom_bar(
@@ -1812,11 +1817,7 @@ ggplot(ap2) +
     labels = scales::label_percent(),
     breaks = scales::breaks_width(width = .05),
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_markdown(),
-    axis.title.x = element_markdown()
-  ) +
+  plot_theme +
   coord_flip()
 ```
 
@@ -1838,7 +1839,7 @@ ggplot(ap2) +
     x = "Idade (dias)",
     y = "Frequência absoluta"
   ) +
-  theme_minimal()
+  plot_theme
 
 ggplot(ap2) +
   geom_bar(
@@ -1856,13 +1857,13 @@ ggplot(ap2) +
     x = "Idade (dias)",
     y = "Frequência relativa (%)"
   ) +
-  theme_minimal()
+  plot_theme
 ```
 
 
 ```{r}
 #| label: est_descritiva_graficos_barras_3
-#| fig-cap: "Exemplos de gráficos de barras para variáveis discretas"
+#| fig-cap: "Exemplos de gráficos de barras para variáveis contínuas agrupadas"
 #| fig-subcap: 
 #|  - "Frequência absoluta em gráfico de barras vertical de uma variável contínua agrupada"
 #|  - "Frequência relativa em gráfico de barras vertical de uma variável contínua agrupada"
@@ -1893,10 +1894,7 @@ ggplot(frequencias_dwg_fin) +
     x = "Intervalos de ganho de peso",
     y = "Frequência absoluta"
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_markdown(),
-  )
+  plot_theme
 
 ggplot(frequencias_dwg_fin) +
   geom_bar(aes(x = dwg_fin_classificado, y = Fri), stat = "identity", fill = "#FED789FF", color = "black", position = position_dodge(0.7)) +
@@ -1909,10 +1907,7 @@ ggplot(frequencias_dwg_fin) +
     labels = scales::label_percent(),
     breaks = scales::breaks_width(width = .05),
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_markdown(),
-  )
+  plot_theme
 
 ggplot(frequencias_dwg_fin) +
   geom_bar(aes(x = dwg_fin_classificado, y = Fac), stat = "identity", fill = "#FED789FF", color = "black", position = position_dodge(0.7)) +
@@ -1921,10 +1916,7 @@ ggplot(frequencias_dwg_fin) +
     x = "Intervalos de ganho de peso",
     y = "Frequência acumulada"
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_markdown(),
-  )
+  plot_theme
 
 ggplot(frequencias_dwg_fin) +
   geom_bar(aes(x = dwg_fin_classificado, y = Frac), stat = "identity", fill = "#FED789FF", color = "black", position = position_dodge(0.7)) +
@@ -1937,19 +1929,12 @@ ggplot(frequencias_dwg_fin) +
     labels = scales::label_percent(),
     breaks = scales::breaks_width(width = .05),
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_markdown(size = 12),
-    axis.text.x = element_text(size = 11, face = "bold"),
-    axis.text.y = element_text(size = 11),
-    axis.title = element_text(size = 12)
-  )
+  plot_theme
 ```
 
 - Estatística descritiva univariada
     - Representação gráfica dos dados
     - Representação gráfica para variáveis qualitativas
-        - Gráfico de barras
         - Gráfico de setores ou pizza
         - Diagrama de Pareto
     - Representação gráfica para variáveis quantitativas
