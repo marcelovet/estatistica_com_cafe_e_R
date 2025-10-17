@@ -60,11 +60,18 @@ format:
 #| label: setup
 #| warning: false
 
+# lapply(c(
+#   "tidyverse",
+#   "gridExtra",
+#   "tidyverse",
+#   "kableExtra",
+#   "ggtext",
+#   "paletteer"
+# ), install.packages, character.only = TRUE)
+
 # Pacotes
 library(tidyverse)
 library(gridExtra)
-library(plotly)
-library(gt)
 library(tidyverse)
 library(kableExtra)
 
@@ -195,7 +202,8 @@ A importação de dados é o primeiro passo em qualquer análise. O R oferece m�
 # mini rotina para instalar um pacote se ainda não estiver instalado
 instala_se_nao_existe <- function(nome_do_pacote){
   if(nome_do_pacote %in% rownames(installed.packages())) return()
-  install.packages(nome_do_pacote)
+  install.packages(nome_do_pacote, quiet = TRUE)
+  return()
 }
 lapply(c("readxl", "haven"), instala_se_nao_existe)
 
@@ -1183,7 +1191,7 @@ flowchart TD
     C2 --> C25[Boxplot]
 ```
 
-## Tabela de distribuição de frequências
+## Tabela de distribuição de frequências (Univariada)
 
 Tabelas de frequências representam o número absoluto ou relativo de ocorrências de uma categoria (variáveis qualitativas), valor (variáveis quantitativas discretas) ou intervalo de valores (variáveis quantitativas contínuas).
 
@@ -1662,6 +1670,8 @@ O pacote `paletter` também possui um [site](https://r-graph-gallery.com/color-p
 #| warning: false
 
 require(paletteer)
+instala_se_nao_existe("nbapalettes")
+instala_se_nao_existe("pals")
 
 ggplot(dados, aes(x, y, color = tamanho)) +
   geom_point() +
@@ -1732,6 +1742,8 @@ Então, por exemplo, para personalizar o texto do título e subtítulo podemos u
 #| label: tutorial_ggplot2_18
 #| fig-cap: "Personalizando temas em `theme()`."
 #| warning: false
+instala_se_nao_existe("showtext")
+
 require(showtext)
 font_add_google("Alegreya")
 font_add_google("IBM Plex Serif")
@@ -1761,7 +1773,7 @@ p_base +
 
 Embora o `ggplot2` traga muitas possibilidades de criação de gráficos, há sempre espaço para inovações e especializações na comunidade do R, então recomendo o site [ggplot2 extensions](https://exts.ggplot2.tidyverse.org/gallery/) que traz uma série de pacotes baseados no `ggplot2`, mas com um "temperinho a mais" para determinados objetivos que poderiam ser particularmente difíceis ou tediosos de alcançar usando somente o `ggplot2` ("não reinvente a roda se ela já foi criada").
 
-### Representação gráfica de variáveis qualitativas
+### Representação gráfica de variáveis qualitativas (Univariada)
 
 #### Gráfico de barras
 
@@ -2067,10 +2079,474 @@ ggplot(mortalidade_producao, aes(x = causa)) +
   )
 ```
 
+### Outras opções gráficas para variáveis qualitativas
+
+As opções a seguir, embora não sejam tão comuns para análise exploratória e estatítica descritiva em relatórios científicos, podem ser interessantes em apresentações e divulgações científicas, pelo possibilibilidade de conseguir um visual mais atrativo para o público, principalmente quando trabalhamos com mais de uma variável no mesmo gráfico (como veremos mais a frente).
+
+O gráfico de waffle utiliza uma grade de pequenos quadrados de tamanhos iguais para representar partes de um todo, semelhante a um gráfico de pizza, com cada quadrado representando uma determinada porcentagem ou valor. Esse gráfico permite demonstrar proporções e o progresso em direção a uma meta, e são fáceis de entender devido à sua estrutura de grade simples. Eles podem ser criados com um número fixo de células, por exemplo, em uma grade de $10 \times 10$ cada célula 1%.
+
+```{r}
+#| label: est_descritiva_graficos_outros_waffle
+#| fig-cap: "Exemplo de gráfico de waffle"
+#| warning: false
+
+bvd_test <- read_dta(
+  "../datasets/stata/bvd_test.dta",
+  encoding = "UTF-8"
+  ) %>%
+  as_factor() %>%
+  mutate(
+    season = fct_recode(
+      season,
+      "Inverno" = "Winter",
+      "Primavera" = "Spring",
+      "Verão" = "Summer",
+      "Outono" = "Autumn"
+    )
+  )
+
+bvd_test %>%
+  count(season)
+
+criar_waffle_data <- function(
+  data,
+  var,
+  n_linhas = 10,
+  total = 100) {
+  
+  contagem <- data %>%
+    count(.data[[var]])
+  
+  valores <- contagem$n
+  names(valores) <- contagem[[var]]
+  nomes <- names(valores)
+  
+  # Normalizar valores para o total especificado
+  if(is.null(nomes)) nomes <- paste0("Cat", seq_along(valores))
+  proporcoes <- round(valores / sum(valores) * total)
+  
+  # Ajustar para garantir que soma seja exatamente igual ao total
+  diferenca <- total - sum(proporcoes)
+  if(diferenca != 0) {
+    idx_max <- which.max(proporcoes)
+    proporcoes[idx_max] <- proporcoes[idx_max] + diferenca
+  }
+  
+  # Criar sequência de categorias
+  categorias <- rep(nomes, times = proporcoes)
+  
+  # Criar grid de coordenadas
+  n_colunas <- ceiling(total / n_linhas)
+  
+  dados_waffle <- expand.grid(
+    y = 1:n_linhas,
+    x = 1:n_colunas
+  ) %>%
+    mutate(
+      posicao = row_number(),
+      categoria = c(categorias, rep(NA, n() - length(categorias)))[1:n()]
+    ) %>%
+    filter(!is.na(categoria))
+  
+  return(dados_waffle)
+}
+
+plotar_waffle <- function(
+  dados_waffle,
+  titulo = "",
+  cores = NULL,
+  palette = NULL) {
+  
+  p <- ggplot(
+    dados_waffle,
+    aes(x = x, y = y, fill = categoria)
+    ) +
+    geom_tile(
+      color = "white",
+      size = 0.5,
+      width = 0.95,
+      height = 0.95
+    ) +
+    coord_equal() +
+    scale_y_reverse() +
+    theme_void() +
+    theme(
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      plot.title = element_text(face = "bold", hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    ) +
+    labs(title = titulo)
+  
+  # Adicionar cores personalizadas se fornecidas
+  if(!is.null(cores)) {
+    p <- p + scale_fill_manual(values = cores)
+  }
+  if(!is.null(palette)) {
+    p <- p + scale_fill_brewer(palette = palette)
+  }
+  
+  return(p)
+}
+
+criar_waffle_multiplo <- function(
+  data,
+  var,
+  grupo_var = NULL,
+  titulo_geral = "",
+  n_linhas = 10,
+  total = 100,
+  cores = NULL,
+  palette = NULL,
+  ncol_facet = NULL) {
+  
+  # Sem variável de grupo - apenas um waffle
+  if(is.null(grupo_var)) {
+    dados_waffle <- criar_waffle_data(data, var, n_linhas, total)
+    p <- plotar_waffle(dados_waffle, titulo_geral, cores, palette)
+    return(p)
+  }
+  
+  # Com variável de grupo - múltiplos waffles (facetas)
+  todos_dados <- data %>%
+    group_by(.data[[grupo_var]]) %>%
+    group_modify(~ {
+      criar_waffle_data(.x, var, n_linhas, total)
+    }) %>%
+    ungroup() %>%
+    rename(painel = all_of(grupo_var))
+  
+  # número de colunas para facet
+  n_paineis <- n_distinct(todos_dados$painel)
+  if(is.null(ncol_facet)) {
+    ncol_facet <- ceiling(sqrt(n_paineis))
+  }
+  
+  p <- ggplot(todos_dados, aes(x = x, y = y, fill = categoria)) +
+    geom_tile(
+      color = "white",
+      size = 0.3,
+      width = 0.9,
+      height = 0.9
+    ) +
+    facet_wrap(~painel, ncol = ncol_facet) +
+    coord_equal() +
+    scale_y_reverse() +
+    theme_void() +
+    theme(
+      legend.position = "bottom",
+      strip.text = element_text(face = "bold", size = 11),
+      plot.title = element_text(face = "bold", hjust = 0.5, size = 14, vjust = 1.5),
+      plot.margin = margin(10, 10, 10, 10),
+      panel.spacing = unit(1, "lines")
+    ) +
+    labs(title = titulo_geral, fill = "")
+  
+  if(!is.null(cores)) {
+    p <- p + scale_fill_manual(values = cores)
+  }
+  if(!is.null(palette)) {
+    p <- p + scale_fill_brewer(palette = palette)
+  }
+
+  return(p)
+}
+
+criar_waffle_multiplo(
+  data = bvd_test,
+  var = "season",
+  titulo_geral = "Estação de parição das vacas.",
+  palette = "Dark2",
+  n_linhas = 10, total = 10 * 15
+)
+```
+
+O gráfico de pontos de Cleveland é um tipo de visualização de dados que utiliza pontos para representar valores de diferentes categorias, servindo como uma alternativa ao gráfico de barras. Ele exibe um único ponto para cada categoria no ponto correspondente à sua frequência, facilitando a comparação de valores e a identificação de padrões. Por vezes, ele é ligado ao eixo das abscissas (ou ordenadas para gráficos na horizontal) por uma linha, de modo que a altura represente também a frequência. Outra utilização interessante para esse gráfico seria para mostrar variações das frequências (ou outro valor) em relação à outro valor de referência, como no segundo exemplo abaixo.
+
+```{r}
+#| label: est_descritiva_graficos_outros_cleveland_1
+#| fig-cap: "Exemplos de gráfico de Cleveland: Contagem de uma variável qualitativa"
+#| warning: false
+
+bvd_test %>%
+  count(breed) %>%
+  ggplot(aes(x = n, y = reorder(breed, n))) +
+  geom_segment(aes(yend = breed), xend = 0, colour = "grey50") +
+  geom_point(size = 3, color = "blue") +
+  theme_bw() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 14),
+  ) +
+  labs(
+    title = "Vacas avaliadas segundo a raça",
+    x = "Frequência absoluta",
+    y = "Raça",
+  )
+```
+
+```{r}
+#| label: est_descritiva_graficos_outros_cleveland_2
+#| fig-cap: "Exemplos de gráfico de Cleveland: Distribuição das contagens em relação à média"
+#| warning: false
+
+exemplo_df <- tibble(
+  date = seq(ymd("2025-01-01"), by="day", length.out = 365),
+  ocorrencias = round(runif(365, 0, 100))
+) %>%
+mutate(
+  mes = month(date, label = TRUE, abbr = FALSE)
+) %>%
+group_by(mes) %>%
+summarise(
+  total = sum(ocorrencias)
+)
+
+valor_referencia <- round(mean(exemplo_df$total))
+
+ggplot(exemplo_df, aes(x=mes, y=total)) +
+  geom_hline(yintercept = valor_referencia, color = "red", linewidth = 1) +
+  geom_segment(
+    aes(x=mes, xend=mes, y=valor_referencia, yend=total),
+    color="grey"
+  ) +
+  geom_point(color="steelblue", size=4) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 14),
+  ) +
+  labs(
+    x = element_blank(),
+    y = "Frequência mensal em relação a média anual"
+  ) +
+  annotate(
+    "text", 
+    label = str_c("Média anual: ", valor_referencia),
+    x = 5,
+    y = valor_referencia,
+    vjust = -1,
+    size = 7,
+    color = "black"
+  )
+
+```
+
+O treemap representa dados hierárquicos através de retângulos aninhados, em que o tamanho do retângulo é proporcional a uma variável quantitativa (frequências, por exemplo), a cor representa categorias ou outra variável quantitativa e a hierarquia é observada por retângulos dentro de retângulos, demontrando os níveis de agrupamento.
+
+```{r}
+#| label: est_descritiva_graficos_outros_treemap_1
+#| fig-cap: "Exemplos de gráfico treemap"
+#| warning: false
+instala_se_nao_existe("treemapify")
+library(treemapify)
+
+bvd_test %>%
+  count(breed) %>%
+  ggplot(aes(area = n, fill = breed, label = breed)) +
+  geom_treemap() +
+  geom_treemap_text(
+    colour = "white", place = "centre", grow = FALSE
+  ) +
+  labs(
+    title = "Distribuição de vacas por raça",
+    subtitle = "Tamanho proporcional à frequência relativa de cada raça na amostragem"
+  ) +
+  theme(legend.position = "none")
+```
+
+Isso pode ser particularmente interessante em apresentações, quando queremos apresentar contagens de variáveis em múltiplos níveis (considerando várias variáveis), ou quando temos muitas categorias e queremos deixar evidente a importância de determinada categoria em relação às demais.
+
+```{r}
+#| label: est_descritiva_graficos_outros_treemap_func_treemap_to_plotly
+#| warning: false
+
+instala_se_nao_existe("treemap")
+instala_se_nao_existe("plotly")
+
+treemap_to_plotly <- function(
+  data,
+  index_cols,
+  size_col,
+  title = "") {
+  tm <- treemap::treemap(
+    data,
+    index = index_cols,
+    vSize = size_col,
+    type = "index",
+    draw = FALSE
+  )
+  
+  tm_data <- tm$tm %>%
+    as_tibble() %>%
+    mutate(
+      # labels hierárquicos para o plotly
+      label = case_when(
+        level == 1 ~ as.character(get(index_cols[1])),
+        level == 2 ~ as.character(get(index_cols[2])),
+        level == 3 ~ as.character(get(index_cols[3])),
+        TRUE ~ ""
+      ),
+      parent = case_when(
+        level == 1 ~ "",
+        level == 2 ~ as.character(get(index_cols[1])),
+        level == 3 ~ paste(get(index_cols[1]), get(index_cols[2]), sep = " - "),
+        TRUE ~ ""
+      ),
+      ids = case_when(
+        level == 1 ~ as.character(get(index_cols[1])),
+        level == 2 ~ paste(get(index_cols[1]), get(index_cols[2]), sep = " - "),
+        level == 3 ~ paste(
+          get(index_cols[1]), 
+          get(index_cols[2]), 
+          get(index_cols[3]),
+          sep = " - "
+        ),
+        TRUE ~ ""
+      )
+    )
+  
+  plotly::plot_ly(
+    type = "treemap",
+    labels = tm_data$label,
+    parents = tm_data$parent,
+    values = tm_data$vSize,
+    ids = tm_data$ids,
+    marker = list(
+      colors = tm_data$color,
+      line = list(width = 2, color = "white")
+    ),
+    textinfo = "label+value+percent parent",
+    hovertemplate = paste(
+      '<b>%{label}</b>',
+      '<br>Valor: %{value}',
+      '<br>%{percentParent:.1%} do grupo pai',
+      '<extra></extra>'
+    ),
+    domain = list(x = c(0, 1), y = c(0, 1))
+  ) %>%
+  plotly::layout(
+    title = title,
+    margin = list(l = 0, r = 0, t = 30, b = 0)
+  )
+}
+```
+
+```{r}
+#| label: est_descritiva_graficos_outros_treemap_2
+#| fig-cap: "Exemplos de gráfico treemap"
+#| warning: false
+#| eval: !expr knitr::is_html_output()
+
+bvd_test %>%
+  count(spec, breed, season) %>%
+  treemap_to_plotly(
+    index_cols = c("spec", "breed", "season"),
+    size_col = "n",
+    title = "Treemap Interativo - Wrapper Function"
+  )
+```
+
+Por fim temos o empacotamento circular ou treemap circular, que assim como treemap permite visualizar uma organização hierárquica. Nele, cada nó da árvore é representado como um círculo e seus subnós são representados como círculos dentro dele. O tamanho de cada círculo pode ser proporcional a um valor específico (como a frequência da distribuição).
+
+```{r}
+#| label: est_descritiva_graficos_outros_circular_packing
+#| fig-cap: "Exemplo de gráfico de empacotamento circular"
+#| warning: false
+
+instala_se_nao_existe("packcircles")
+
+data <- bvd_test %>%
+  count(season)
+
+# obtém as coordenadas do centro de cada categoria
+# e o raio proporcional ao valor
+packing <- packcircles::circleProgressiveLayout(
+  data$n,
+  sizetype='area'
+)
+data <- cbind(data, packing)
+# obtém os vertices do circulo
+dat.gg <- packcircles::circleLayoutVertices(packing, npoints=50)
+
+ggplot() +
+  geom_polygon(
+    data = dat.gg,
+    aes(x, y, group = id, fill=as.factor(id)),
+    colour = "black",
+    alpha = 0.6
+  ) +
+  geom_text(data = data, aes(x, y, size=n, label = season)) +
+  scale_size_continuous(range = c(5,10)) +
+  theme_void() + 
+  theme(legend.position="none") +
+  labs(title = "Estação de parto das vacas") +
+  coord_equal()
+```
+
+### Representação gráfica de variáveis quantitativas (Univariada)
+
+#### Gráfico de linhas e pontos
+
+No gráficos de linhas e pontos, os pontos no gráfico, posicionados por pares de valores indicando a abcissa (X) e ordenadas (Y), são ligados por segmentos de reta. Apesar de sua construção depender de dois valores, o que indicaria a necessidade de duas variáveis, se uma delas varia em iontervalos regulares (por exemplo, meses do ano), então, estamos criando um gráfico para descrever o comportamento de uma única variável quantitativa ao longo desse intervalo regular.
+
+```{r}
+#| label: est_descritiva_graficos_linhas
+#| fig-cap: "Exemplo de gráfico de empacotamento circular"
+#| warning: false
+
+air_quality <- read_xlsx(
+  "../datasets/excel/AirQualityUCI.xlsx"
+)
+
+air_quality <- air_quality %>%
+  mutate(
+    year = year(Date),
+    month = month(Date)
+  ) %>%
+  group_by(year, month) %>%
+  summarise(
+    temperatura = mean(`T`, na.rm = TRUE)
+  ) %>%
+  mutate(
+    data = ymd(str_c(year, month, 1, sep="-"))
+  )
+
+ggplot(air_quality, aes(x = data, y = temperatura)) +
+  geom_line(color = "grey") +
+  geom_point(shape=21, color="black", fill="#6b93dfb6", size=6) +
+  plot_theme +
+  labs(
+    x = NULL,
+    y = "temperatura (°C)",
+    title = "Variação de temperatura ao longo do estudo"
+  )
+
+```
+
+#### Histograma
+
+O histograma é uma representação gráfica da distribuição de frequências de uma variável contínua (ou discreta com muitos valores). Ele divide o intervalo de valores em classes (*bins*) e mostra quantas observações caem em cada classe através de barras adjacentes. Normalmente, construímos um histograma para visualizar a forma, centro e dispersão da distribuição dos dados.
+
+Para construir um histograma precisamos calcular os seguintes elementos: 
+
+- **Classes (bins)**: Intervalos que irão agrupar nossa variável quantitativa (serão representadas como a largura de cada barra)
+- **Frequência**: Contagem de observações em cada classe  (serão representadas como a altura de cada barra)
+
+O número de classes e largura do intervalo de cada classe, quando adotamos um intervalo igual para todas as classes, pode ser calculado da mesma forma que foi explicado na tabela de frequências de variáveis contínuas. Já o valor em cada classe pode ser calculado como a frequência absoluta ($F_i$, o númeor de observações na classe $i$), frequência relativa ($F_i / n$, em que $n$ é o número de observações) ou como densidade ($F_i / (n \times h_i)$, em que $n$ é o número de observações e $h_i$ é a amplitude da classe). O interessante de usar a densidade no histograma é que obtemos um estimador não paramétrico da fdp (função densidade de probabilidade) da distribuição, considerando que $F_i / n \to P(X \in [a,b))$ quando $n \to \infty$.
+
+# TODO: Demonstrar a criação do histograma
+
+Gráficos de histograma também costumam ser associados a estimativas Kernel de densidade (KDE), um método de suavização não paramétrico da fdp de variáveis aleatórias contínuas a partir de uma amostra de dados.
+
+# TODO: definição da KDE
+
 - Estatística descritiva univariada
     - Representação gráfica dos dados
-    - Representação gráfica para variáveis qualitativas
-        - Diagrama de Pareto
     - Representação gráfica para variáveis quantitativas
         - Gráfico de linhas
         - Gráfico de pontos ou dispersão
