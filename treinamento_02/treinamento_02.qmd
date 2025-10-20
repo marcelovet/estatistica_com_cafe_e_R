@@ -1216,7 +1216,7 @@ No caso de variáveis contínuas, para criarmos tabelas de frequências delas, p
 No R, as tabelas de frequências podem ser obtidas da seguinte forma:
 
 ```{r}
-ap2 <- read_dta(
+ap2 <- haven::read_dta(
   "../datasets/stata/ap2.dta",
   encoding = "UTF-8"
   ) %>%
@@ -1248,9 +1248,37 @@ tab_frequencias_discreta <- ap2 %>%
   )
 
 # Quantitativa contínua
-classes_k <- round(1 + 3.322 * log10(length(ap2$w_age_t)))
-breaks <- floor(seq(min(ap2$w_age_t), max(ap2$w_age_t), length.out = classes_k + 1))
-breaks[length(breaks)] <- ceiling(max(ap2$w_age_t))
+cria_classes_continua <- function(variavel, tipo = "sqrt") {
+  if(!(tipo %in% c("sqrt", "sturges"))){
+    cat("O tipo informado não está disponível\n")
+    return(NULL)
+  }
+  
+  if(tipo == "sqrt") {
+    classes_k <- round(sqrt(length(variavel)))
+    breaks <- seq(
+      min(variavel),
+      max(variavel),
+      length.out = classes_k + 1
+    )
+    breaks[length(breaks)] <- ceiling(max(variavel))
+
+    return(list(k = classes_k, breaks = breaks))
+  }
+
+  classes_k <- round(1 + 3.322 * log10(length(variavel)))
+  breaks <- seq(
+    min(variavel),
+    max(variavel),
+    length.out = classes_k + 1
+  )
+  breaks[length(breaks)] <- ceiling(max(variavel))
+
+  return(list(k = classes_k, breaks = breaks))
+}
+
+k_breaks <- cria_classes_continua(ap2$w_age_t, tipo="sturges")
+breaks <- k_breaks[["breaks"]]
 
 tab_frequencias_continua <- ap2 %>%
   mutate(
@@ -2537,21 +2565,111 @@ Para construir um histograma precisamos calcular os seguintes elementos:
 - **Classes (bins)**: Intervalos que irão agrupar nossa variável quantitativa (serão representadas como a largura de cada barra)
 - **Frequência**: Contagem de observações em cada classe  (serão representadas como a altura de cada barra)
 
-O número de classes e largura do intervalo de cada classe, quando adotamos um intervalo igual para todas as classes, pode ser calculado da mesma forma que foi explicado na tabela de frequências de variáveis contínuas. Já o valor em cada classe pode ser calculado como a frequência absoluta ($F_i$, o númeor de observações na classe $i$), frequência relativa ($F_i / n$, em que $n$ é o número de observações) ou como densidade ($F_i / (n \times h_i)$, em que $n$ é o número de observações e $h_i$ é a amplitude da classe). O interessante de usar a densidade no histograma é que obtemos um estimador não paramétrico da fdp (função densidade de probabilidade) da distribuição, considerando que $F_i / n \to P(X \in [a,b))$ quando $n \to \infty$.
+O número de classes e largura do intervalo de cada classe, quando adotamos um intervalo igual para todas as classes, pode ser calculado da mesma forma que foi explicado na tabela de frequências de variáveis contínuas. Já o valor em cada classe pode ser calculado como a frequência absoluta ($F_i$, o número de observações na classe $i$), frequência relativa ($F_i / n$, em que $n$ é o número de observações) ou como densidade ($F_i / (n \times h_i)$, em que $n$ é o número de observações e $h_i$ é a amplitude da classe). O interessante de usar a densidade no histograma é que obtemos um estimador não paramétrico da fdp (função densidade de probabilidade) da distribuição, considerando que $F_i / n \to P(X \in [a,b))$ quando $n \to \infty$.
 
-# TODO: Demonstrar a criação do histograma
+```{r}
+#| label: est_descritiva_graficos_histograma
+#| fig-cap: "Exemplos de gráfico histograma"
+#| fig-subcap: 
+#|  - "Histograma de frequência absoluta com k obtido pela sqrt(n)"
+#|  - "Histograma de frequência absoluta com k obtido pela equação de Sturges"
+#|  - "Histograma de frequência relativa"
+#|  - "Histograma de densidade"
+#| layout-ncol: 1
+#| warning: false
 
-Gráficos de histograma também costumam ser associados a estimativas Kernel de densidade (KDE), um método de suavização não paramétrico da fdp de variáveis aleatórias contínuas a partir de uma amostra de dados.
+tema <- theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12)
+  )
 
-# TODO: definição da KDE
+breaks <- cria_classes_continua(ap2$w_age_t, "sqrt")[["breaks"]]
+
+ggplot(ap2) +
+  geom_histogram(
+    aes(x = w_age_t),
+    breaks = breaks,
+    color = "black",
+    fill = "steelblue"
+  ) +
+  scale_x_continuous(
+    breaks = round(breaks, 1)
+  ) +
+  tema + 
+  labs(
+    title = expression("Histograma de" ~ F[i] ~ "usando" ~ k == sqrt(n)),
+    x = "Peso do porco à transferência do desmame para a unidade de terminação (kg)",
+    y = expression("Frequência absoluta (" ~ F[i] ~ "%)")
+  )
+
+breaks <- cria_classes_continua(ap2$w_age_t, "sturges")[["breaks"]]
+
+ggplot(ap2) +
+  geom_histogram(
+    aes(x = w_age_t),
+    breaks = breaks,
+    color = "black",
+    fill = "steelblue"
+  ) +
+  scale_x_continuous(
+    breaks = round(breaks, 2)
+  ) +
+  tema + 
+  labs(
+    title = expression("Histograma de" ~ F[i] ~ "usando" ~ k == 1 + 1.33 %*% log[10](n) ~ "(Equação de Sturges)"),
+    x = "Peso do porco à transferência do desmame para a unidade de terminação (kg)",
+    y = expression("Frequência absoluta (" ~ F[i] ~ "%)")
+  )
+
+ggplot(ap2) +
+  geom_histogram(
+    aes(x = w_age_t, y = after_stat(count / sum(count))),
+    breaks = breaks,
+    color = "black",
+    fill = "steelblue"
+  ) +
+  scale_x_continuous(
+    breaks = round(breaks, 2)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_percent(),
+    limits = c(.0, .2),
+    breaks = scales::breaks_width(width = .025),
+  ) +
+  tema + 
+  labs(
+    title = expression("Histograma de" ~ F[ri] ~ "usando" ~ k == 1 + 1.33 %*% log[10](n) ~ "(Equação de Sturges)"),
+    x = "Peso do porco à transferência do desmame para a unidade de terminação (kg)",
+    y = expression("Frequência relativa (" ~ F[ri] ~ "%)")
+  )
+
+ggplot(ap2) +
+  geom_histogram(
+    aes(x = w_age_t, y = after_stat(density)),
+    breaks = breaks,
+    color = "black",
+    fill = "steelblue"
+  ) +
+  scale_x_continuous(
+    breaks = round(breaks, 2)
+  ) +
+  tema + 
+  labs(
+    title = expression("Histograma de" ~ F[i] / n %*% h[i] ~ "usando" ~ k == 1 + 1.33 %*% log[10](n) ~ "(Equação de Sturges)"),
+    x = "Peso do porco à transferência do desmame para a unidade de terminação (kg)",
+    y = expression("Densidade (" ~ F[i] / n %*% h[i] ~ "%)")
+  )
+
+```
+
+Gráficos de histograma também costumam ser associados a estimativas Kernel de densidade (KDE), um método de suavização não paramétrico da fdp de variáveis aleatórias contínuas a partir de uma amostra de dados. Entretanto, como ainda não introduzimos os conceitos básicos de probabilidade e distribuições de probabilidade, deixarei para explicar melhor a KDE após esses assuntos.
+
 
 - Estatística descritiva univariada
     - Representação gráfica dos dados
     - Representação gráfica para variáveis quantitativas
-        - Gráfico de linhas
-        - Gráfico de pontos ou dispersão
-        - Histograma
-        - Gráfico de ramo-e-folhas
         - Boxplot ou diagrama de caixa
     - Medidas-resumo
         - Medidas de posição ou localização
