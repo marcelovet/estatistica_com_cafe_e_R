@@ -1206,7 +1206,7 @@ No caso de variáveis contínuas, para criarmos tabelas de frequências delas, p
 
 1. Ordenar os dados do menor ao maior;
 2. Calcular o número de classes ($k$) por
-  - $k=1+1,33 \times \log_{10}{n}$ (Equação de Sturges)
+  - $k=1 + 3,322 \times \log_{10}{n}$ (Equação de Sturges)
   - $k=\sqrt{n}$
   - $n$ é o número de observações e k deve ser arredondado para o inteiro mais próximo;
 3. Calcular o intervalo das classes, $\Delta_{h}$, como $\Delta_{h} = \frac{A}{k}$, em que $A$ é a amplitude (máximo valor menos o mínimo);
@@ -2659,18 +2659,250 @@ ggplot(ap2) +
   labs(
     title = expression("Histograma de" ~ F[i] / n %*% h[i] ~ "usando" ~ k == 1 + 1.33 %*% log[10](n) ~ "(Equação de Sturges)"),
     x = "Peso do porco à transferência do desmame para a unidade de terminação (kg)",
-    y = expression("Densidade (" ~ F[i] / n %*% h[i] ~ "%)")
+    y = expression("Densidade (" ~ F[i] / n %*% h[i] ~ ")")
   )
 
 ```
 
 Gráficos de histograma também costumam ser associados a estimativas Kernel de densidade (KDE), um método de suavização não paramétrico da fdp de variáveis aleatórias contínuas a partir de uma amostra de dados. Entretanto, como ainda não introduzimos os conceitos básicos de probabilidade e distribuições de probabilidade, deixarei para explicar melhor a KDE após esses assuntos.
 
+#### Boxplot ou diagrama de caixa
+
+O boxplot (diagrama de caixa) é uma representação gráfica que resume a distribuição de uma variável quantitativa através de cinco estatísticas de ordem, permitindo visualizar simultaneamente medidas de posição, dispersão e identificação de valores atípicos.
+
+Seja $X_1, X_2, ..., X_n$ uma amostra aleatória. As estatísticas de ordem $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ são os valores amostrais ordenados. Para essa amostra ordenada, definimos:
+
+- **Primeiro Quartil** ($Q_1$): $Q_1 = X_{(\lceil 0.25n \rceil)}$
+- **Mediana** ($Q_2$ ou $\tilde{x}$): 
+  
+  $$\tilde{x} = \begin{cases}
+  X_{(\frac{n+1}{2})} & \text{se } n \text{ é ímpar} \\
+  \frac{X_{(\frac{n}{2})} + X_{(\frac{n}{2}+1)}}{2} & \text{se } n \text{ é par}
+  \end{cases}$$
+
+- **Terceiro Quartil** ($Q_3$): $Q_3 = X_{(\lceil 0.75n \rceil)}$
+- **Amplitude Interquartílica** ($\text{IQR}$): $\text{IQR} = Q_3 - Q_1$. O IQR representa a dispersão dos 50% dados centrais, sendo uma medida robusta de variabilidade.
+
+Para a construção do boxplot usamos os seguintes elementos:
+
+1. **Caixa**: Retângulo delimitado por $Q_1$ e $Q_3$
+2. **Linha mediana**: Segmento em $Q_2$ dentro da caixa
+3. **Whiskers** (bigodes): Estendem-se até os valores extremos não-outliers
+4. **Outliers**: Pontos além dos whiskers
+
+Existem várias formas de definir o limite dos whiskers, mas, em geral usamos o critério de Tukey:
+
+- **Limite Inferior**: $L_I = Q_1 - 1.5 \times \text{IQR}$
+- **Limite Superior**: $L_S = Q_3 + 1.5 \times \text{IQR}$
+
+Calculados os limites inferior e superior, o whisker inferior será $\min\{x_i : x_i \geq L_I\}$, ou seja, o menor valor entre o mínimo dos dados e o $L_I$, enquanto o whisker superior será $\max\{x_i : x_i \leq L_S\}$, o maior valor entre o máximo dos dados e o $L_S$. Valores superiores ao whisker superior ou inferiores ao whisker inferior serão considerados *outliers* e representados como pontos no gráfico.
+
+```{r}
+#| label: est_descritiva_graficos_boxplot
+#| fig-cap: "Exemplo de gráfico boxplot"
+#| warning: false
+ggplot(ap2, aes(y = w_age_t, x = 1)) +
+  geom_boxplot(
+    color = "black",
+    fill = "steelblue",
+    outlier.size = 4,
+    outlier.shape = 23,
+    outlier.color = "black",
+    outlier.fill = "red",
+  ) +
+  geom_jitter(
+    color="black",
+    size=0.6,
+    alpha=0.9,
+    width = .1,
+    height = 0
+  ) +
+  scale_x_continuous(
+    breaks = NULL
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 50, 5)
+  ) +
+  tema + 
+  labs(
+    title = "Boxplot do peso dos porcos à transferência do desmame para a unidade de terminação",
+    x = NULL,
+    y = "Peso do porco à transferência do desmame para a unidade de terminação (kg)"
+  )
+```
+
+Com algumas manipulações podemos combinar os gráficos de histograma, densidade estimada e boxplot, para uma visualização ainda mais completa do comportamento dos nossos dados.
+
+```{r}
+#| label: est_descritiva_graficos_hisbox
+#| fig-cap: "Exemplo de gráfico composto histograma + boxplot"
+#| warning: false
+instala_se_nao_existe("patchwork")
+require(patchwork)
+
+criar_hist_boxplot <- function(
+  data,
+  variavel,
+  x_caption = NULL,
+  title = NULL,
+  metodo_agrupamento = "sturges",
+  color_hist = "black",
+  fill_hist = "steelblue",
+  color_box = "black",
+  fill_box = "lightgray") {
+  
+  valores <- data[[variavel]]
+
+  breaks <- cria_classes_continua(
+    valores,
+    metodo_agrupamento
+  )[["breaks"]]
+  
+  # Calcular limites comuns para os eixos x
+  x_limits <- range(valores, na.rm = TRUE)
+  x_expand <- diff(x_limits) * 0.05  # 5% de margem
+  x_limits <- x_limits + c(-x_expand, x_expand)
+  
+  escala_x <- scale_x_continuous(
+    limits = x_limits,
+    expand = c(0, 0),
+    breaks = round(breaks, 2)
+  )
+
+  # Histograma principal
+  p_hist <- ggplot(
+    data,
+    aes_string(x = variavel)
+    ) +
+    geom_histogram(
+      aes(y = after_stat(density)),
+      breaks = breaks,
+      fill = fill_hist,
+      color = color_hist,
+      alpha = 0.8
+    ) +
+    geom_density(
+      color = "darkred",
+      linewidth = 1,
+      alpha = 0.8
+    ) +
+    escala_x +
+    labs(
+      title = title,
+      x = NULL,
+      y = expression("Densidade (" ~ F[i] / n %*% h[i] ~ ")")
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      plot.margin = margin(5, 5, 0, 5)
+    )
+  
+  # Boxplot marginal
+  p_box <- ggplot(data, aes_string(x = variavel)) +
+    geom_boxplot(
+      aes(y = 0),
+      width = 0.25,
+      fill = fill_box,
+      color = color_box,
+      outlier.color = "red",
+      outlier.shape = 21,
+      outlier.fill = "red",
+      outlier.alpha = 0.5
+    ) +
+    escala_x +
+    coord_cartesian(
+      ylim = c(-0.15, 0.15)
+    ) +
+    labs(
+      x = x_caption,
+      y = NULL
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      panel.grid = element_blank(),
+      plot.margin = margin(0, 5, 5, 5)
+    )
+  
+  plot <- p_hist / p_box + plot_layout(heights = c(4, 1))
+
+  return(plot)
+}
+
+criar_hist_boxplot(
+  ap2,
+  "w_age_t6",
+  x_caption = "Peso à 6ª semana na terminação",
+  title = "Distribuição do peso dos porcos após 6 semanas na terminação"
+)
+```
+
+Uma propriedade importante do boxplot é que ele usa a mediana como ponto central, uma medida mais robusta que a média para dados com outliers muito extremos. Além disso, em dados com distribuição normal $X \sim N(\mu, \sigma^2): P(L_I \leq X \leq L_S) \approx 0.9930$, ou seja, a proporção esperada de outliers nos dados é de aproximadamente 0,7%.
+
+Além disso, o boxplot permite avaliar assimetrias na distribuição em relação à mediana (pelo tamanho das caixas):
+
+- **Simétrica**: $Q_2 - Q_1 \approx Q_3 - Q_2$, caixas de mesmo tamanho;
+- **Assimétrica à direita**: $Q_3 - Q_2 > Q_2 - Q_1$, caixa superior maior;
+- **Assimétrica à esquerda**: $Q_2 - Q_1 > Q_3 - Q_2$, caixa inferior maior.
+
+Alguns aspectos que devem ser levados em consideração na análise e uso do boxplot são o fato dele não demonstrar possíveis multimodalidades (mais de uma moda), ser instável para amostras pequenas (< 20) e o fato de que o critério de Tukey ($1.5 \times \text{IQR}$) nem sempre será adequado para definir o que é um outlier (é sempre importante avaliar cada um desses dados considerados outliers de forma individual e seu real impacto no teste ou modelo que será utilizado posteriormente).
+
+Uma alternativa ao boxplot é o gráfico de violino. Esse gráfico nada mais é que um gráfico de densidade espelhado, obtido pela KDE, que dá essa forma parecida com um violino. Como ainda não apresentamos formalmente os conceitos da KDE, nesse momento irei apresentar somente a maneira de obter esse gráfico.
+
+```{r}
+#| label: est_descritiva_graficos_violin
+#| fig-cap: "Exemplo de gráfico violino + boxplot + histograma"
+#| warning: false
+
+ggplot(ap2, aes(y = w_age_t, x = 0)) +
+  geom_violin(
+    scale = "width",
+    trim = FALSE,
+    linewidth = 1,
+    fill = "#FF7F50",
+    alpha = .2
+  ) +
+  stat_bin(
+    aes(x = after_stat(density/max(density) * 0.4)),
+    geom = "bar",
+    alpha = 0.7,
+    bins = 11,
+    orientation = "y",
+    color = "#DC143C",
+    fill = "#DC143C",
+    linewidth = 1
+  ) + 
+  geom_boxplot(
+    color = "#00008B",
+    fill = "steelblue",
+    outlier.size = 5,
+    outlier.shape = 23,
+    outlier.color = "orange",
+    outlier.fill = "orange",
+    linewidth = 1.1,
+    width = .2
+  ) +
+  scale_x_continuous(
+    breaks = NULL,
+    limits = c(-0.5, 0.5)
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 50, 5)
+  ) +
+  tema + 
+  labs(
+    title = "Densidade estimada e boxplot do peso dos porcos à transferência do desmame para a unidade de terminação",
+    x = NULL,
+    y = "Peso do porco à transferência do desmame para a unidade de terminação (kg)"
+  )
+```
+
 
 - Estatística descritiva univariada
     - Representação gráfica dos dados
-    - Representação gráfica para variáveis quantitativas
-        - Boxplot ou diagrama de caixa
     - Medidas-resumo
         - Medidas de posição ou localização
             - Medidas de tendência central
