@@ -1315,7 +1315,7 @@ kable(tab_frequencias_discreta, col.names = tabela_headers)
 kable(tab_frequencias_continua, col.names = tabela_headers)
 ```
 
-## Representação gráfica dos dados
+## Representação gráfica dos dados de uma variável
 
 Os gráficos hoje são insdispensáveis na estatística e análise de dados, servindo como uma ponte entre os dados brutos e seu comportamento em conjunto. Normalmente os usamos para detectar padrões, tendências, anomalias e relações que não seriam percebidos em tabelas ou medidas resumo.
 
@@ -2900,7 +2900,349 @@ ggplot(ap2, aes(y = w_age_t, x = 0)) +
   )
 ```
 
+## Medidas-resumo
 
+Como o próprio nome indica, medidas-resumo tentam representar o comportamento de uma variável em estudo por meio de um valor. Com exceção da moda (valor mais frequente de uma variável), as medidas-resumo são calculadas normalmente para variáveis quantitativas.
+
+### Medidas de posição ou localização
+
+Medidas de posição indicam a localização dos dados em relação ao intervalos de valores que a variável em estudo assume. Elas podem ser agrupadas em medidas de tendência central (média, mediana e moda) e medidas separatrizes (quartis, decis e percentis).
+
+#### Média
+
+A média aritmética ou média simples representa o valor central no intervalo de valores assumidos pela variável. Em uma população de tamanho $N$ representamos a média simples como $\mu$, enquanto, em uma amostra de tamanho $n$, indicamos a média amostral como $\bar{X}$.
+
+A média aritmética de uma variável é a soma de todos os valores registrados no estudo dividido pelo total de observações. Ou seja,
+
+$$
+\bar{X} = \frac{\sum_{i=1}^n x_i}{n}
+$$
+
+em que $x_i$ é o valor da observação $i$, com $i=1,2,...,n$ e $n$ é o número de observações.
+
+Pensando em dados de uma população de uma variável aleatória $X$ com função probabilidade (variável discreta) ou função densidade de probabilidade (variável contínua), $\mu$ é definido como
+
+- Variável aleatória discreta: $\mu = E[X] = \sum_{x} x \cdot P(X = x)$;
+- Variável aleatória contínua: $\mu = E[X] = \int_{-\infty}^{\infty} x \cdot f(x)dx$.
+
+A média simples é uma medida de posição altamente utilizada na estatística por apresentar uma série de propriedades interessantes, que serão apresentadas a seguir:
+
+1 - **Linearidade**
+
+A esperança (média populacional) preserva operações lineares, ou seja, $E[aX + b] = aE[X] + b$. Se você multiplicar uma variável por uma constante ou somar uma constante, a média será transformada da mesma forma.
+
+Exemplo para uma variável discreta:
+
+$E[aX + b] = \sum_{x} (ax + b) \cdot P(X = x)$
+$= \sum_{x} ax \cdot P(X = x) + \sum_{x} b \cdot P(X = x)$
+$= a\sum_{x} x \cdot P(X = x) + b\sum_{x} P(X = x)$
+$= aE[X] + b \cdot 1 = aE[X] + b = a\mu + b$
+
+Essa propriedade facilita cálculos quando alteramos a escala da variável (em uma transformação linear) e permite a padronização de variáveis para o valor $Z$, definido como $Z = \frac{X - \mu}{\sigma}$, que tem $E[Z] = 0$.
+
+2 - **Minimização de erro quadrático**:
+
+A média é o valor que minimiza a soma dos quadrados dos desvios ($\bar{X} = \arg\min_c \sum_{i=1}^{n} (X_i - c)^2$). Se você imaginar os dados como pontos em uma reta,  a média é o ponto que representa a menor soma das distâncias (as quadrado) entre os dados e esse ponto.
+
+Demonstrando essa propriedade, buscamos um valor $c$ que minimize $g(c) = \sum_{i=1}^{n} (X_i - c)^2$, ou seja, que apresente o menor desvio quadrático. Desenvolvendo essa equação:
+
+**Passo 1:** Expandir o quadrado
+
+$g(c) = \sum_{i=1}^{n} (X_i^2 - 2X_ic + c^2)$
+
+$= \sum_{i=1}^{n} X_i^2 - 2c\sum_{i=1}^{n} X_i + nc^2$
+
+**Passo 2:** Derivar em relação a $c$
+
+Para obter essa derivada vamos aplicar algumas regras de derivadas
+
+1. **Derivada de uma constante**: Se $k$ é constante, $\frac{d}{dc}(k) = 0$
+2. **Regra da potência**: $\frac{d}{dc}(c^n) = nc^{n-1}$
+3. **Regra da constante multiplicativa**: $\frac{d}{dc}(k \cdot c) = k$
+4. **Linearidade da derivada**: $\frac{d}{dc}(f + g) = \frac{df}{dc} + \frac{dg}{dc}$
+
+nosso $g(c)$ possui 3 termos,
+
+$g(c) = \underbrace{\sum_{i=1}^{n} X_i^2}_{\text{Termo 1}} - \underbrace{2c\sum_{i=1}^{n} X_i}_{\text{Termo 2}} + \underbrace{nc^2}_{\text{Termo 3}}$
+
+então, para o Termo 1, $\sum_{i=1}^{n} X_i^2$, como ele não depende de $c$, o tratamos como uma constante, logo, $\frac{d}{dc}\left(\sum_{i=1}^{n} X_i^2\right) = 0$. Para o Termo 2, $-2c\sum_{i=1}^{n} X_i$, podemos reescrevê-lo como $-2\left(\sum_{i=1}^{n} X_i\right) \cdot c$, então $\sum_{i=1}^{n} X_i$ novamente é uma constante em relação ao $c$ (que trataremos como $K = \sum_{i=1}^{n} X_i$), portanto, buscamos a derivada em relação ao $c$ de $-2Kc$, assim, usando a regra da constante multiplicativa, $\frac{d}{dc}(-2Kc) = -2K = -2\sum_{i=1}^{n} X_i$. Para o Termo 3, $nc^2$, $n$ é uma constante e aplicamos a regra da potência, logo, $\frac{d}{dc}(nc^2) = n \cdot 2c^{2-1} = 2nc$. Combinando todos esses termos (linearidade da deriva ou regra da soma), obtemos
+
+$\frac{dg}{dc} = -2\sum_{i=1}^{n} X_i + 2nc$
+
+**Passo 3:** Igualar a zero e resolver
+
+$-2\sum_{i=1}^{n} X_i + 2nc = 0$
+
+$nc = \sum_{i=1}^{n} X_i$
+
+$c = \frac{1}{n}\sum_{i=1}^{n} X_i = \bar{X}$
+
+3 - **Propriedade dos desvios**
+
+A soma dos desvios em relação à média é sempre zero ($\sum_{i=1}^{n} (X_i - \bar{X}) = 0$), logo, os desvios positivos e negativos se cancelam. Assim, a média aritmética é o centro do intervalo dos valores da variável. A consequência dessa propriedade ocorre no momento de calcularmos a variabilidade dos dados (o quanto variam em relação a média). Como os desvios se cancelam, a estratégia adotada para conseguir calcular medidas de dispersão seria somar os desvios absolutos ($\sum_{i=1}^{n} |X_i - \bar{X}|$) ou os desvios quadráticos (($\sum_{i=1}^{n} (X_i - \bar{X})^2$)). A segunda opção acaba sendo a mais adotada, pela sua relação com os momentos (que aprenderemos em treinamentos futuros) e outras características que serão explicadas no tópico das medidas de dispersão.
+
+4 - **Teorema do Limite Central**
+
+A distribuição da média amostral se aproxima de uma normal quando $n$ aumenta. Se $X_1, ..., X_n$ são i.i.d. com $E[X_i] = \mu$ e $\text{Var}(X_i) = \sigma^2 < \infty$, então, $\frac{\bar{X} - \mu}{\sigma/\sqrt{n}} \xrightarrow{d} N(0, 1)$ quando $n \to \infty$, ou, de forma equivalente, $\bar{X} \xrightarrow{d} N\left(\mu, \frac{\sigma^2}{n}\right)$.
+
+5 - **Média aritmética como um estimador**
+
+A média simples é um estimador não enviesado da média populacional ($E[\bar{X}] = \mu$). Ou seja, se repetimos um experimento aleatório várias vezes e para cada tentativa registramos a média amostral, conforme o número de tentativas aumenta, a média das médias amostrais de cada experimento se aproxima cada vez mais da média populacional.
+
+$E[\bar{X}] = E\left[\frac{1}{n}\sum_{i=1}^{n} X_i\right]$
+
+$= \frac{1}{n}\sum_{i=1}^{n} E[X_i]$
+
+$= \frac{1}{n}\sum_{i=1}^{n} \mu = \frac{n\mu}{n} = \mu$
+
+A média é também um estimador consistente ($\bar{X} \xrightarrow{p} \mu$), ou seja, conforme o $n$ amostral aumenta, a probabilidade de $\bar{X}$ estar próximo de $\mu$ tende a 1 ($P(|\bar{X} - \mu| \leq \epsilon) \to 1 \text{ quando } n \to \infty$).
+
+Além disso, entre todos os estimadores não-viesados que são combinações lineares dos dados, a média tem a menor variância.
+
+$\text{Var}(\bar{X}) = \text{Var}\left(\frac{1}{n}\sum_{i=1}^{n} X_i\right)$
+
+$= \frac{1}{n^2}\text{Var}\left(\sum_{i=1}^{n} X_i\right)$
+
+$= \frac{1}{n^2}\sum_{i=1}^{n} \text{Var}(X_i)$ (em condição de i.i.d.)
+
+$= \frac{1}{n^2} \cdot n\sigma^2 = \frac{\sigma^2}{n}$
+
+Ou seja, $\text{Var}(\hat{\mu}) \geq \text{Var}(\bar{X}) = \sigma^2/n$.
+
+Na média simples, todas as observações possui o mesmo peso ou importância no seu cálculo, porém, quando queremos atribuir diferentes pesos ($w_i$) para cada observação, podemos calcular a média ponderada como
+
+$\bar{X}_w = \frac{\sum_{i=1}^{n} w_i X_i}{\sum_{i=1}^{n} w_i}$, onde $w_i > 0$, ou $\bar{X}_w = \sum_{i=1}^{n} w_{r_i} X_i$, onde $w_{r_i}$ é o peso relativo ($\frac{w_i}{\sum_{i=1}^{n} w_i}$).
+
+A média ponderada é particularmente útil quando precisamos obter a média amostral, mas nosso conjunto de dados foi registrado de uma forma em que uma váriavel apresenta os valores de interesse e outra apresenta o número de vezes em que foi observado aquele determinado valor.
+
+No R calculamos a média simples com a função `mean()`. Um aspecto importante a se considerar quando usando essa função (e qualquer outra função do R que realiza operações matemáticas) é que valores ausentes (`NA`) contaminam seus resultados, ou seja, se houver uma observação `NA` na sua variável, o resultado da operação por padrão também é `NA`. Para contornar esse problema, usamos o argumento `na.rm = TRUE`, assim, esses valores são removidos antes de ser calculada a média.
+
+```{r}
+#| label: medidas_resumo_media_simples
+#| warning: false
+ap2 %>%
+  summarise(
+    across(starts_with("w_age"), ~ mean(.x, na.rm = TRUE), .names = "mean_{.col}")
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "Variável",
+    names_prefix = "mean_",
+    values_to = "Média",
+  ) %>%
+  kable()
+```
+
+Já a média ponderada pode ser calculada com `weighted.mean()`.
+
+```{r}
+#| label: medidas_resumo_media_ponderada
+#| warning: false
+dataset_alunos <- tibble(
+  n_alunos = round(runif(10, 1, 10)),
+  notas = round(runif(10, 0, 100), 2),
+)
+
+m1 <- dataset_alunos %>%
+  summarise(
+    media = round(weighted.mean(notas, n_alunos), 3)
+  ) %>% pull(media)
+
+m2 <- round(sum(dataset_alunos$notas * dataset_alunos$n_alunos) / sum(dataset_alunos$n_alunos), 3)
+m3 <- round(sum(dataset_alunos$notas * (dataset_alunos$n_alunos / sum(dataset_alunos$n_alunos))), 3)
+
+m1 == m2 & m2 == m3
+```
+
+Para dados agrupados, no caso de variáveis discretas calculamos a média usando a média ponderada, em que cada peso representará a frequência observada daquele valor. Já para variáveis contínuas agrupadas, cada classe não representa um valor, mas sim um intervalo, então estimamos a média usando o ponto médio de cada classe (cada intervalo) como o o valor observado e a frequência de observações daquela classe como o peso. Ou seja,
+
+$\bar{X} = \frac{\sum_{i=1}^k x_i \times F_i}{\sum_{i=1}^k F_i} = \frac{\sum_{i=1}^k x_i \times F_i}{n}$, em que $k$ é o número de classes, $x_i$ é o ponto médio do intervalo da classe $i$ e $F_i$ é a frequência observada na classe $i$.
+
+Um aspecto importante da média amostral é que ela é "puxada" na direção das observações extremas, ou seja, valores muito discrepantes em relação aos demais. Para tentar diluir esse efeito de *outliers* da amostra na hora de avaliar a posição central dos dados, podemos calcular a média aparada ou a média winsorizada.
+
+A média ponderada remove $\alpha\%$ das observações extremas (de forma igual nos limites inferior e superior) de uma variável ordenada antes de calcular a média. Ela é expressa como:
+
+$\bar{X}_{\alpha} = \frac{1}{n-2k}\sum_{i=k+1}^{n-k} X_{(i)}$, em que $\alpha$ é a proporção a ser removida e $k$ é o número efetivo de observações que serão removidas do cálculo da média aparada ($n \times \alpha / 2$).
+
+No R a média aparada também é obtida pela função `mean()` usando o argumento `trim = valor`, sendo que o valor passado ao `trim` corresponde ao $\alpha / 2$, ou seja, a proporção a ser removida em cada extremo.
+
+```{r}
+#| label: medidas_resumo_media_aparada
+#| warning: false
+ap2 %>%
+  summarise(
+    across(starts_with("w_age"), ~ mean(.x, trim = 0.025, na.rm = TRUE), .names = "mean_{.col}")
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "Variável",
+    names_prefix = "mean_",
+    values_to = "Média aparada (em 5%)",
+  ) %>%
+  kable()
+```
+
+A média winsorizada, por sua vez, substitui os valores extremos pelos percentis correspondentes. Por exemplo, se queremos uma média winsorizada de $\alpha = 10\%$, iremos substituir todos os valores abaixo do percentil 10% pelo valor desse percentil e subtituir todos valores acima do percentil 90% pelo valor desse percentil.
+
+No R não temos uma função, a não ser em pacotes específicos, da média winsorizada, porém podemos facilmente criar nossa própria função para calculá-la:
+
+```{r}
+#| label: medidas_resumo_media_winsorizada
+#| warning: false
+
+media_winsorizada <- function(x, p = 0.1) {
+  # Remover NAs
+  x <- x[!is.na(x)]
+  
+  x_sorted <- sort(x) # ordena a variavel
+  n <- length(x)
+  
+  # obter o indice para os percentis
+  k <- floor(n * p)
+  
+  # Se k = 0, então p = 0, retornar média comum
+  if(k == 0) return(mean(x))
+  
+  x_wins <- x
+  
+  # Valores dos percentis para substituição
+  lower_val <- x_sorted[k + 1]
+  upper_val <- x_sorted[n - k]
+  
+  # substitui valores extremos pelos percentis
+  x_wins[x_wins < lower_val] <- lower_val
+  x_wins[x_wins > upper_val] <- upper_val
+  
+  return(mean(x_wins))
+}
+
+ap2 %>%
+  summarise(
+    across(starts_with("w_age"), ~ media_winsorizada(.x, p = 0.025), .names = "mean_{.col}")
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "Variável",
+    names_prefix = "mean_",
+    values_to = "Média winsorizada (em 5%)",
+  ) %>%
+  kable()
+```
+
+
+#### Mediana
+
+A mediana ($Md$) é uma medida de posição do centro da distribuição dos dados ordenados de forma crescente, de modo que $P(X \leq Md) \geq \frac{1}{2}$ e $P(X \geq m) \geq \frac{1}{2}$.
+
+Seja $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ a nossa variável ordenada de forma crescente, definimos $Md$ como
+
+$\text{Md} = \begin{cases} X_{(\frac{n+1}{2})} & \text{se } n \text{ é ímpar} \\ \frac{X_{(\frac{n}{2})} + X_{(\frac{n}{2}+1)}}{2} & \text{se } n \text{ é par} \end{cases}$,
+
+em que $n$ é o número de observações e $X_{(i)}$ é o valor da variável na posição $i$.
+
+Algo importante para se compreender da mediana (e medidas separatrizes em geral) é que ela representa um valor para o qual 50% dos dados são menores ou iguais àquele valor, enquanto os outros 50% não necessariamente serão maiores que aquele valor (podem ser iguais). Para exemplificar, imagine uma amostra de 11 observações, cuja mediana será dada pelo 6º valor ordenado dessa avariável ($(11 + 1)/2=6$). Se nossa amostra ordenada for representada por
+
+$1 \quad 2 \quad 3 \quad 4 \quad 5 \quad *6* \quad 7 \quad 8 \quad 9 \quad 10 \quad 11$
+
+de fato, 50% das observações serão menores ou iguais à mediana, enquanto os demais foram maiores. Porém se nossa amostra fosse
+
+$1 \quad 2 \quad 3 \quad 4 \quad 5 \quad *6* \quad 6 \quad 6 \quad 6 \quad 8 \quad 9$
+
+agora, 50% das observações continuam sendo menores ou iguais à mediana, porém não podemos 50% dos valores observados são maiores que 6. Conclusão, o correto a se afirmar sobre a mediana é que 50% dos valores são menores ou **iguais** à mediana ou 50% dos valores são maiores ou **iguais** à mediana.
+
+Como propriedades da mediana, nós temos:
+
+1 - **Minimização do desvio absoluto**
+
+A mediana é o valor que minimiza a soma das distâncias absolutas de todos os pontos até ela.
+
+$\text{Md} = \arg\min_c \sum_{i=1}^{n} |X_i - c|$
+
+Demonstrando essa propriedade, buscamos um valor $c$ que minimize $g(c) = \sum_{i=1}^{n} |X_i - c|$, ou seja, que apresente o menor desvio absoluto (lembrando que $|X_i - c|$ representa a distância de cada ponto $X_i$ até $c$). Desenvolvendo essa equação:
+
+**Passo 1**: Analisar a derivada de $|x|$
+
+- Para $x > 0$: $\frac{d|x|}{dx} = 1$
+- Para $x < 0$: $\frac{d|x|}{dx} = -1$
+- Em $x = 0$: a derivada não existe (ponto de não-diferenciabilidade)
+
+**Passo 2**: Calcular a derivada de $g(c)$ por partes
+
+Seja $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ a nossa variável ordenada, para um $c$ no intervalo $(X_{(k)}, X_{(k+1)})$:
+
+- Temos exatamente $k$ valores menores que $c$: $X_{(1)}, ..., X_{(k)}$
+- Temos exatamente $n-k$ valores maiores que $c$: $X_{(k+1)}, ..., X_{(n)}$
+
+Aplicando a regra da cadeia em cada parte
+
+- Para $X_i < c$: $\frac{d|X_i - c|}{dc} = \frac{d|X_i - c|}{d(X_i - c)} \cdot \frac{d(X_i - c)}{dc} = (-1) \cdot (-1) = 1$
+- Para $X_i > c$: $\frac{d|X_i - c|}{dc} = \frac{d|X_i - c|}{d(X_i - c)} \cdot \frac{d(X_i - c)}{dc} = (1) \cdot (-1) = -1$
+
+**Passo 3**: Somar as derivadas
+
+Então no intervalo $(X_{(k)}, X_{(k+1)})$ temos $g'(c) = \sum_{i: X_i < c} 1 + \sum_{i: X_i > c} (-1) = k - (n-k) = 2k - n$.
+
+**Passo 4**: Encontrar o ponto crítico
+
+$g'(c) = 0$ quando $2k - n = 0$, ou seja, quando $k = n/2$. Assim, obtemos o valor que minimiza o desvio absoluto quando usamos um valor $c$, tal que $X_{(n/2)} < c < X_{(\frac{n}{2}+1)}$, e a mediana é justamente a medida que cumpre esses requisitos.
+
+2 - **Equivariância**
+
+Se $Y = aX + b$ $(a > 0)$, então $\text{Med}(Y) = a \cdot \text{Med}(X) + b$. Observe que, sejam $X_1, X_2, ..., X_n$ as observações de $X$, então $Y_i = aX_i + b$ para $i = 1, 2, ..., n$. Como os $X_i$ são deslocados por $b$ no mesmo sentido e "esticados" ou "comprimidos" por $a$ na mesma intensidade e direção (pois $a > 0$), então a ordem é preservada. Logo, se $X_i < X_j$ então $aX_i + b < aX_j + b$, portanto, $Y_i < Y_j$. Resumindo, a posição da mediana em $Y$ é a mesma posição da mediana em $X$, com isso a $\text{Med}(Y) = Y_{(\frac{n+1}{2})} = aX_{(\frac{n+1}{2})} + b = a \cdot \text{Med}(X) + b$.
+
+3 - **Robustez**
+
+A mediana apresenta ponto de ruptura de 50%, o que, de forma bem simplista, significa que precisaríamos substituir cerca de metade das observações por valores arbitrários para que a variável não forneça informação suficiente sobre a verdadeira localização da mediana. Na prática, significa que ela sofre menos alterações se decidirmos substituir outliers por uma medida de posição (como a própria mediana, a média, ou um percentil).
+
+4 - **Distribuição assintótica da mediana** (para variáveis contínuas)
+
+Uma distribuição assintótica descreve o **comportamento limite** da distribuição de um estimador (ou estatística) quando o tamanho da amostra, $n$, cresce indefinidamente, ou seja, quando $n \to \infty$. Quando nós calculamos uma estatística (por exemplo, a média, a variância ou a mediana amostral), sua distribuição exata depende do tamanho da amostra e da distribuição dos dados. À medida que o $n$ cresce, muitas estatísticas passam a ter distribuições que semelhantes a alguma forma simples e bem conhecida, por exemplo, a distribuição normal. Essa distribuição limite é o que chamamos de **distribuição assintótica**.
+
+No caso da mediana, temos o teorema que $\sqrt{n}(\text{Md} - \theta) \xrightarrow{d} N\left(0, \frac{1}{4f(\theta)^2}\right)$, onde $\theta$ é a mediana populacional e $f(\theta)$ é a densidade no ponto $\theta$, ou seja, quando $n$ é grande, a distribuição da variável transformada $\sqrt{n}(\text{Md} - \theta)$ se aproxima de uma normal $N(0,\,1/(4f(\theta)^2))$. 
+
+Simplificando, a mediana amostral é aproximadamente normal quando a amostra é grande, com variância decrescendo a uma taxa de $1/n$, ou seja, a mediana, assim como a média, se torna cada vez mais precisa (mais próxima da mediana populacional) quando você tem mais dados. E essa precisão crescente se reflete matematicamente pela variância decrescendo a uma taxa de $1/n$.
+
+Se definimos $Y_n = \sqrt{n}(\text{Md} - \theta)$, então, $\text{Md} - \theta = \frac{Y_n}{\sqrt{n}}$. Calculando a variância assintótica da $\text{Md}$ teremos $\operatorname{Var}(\text{Md}) = \operatorname{Var}\left(\frac{Y_n}{\sqrt{n}}\right)$ ($\theta$ é constante e não altera a variância). Como multiplicar uma variável aleatória por uma constante $1/\sqrt{n}$ multiplica sua variância por $1/n$, então, $\operatorname{Var}(\text{Md}) \approx \frac{1}{n} \operatorname{Var}(Y_n)$. Agora, se $\operatorname{Var}(Y_n) \to \frac{1}{4f(\theta)^2}$, então $\operatorname{Var}(\text{Md}) \approx \frac{1}{4n f(\theta)^2}$, onde o único elemento que varia é $n$, por isso que a variância da distribuição amostral da mediana vai decrescendo a uma taxa de $1/n$ conforme $n$ aumenta.
+
+Para calcular a mediana de dados agrupados de uma variável discreta, usamos o mesmo método dos dados não agrupados, ou seja, calculamos a posição das observações que serão usadas para calcular a mediana, e utilizamos o valor da categoria em que cada posição está. Por exemplo, imagine a seguinte variável discreta agrupada:
+
+| Número de crias | $F_i$ | $F_{ac}$ |
+|:----------------|-----|-------:|
+|1| 6| 6|
+|2|20|26|
+|3|14|40|
+|4| 3|43|
+|5| 1|44|
+
+Como $n$ é par, a mediana é a soma dos elementos na posição $n/2 = 22$ e $(n/2)+1 = 23$ divido por $2$. Olhando a frequência acumulada, vemos que ambos estão na categoria 2, logo, a mediana é $Md = (2+2) / 2 = 2$.
+
+Para dados agrupados de uma variável contínua, primeiro calculamos a posição da mediana como $n/2$ e identificamos a classe em que contém a posição mediana, a partir da avaliação das frequências acumuladas. Essa classe, agora denominada classe mediana ($C_{Md}$) será a base para calcularmos a mediana segundo a expressão:
+
+$Md = LI_{C_{Md}} + \frac{(\frac{n}{2} - F_{ac({C_{Md}}-1)})}{F_{C_{Md}}} \times A_{C_{Md}}$
+
+em que
+
+- $LI_{C_{Md}}$ é o limite inferior do intervalo da classe mediana
+- $F_{ac({C_{Md}}-1)}$ é a frequência acumulada da classe anterior à classe mediana
+- $F_{C_{Md}}$ é a frequência absoluta da classe mediana
+- $n$ é o total de observações, e
+- $A_{C_{Md}}$ é a amplitude da classe mediana (limite superior menos o inferior).
+
+#### Moda
+
+A moda é o valor de maior frequência (mais observado). De forma mais formal, para uma variável discreta a moda é $\text{Mo} = \arg\max_x P(X = x)$, enquanto para uma variável contínua a moda é $\text{Mo} = \arg\max_x f(x)$, ou seja, o valor com maior probabilidade de ocorrência daquela variável.
+
+Para dados qualitativos ou quantitativos discretos, iremos calcular as frequências de cada valor/categoria e a classe (unimodal) ou classes (bi ou multimodal) de maior frequência serão a moda.
+
+Já para dados contínuos, iremos primeiro agrupá-los (seguindo aquelas regras apresentadas anteriormente para tabelas de frequência) e depois estimar a moda usando o método de Czuber ou o método de King.
+
+# TODO: descrever os métodos
+
+
+
+
+
+Essas propriedades fundamentam a escolha entre estimadores conforme o contexto e presença de outliers.
 - Estatística descritiva univariada
     - Representação gráfica dos dados
     - Medidas-resumo
