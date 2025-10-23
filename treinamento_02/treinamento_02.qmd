@@ -26,6 +26,7 @@ citation:
   issue: 1
 funding: "The author received no specific funding for this work."
 lang: pt-BR
+bibliography: referencias.bib
 toc: true
 toc-depth: 5
 toc-expand: true
@@ -3228,6 +3229,8 @@ em que
 - $n$ é o total de observações, e
 - $A_{C_{Md}}$ é a amplitude da classe mediana (limite superior menos o inferior).
 
+Como a mediana é uma medida separatriz, o segundo quartil (ou quantil de ordem 0,5), deixarei para apresentar o exemplo de sua obtenção no R no tópico de **medidas separatrizes**.
+
 #### Moda
 
 A moda é o valor de maior frequência (mais observado). De forma mais formal, para uma variável discreta a moda é $\text{Mo} = \arg\max_x P(X = x)$, enquanto para uma variável contínua a moda é $\text{Mo} = \arg\max_x f(x)$, ou seja, o valor com maior probabilidade de ocorrência daquela variável.
@@ -3236,7 +3239,306 @@ Para dados qualitativos ou quantitativos discretos, iremos calcular as frequênc
 
 Já para dados contínuos, iremos primeiro agrupá-los (seguindo aquelas regras apresentadas anteriormente para tabelas de frequência) e depois estimar a moda usando o método de Czuber ou o método de King.
 
-# TODO: descrever os métodos
+No método de Czuber, primeiro identificamos a classe que contém a moda (aquela de maior frequência absoluta). Essa classe, agora denominada classe modal ($C_{Mo}$) será a base para calcularmos a moda segundo a expressão:
+
+$Mo = LI_{C_{Mo}} + \frac{(F_{C_{Mo}} - F_{C_{Mo-1}})}{2 \times F_{C_{Mo}} - (F_{C_{Mo-1}} + F_{C_{Mo+1}})} \times A_{C_{Mo}}$
+
+em que
+
+- $LI_{C_{Mo}}$ é o limite inferior do intervalo da classe modal
+- $F_{C_{Mo}}$ é a frequência absoluta da classe modal
+- $F_{C_{Mo-1}}$ é a frequência absoluta da classe anterior à classe modal
+- $F_{C_{Mo+1}}$ é a frequência absoluta da classe posterior à classe modal
+- $A_{C_{Mo}}$ é a amplitude da classe modal (limite superior menos o inferior).
+
+No método de King, também identificamos a classe que contém a moda e calculamos a moda segundo a expressão:
+
+$Mo = LI_{C_{Mo}} + \frac{F_{C_{Mo+1}}}{(F_{C_{Mo-1}} + F_{C_{Mo+1}})} \times A_{C_{Mo}}$
+
+em que
+
+- $LI_{C_{Mo}}$ é o limite inferior do intervalo da classe modal
+- $F_{C_{Mo-1}}$ é a frequência absoluta da classe anterior à classe modal
+- $F_{C_{Mo+1}}$ é a frequência absoluta da classe posterior à classe modal
+- $A_{C_{Mo}}$ é a amplitude da classe modal (limite superior menos o inferior).
+
+No R não há uma função no `base` para obtenção da moda, entrentanto, iremos criar a nossa própria:
+
+```{r}
+#| label: medidas_resumo_moda
+#| warning: false
+
+# Calcula a moda de uma variável categórica ou discreta
+# 
+# Args:
+#   data: data.frame ou tibble; fonte dos dados.
+#   var: character; nome da variável para o qual será calculada a moda.
+# 
+# Returns:
+#   lista com dados originais, variável de interesse, método de agrupamento (NULL), 
+#   tabela de frequências e modas calculadas (list).
+moda_qualitativa_discreta <- function(data, var) {
+  var_discreta <- is.numeric(data[[var]])
+  
+  if(var_discreta) {
+    data <- data %>%
+      arrange(.data[[var]])
+    data[[var]] <- factor(data[[var]], ordered = TRUE)
+  }
+
+  tab_frequencias <- data %>%
+    count(.data[[var]], name = "Fi") %>%
+    mutate(
+      Fri = scales::percent(Fi / sum(Fi), accuracy = .1),
+      Fac = cumsum(Fi),
+      Frac = scales::percent(cumsum(Fi / sum(Fi)), accuracy = .1)
+    )
+  
+  freq_max <- max(tab_frequencias$Fi)
+  classe_modal <- tab_frequencias %>%
+    filter(Fi == freq_max)
+  
+  return(list(
+    dados = data,
+    variavel = var,
+    metodo_agrupamento = NULL,
+    metodo_moda = ifelse(var_discreta, "Dados discretos - max(frequencia)", "Dados qualitativos - max(frequencia)"),
+    tabela_de_frequencias = tab_frequencias,
+    resultado = tibble(
+      moda = as.character(classe_modal[[var]]),
+      frequencia = classe_modal$Fi
+    )
+  ))
+}
+
+# Calcula a moda de uma variável contínua
+# 
+# Args:
+#   data: data.frame ou tibble; fonte dos dados.
+#   var: character; nome da variável para o qual será calculada a moda.
+#   tipo_agrupamento: character; método usado para criar as classes (intervalos) da variável.
+#   metodo_moda: character; método que deverá usar para calcular a moda (aceita "czuber" e "king")
+# 
+# Returns:
+#   lista com dados originais, variável de interesse, método de agrupamento, 
+#   tabela de frequências e modas calculadas (list).
+moda_continua <- function(data, var, tipo_agrupamento = "sturges", metodo_moda = "czuber") {
+  metodos_disponiveis <- c("czuber", "king")  
+  if (!(metodo_moda %in% metodos_disponiveis)) {
+    stop(
+      sprintf(
+        "Método '%s' não disponível. Métodos possíveis: %s.",
+        metodo_moda,
+        str_c(metodos_disponiveis, collapse = ", ")
+      )
+    )
+  }
+  
+  n <- length(data[[var]])
+  if(n == 0) return(NULL)
+  if(n == 1) return(data[[var]])
+
+  k_breaks <- cria_classes_continua(data[[var]], tipo = tipo_agrupamento)
+  if(is.null(k_breaks)) return(NULL)
+
+  breaks <- k_breaks$breaks
+
+  tab_frequencias <- data %>%
+    mutate(
+      agrupamento = cut(.data[[var]], breaks = breaks, right = TRUE, include.lowest = TRUE),
+    ) %>%
+    count(agrupamento, name = "Fi") %>%
+    mutate(
+      idx = row_number(),
+      Fri = scales::percent(Fi / sum(Fi), accuracy = .1),
+      Fac = cumsum(Fi),
+      Frac = scales::percent(cumsum(Fi / sum(Fi)), accuracy = .1),
+      Ls = breaks[idx + 1],
+      Li = breaks[idx],
+      amplitude = Ls - Li
+    )
+  
+  freq_max <- max(tab_frequencias$Fi)
+  classe_modal <- tab_frequencias %>%
+    filter(Fi == freq_max)
+  
+  modas <- rep(NA_real_, nrow(classe_modal))
+
+  modas <- sapply(seq_along(classe_modal[[1]]), function(i) {
+    indice = classe_modal$idx[i]
+    Li_mo <- classe_modal$Li[i]
+    A_mo <- classe_modal$amplitude[i]
+    f_mo <- classe_modal$Fi[i]
+    f_mo_anterior <- 0
+    f_mo_posterior <- 0
+    
+    if(indice > 1) f_mo_anterior <- tab_frequencias$Fi[indice - 1]
+    if(indice < max(tab_frequencias$idx)) f_mo_posterior <- tab_frequencias$Fi[indice + 1]
+
+    if (metodo_moda == "czuber") {
+      return(Li_mo + ( ( (f_mo - f_mo_anterior) / (2 * f_mo - (f_mo_anterior + f_mo_posterior)) ) * A_mo ))
+    } else if (metodo_moda == "king") {
+      return(Li_mo + ( ( (f_mo_posterior) / (f_mo_anterior + f_mo_posterior)) * A_mo ))
+    }
+  })
+
+  return(list(
+    dados = data,
+    variavel = var,
+    metodo_agrupamento = tipo_agrupamento,
+    metodo_moda = metodo_moda,
+    tabela_de_frequencias = tab_frequencias %>%
+      rename_with(~ var, "agrupamento") %>%
+      select(-c(idx, Ls, Li, amplitude)),
+    resultado = tibble(
+      classes_modais = as.character(classe_modal$agrupamento),
+      moda = as.character(round(modas, 3))
+    )
+  ))
+}
+
+# Calcula a moda
+# 
+# Args:
+#   data: data.frame ou tibble; fonte dos dados.
+#   var: character; nome da variável para o qual será calculada a moda.
+#   tipo_var: character; tipo da variável (aceita os valores "cat" para variável qualitativa,
+#   "cont" para variável contínua e "disc" para variável discreta).
+#   ...: demais argumentos passados para moda_continua() quando tipo_var = "cont"
+# 
+# Returns:
+#   lista com dados originais, variável de interesse, método de agrupamento 
+#   (se variável contínua), tabela de frequências e modas calculadas (list).
+moda <- function(data, var, tipo_var = "cat", ...) {
+  tipos_aceitos <- c(cat="Categórico ou qualitativo", cont="Contínuo", disc="Discreto")
+  if (!(tipo_var %in% names(tipos_aceitos))) {
+    stop(
+      sprintf(
+        'O tipo de variável "%s" está incorreto. Tipos aceitos: %s.',
+        tipo_var,
+        str_c(
+          str_c(paste0('"',names(tipos_aceitos),'"'), tipos_aceitos, sep = " para "),
+          collapse = ", "
+        )
+      )
+    )
+  }
+
+  if(tipo_var == "cont") return(moda_continua(data, var, ...))
+
+  return(moda_qualitativa_discreta(data, var))
+}
+
+# categorica
+moda_cat <- moda(ap2, "vacc_mp", tipo_var = "cat")
+# discreta
+moda_disc <- moda(ap2, "age_t", tipo_var = "disc")
+# continua
+moda_cont <- moda(ap2, "w_age_t", tipo_var = "cont")
+
+kable(tibble(
+  `Tipo` = c("Qualitativa", "Quantitativa discreta", "Quantitativa contínua"),
+  `Variável` = c(
+    rep(moda_cat$variavel, nrow(moda_cat$resultado)),
+    rep(moda_disc$variavel, nrow(moda_disc$resultado)),
+    rep(moda_cont$variavel, nrow(moda_cont$resultado))
+  ),
+  `Moda` = c(
+    moda_cat$resultado$moda,
+    moda_disc$resultado$moda,
+    moda_cont$resultado$moda
+  )
+))
+
+```
+
+#### Medidas separatrizes
+
+Medidas separatrizes são valores que dividem um conjunto de dados ordenados em partes iguais, ajudando a descrever como os dados se distribuem. Elas indicam a posição relativa de um valor dentro da amostra ou população. As principais são os **quartis** (dividem em 4 partes iguais, 25%, 50%, 75% e 100% ou Q1, Q2/Mediana, Q3 e Q4), **decis** (10 partes) e **percentis** (100 partes). Cada medida separatriz corresponde a um **quantil** (varia entre 0 e 1) específico, por exemplo, o 1º quartil (Q1) é o quantil de ordem 0,25, ou seja, 25% dos dados são menores ou iguais a ele. Essas medidas são úteis para resumir e interpretar a dispersão e a concentração dos dados de forma mais detalhada do que apenas a média ou a mediana.
+
+A definição formal de quantis para uma população é a seguinte:
+
+O quantil de ordem $p$, em que $0 < p < 1$, é o valor $q_p$ tal que $P(X \leq q_p) \geq p$ e $P(X \geq q_p) \geq 1-p$, ou seja, a probabilidade de uma observação daquela variável ser menor ou igual ao $q_p$ é maior ou igual a $p$ (ordem do quantil).
+
+Para uma variável $X$, a sua função de distribuição acumulada (FDA) é denotada por $F(x) = P(X \leq x)$, então, $q_p = F^{-1}(p) = \inf\{x : F(x) \geq p\}$, ou seja, o quantil é a inversa da FDA para o valor $p$ ou menor valor de $x$ que ainda satisfaz a condição de que a probabilidade acumulada é maior ou igual a $p$ (isso para garantir a validade da definição mesmo em distribuições discretas em que a $F(x)$ possui saltos).
+
+Na prática, não teremos os dados populacionais para calcular o quantil, por isso iremos estimá-los a partir da nossa amostra. Então, para uma amostra de tamanho $n$, tal que nossas observações ordenadas sejam $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$, iremos estimar o quantil de ordem $p$ a partir desses dados.
+
+No R, a função `quantile()` adota os métodos de estimação dos quantis propostos por Hyndman e Fan [-@HyndmanFan1996], sendo que o método usado pela função é determinado no argumento `type`.
+
+Ao estimar um quantil amostral, cada método o estima segundo a definição:
+
+$Q_i(p) = (1 - \gamma) x_{(j)} + \gamma x_{(j+1)}$,
+
+onde:
+
+- $i$ é o método escolhido (representado na função do R por um valor discreto entre 1 e 9);
+- $p$ é a ordem do quantil estimado;
+- $j = \lfloor np + m \rfloor$ (o menor valor inteiro do resultado de $np + m$, onde $n$ é o tamanho da amostra);
+- $m$ é um **parâmetro de deslocamento** que muda conforme o método escolhido;
+- $\gamma$ é um valor calculado de acordo com o método escolhido e com $g$; e
+- $g = n p + m - j$.
+
+Os métodos são dividos em dois grupos:
+
+**Discretos (tipos 1–3):**
+
+| Tipo | Descrição | Parâmetro $m$ | $\gamma$ | Observação |
+|------|------------|----------------|---------------------------|-------------|
+| **1** | Inverso da função de distribuição empírica (*ECDF*) | $m = 0$ | $\gamma = 0$ se $g = 0$, senão $1$ | Método “Nearest Rank” |
+| **2** | ECDF com média nos pontos de descontinuidade | $m = 0$ | $\gamma = 0.5$ se $g = 0$, senão $1$ | Padrão antigo do SAS — suaviza empates |
+| **3** | Valor de ordem mais próximo ("nearest even order statistic") | $m = -0.5$ | $\gamma = 0$ se $g = 0$ e $j$ par, senão $1$ | Escolhe o valor mais próximo de $np$; usado no SAS até 2010 |
+
+Esses métodos retornam sempre um valor existente nos dados (ou média de valores adjacentes).
+
+**Contínuos (tipos 4–9):**
+
+Nesses métodos, o $Q(p)$ é tratado como uma função contínua de $p$ e eles usam $\gamma = g$ (que é a parte decimal de $n p + m$). Esses métodos são equivalentes a uma interpolação linear na forma:
+
+$Q(p) = x_{(k)} + \frac{p - p_k}{p_{k+1} - p_k} (x_{(k+1)} - x_{(k)})$
+
+- $x_{(k)}$ é o k‑ésimo valor da amostra (depois de ordenada),
+- $p_k$ é a probabilidade acumulada teórica associada a esse valor, ou seja, o valor da função de distribuição empírica (ECDF) correspondente a $x_{(k)}$. Justamente por ser probabilidade teórica associada ao k‑ésimo valor ordenado da amostra, ele nos permite avaliar o viés e a suavidade do estimador de quantil.
+
+| Tipo | Parâmetro $m$ | Probabilidade associada $p_k$ | Interpretação e uso |
+|------|------------------------------|-----------------------------------|---------------------|
+| **4** | $m = 0$ | $p_k = \frac{k}{n}$ | Interpolação linear da ECDF (usada raramente; simples porém ligeiramente enviesada). |
+| **5** | $m = 0.5$ | $p_k = \frac{k - 0.5}{n}$ | Gera uma função linear definida por partes em que as "quebras" ocorrem no meio dos degraus da ECDF (popular entre hidrólogos). |
+| **6** | $m = p$ | $p_k = \frac{k}{n + 1}$ | Baseada no valor esperado das estatísticas de ordem (usada pelo SPSS e Minitab). |
+| **7** (**Padrão do R**) | $m = 1 - p$ | $p_k = \frac{k - 1}{n - 1}$ | Interpolação dos modas das estatísticas de ordem. Retorna valores suavizados entre os dados. |
+| **8** | $m = (p + 1)/3$ | $p_k = \frac{k - 1/3}{n + 1/3}$ | Aproximadamente uma mediana não enviezada, adequada para qualquer distribuição. Recomendado por Hyndman e Fan [-@HyndmanFan1996]. |
+| **9** | $m = p/4 + 3/8$ | $p_k = \frac{k - 3/8}{n + 1/4}$ | Aproximadamente não enviezados se $x$ vem de uma distribuição Normal (usado em análises robustas). |
+
+Bom, de qualquer forma os próprios idealizadores dessa função indicam fortemente o uso do tipo 8 em seu artigo, então, quem sou eu para dizer o contrário 😁. Vamos ver um exemplo de sua utilização:
+
+```{r}
+#| label: medidas_resumo_quantis
+#| warning: false
+#| tab.cap: "Quartis do ganho de peso diário segundo o estado vacinal"
+
+quartis <- ap2 %>%
+  group_by(vacc_mp) %>%
+  summarise(
+    q1 = quantile(dwg_fin, probs=.25, type=8),
+    q2 = quantile(dwg_fin, probs=.5, type=8),
+    q3 = quantile(dwg_fin, probs=.75, type=8),
+    q4 = quantile(dwg_fin, probs=1, type=8)
+  )
+
+kable(
+  quartis,
+  col.names = c(
+    "Estado vacinal",
+    "$Q_8(25%)$ ou Q1",
+    "$Q_8(50%)$ ou Q2 ou Mediana",
+    "$Q_8(75%)$ ou Q3",
+    "$Q_8(100%)$ ou máximo"
+  )
+)
+```
+
+Quartis são considerados estimadores resistentes (não afetados por até 25% de valores extremos) e basicamente dividem os dados em 4 partes com aproximadamente $n/4$ observações cada. Além disso, são a base para o cálculo da amplitude interquartil (IQR), a medida usada na construção do boxplot, obtido por $\text{IQR} = Q_3 - Q_1$. O IQR em uma distribuição normal também apresenta uma característica interessante em relação ao desvio padrão, pois ele é $\approx 1.349\sigma$, o que permite usá-lo como um estimador robusto do desvio padrão ($\hat{\sigma}_{\text{robusto}} = \text{IQR}/1.349$) se consideramos que a amostra é de uma distribuição normal.
+
 
 
 
@@ -3247,8 +3549,6 @@ Essas propriedades fundamentam a escolha entre estimadores conforme o contexto e
     - Representação gráfica dos dados
     - Medidas-resumo
         - Medidas de posição ou localização
-            - Medidas de tendência central
-            - Medidas separatrizes
             - Identificação de existência de outliers univariados
         - Medidas de dispersão ou variabilidade
             - Amplitude
