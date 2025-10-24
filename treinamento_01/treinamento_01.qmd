@@ -16,7 +16,7 @@ abstract: >
   Relatório do primeiro treinamento onde foi apresentado uma introdução ao R e os conceitos de tipos de variáveis e escalas.
 keywords:
   - statistical analysis
-license: "CC0"
+license: "CC BY-NC"
 copyright: 
   holder: Marcelo Paiva
   year: 2025

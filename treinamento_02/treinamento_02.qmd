@@ -2905,7 +2905,7 @@ ggplot(ap2, aes(y = w_age_t, x = 0)) +
 
 Como o próprio nome indica, medidas-resumo tentam representar o comportamento de uma variável em estudo por meio de um valor. Com exceção da moda (valor mais frequente de uma variável), as medidas-resumo são calculadas normalmente para variáveis quantitativas.
 
-### Medidas de posição ou localização
+## Medidas de posição ou localização
 
 Medidas de posição indicam a localização dos dados em relação ao intervalos de valores que a variável em estudo assume. Elas podem ser agrupadas em medidas de tendência central (média, mediana e moda) e medidas separatrizes (quartis, decis e percentis).
 
@@ -3061,7 +3061,7 @@ $\bar{X} = \frac{\sum_{i=1}^k x_i \times F_i}{\sum_{i=1}^k F_i} = \frac{\sum_{i=
 
 Um aspecto importante da média amostral é que ela é "puxada" na direção das observações extremas, ou seja, valores muito discrepantes em relação aos demais. Para tentar diluir esse efeito de *outliers* da amostra na hora de avaliar a posição central dos dados, podemos calcular a média aparada ou a média winsorizada.
 
-A média ponderada remove $\alpha\%$ das observações extremas (de forma igual nos limites inferior e superior) de uma variável ordenada antes de calcular a média. Ela é expressa como:
+A média aparada remove $\alpha\%$ das observações extremas (de forma igual nos limites inferior e superior) de uma variável ordenada antes de calcular a média. Ela é expressa como:
 
 $\bar{X}_{\alpha} = \frac{1}{n-2k}\sum_{i=k+1}^{n-k} X_{(i)}$, em que $\alpha$ é a proporção a ser removida e $k$ é o número efetivo de observações que serão removidas do cálculo da média aparada ($n \times \alpha / 2$).
 
@@ -3237,7 +3237,7 @@ A moda é o valor de maior frequência (mais observado). De forma mais formal, p
 
 Para dados qualitativos ou quantitativos discretos, iremos calcular as frequências de cada valor/categoria e a classe (unimodal) ou classes (bi ou multimodal) de maior frequência serão a moda.
 
-Já para dados contínuos, iremos primeiro agrupá-los (seguindo aquelas regras apresentadas anteriormente para tabelas de frequência) e depois estimar a moda usando o método de Czuber ou o método de King.
+Já para dados contínuos, iremos primeiro agrupá-los (seguindo aquelas regras apresentadas anteriormente para tabelas de frequência) e depois estimar a moda usando o método de Czuber ou o método de King (raramente é usado atualmente).
 
 No método de Czuber, primeiro identificamos a classe que contém a moda (aquela de maior frequência absoluta). Essa classe, agora denominada classe modal ($C_{Mo}$) será a base para calcularmos a moda segundo a expressão:
 
@@ -3539,28 +3539,284 @@ kable(
 
 Quartis são considerados estimadores resistentes (não afetados por até 25% de valores extremos) e basicamente dividem os dados em 4 partes com aproximadamente $n/4$ observações cada. Além disso, são a base para o cálculo da amplitude interquartil (IQR), a medida usada na construção do boxplot, obtido por $\text{IQR} = Q_3 - Q_1$. O IQR em uma distribuição normal também apresenta uma característica interessante em relação ao desvio padrão, pois ele é $\approx 1.349\sigma$, o que permite usá-lo como um estimador robusto do desvio padrão ($\hat{\sigma}_{\text{robusto}} = \text{IQR}/1.349$) se consideramos que a amostra é de uma distribuição normal.
 
+## Identificação de outliers
+
+Consideramos outliers as observações que apresentam medidas muito discrepantes em relação às demais do conjunto de observações em estudo (amostra). Essas observações discrepantes podem ter impacto nas medidas de resumo calculadas, o que mais a frente levará a distorções nos resultados das análises que dependem dessas medidas, por exemplo, ao tentar ajustar essa amostra a uma distribuição de probabilidade conhecida (como a normal) para a realização de algum teste de hipótese ou modelagem estatística.
+
+Antes de decidir o que será feito com essas observações, precisamos identificar o que levou a tais valores discrepantes, se isso decorre de erros na medição ou na execução da seleção dos indivíduos amostrados, ou se realmente representa a variabilidade real da população em estudo.
+
+Há vários métodos de detecção de outliers e nesse momento apresentarei alguns específicos para quando estamos avaliando somente uma variável, que são: o **método de Tukey** pela avaliação do boxplot, o **método do Z-Score**, o **método MAD** (*median absolute deviation*) e o **teste de Grubbs**.
+
+### Método de Tukey (boxplot)
+
+Esse método já foi apresentado quando apresentei o boxplot na representação gráfica de dados univariados. Nele, calculamos o intervalo interquartil (IQR) e serão considerados outliers os valores $X_i$ que são menores que um limite inferior ou maiores que um limite superior. Esses limites são calculados como:
+
+Limite Inferior - $\text{LI} = Q_1 - k \cdot \text{IQR}$
+
+Limite Superior - $\text{LS} = Q_3 + k \cdot \text{IQR}$
+
+Onde $Q_1$ é o primeiro quartil (quantil de ordem 25%), $Q_3$ é o terceiro quartil (quantil de ordem 75%) e $k$ assume os valores de $k = 1.5$ para identificação de outliers moderados ou $k = 3$ para outliers extremos. Então qualquer valor fora desses limites serão considerados outliers e deverão receber uma maior atenção nossa para verificar se há algum erro em sua caracterização ou se precisaremos adotar alguma abordagem para que não prejudiquem nossas análises.
+
+A justificativa para a adoção desse método de detecção de outliers está na distribuição normal, uma vez que a probabilidade de uma observação estar fora desses limites na distribuição normal é de 0.35% para $k = 1.5$ e de 0.002% para $k = 3$, ou seja:
+
+- $P(X < Q_1 - 1.5 \cdot \text{IQR}) \approx P(X > Q_3 + 1.5 \cdot \text{IQR}) \approx 0.0035$
+- $P(X < Q_1 - 3 \cdot \text{IQR}) \approx P(X > Q_3 + 3 \cdot \text{IQR}) \approx 0.00002$
+
+No R, isso podemos aplicar esse método da seguinte forma:
+
+```{r}
+#| label: outliers_boxplot
+#| warning: false
+
+Q1 <- quantile(ap2$dwg_fin, probs = .25, type = 8)
+Q3 <- quantile(ap2$dwg_fin, probs = .75, type = 8)
+IQR <- Q3 - Q1
+
+# filtrando do dataset os outliers moderados
+outliers <- ap2 %>%
+  filter(dwg_fin < (Q1 - (1.5 * IQR)) | dwg_fin > (Q3 + (1.5 * IQR)))
+
+cat("Número de outliers moderados: ", length(outliers$dwg_fin), "\n")
+
+# filtrando do dataset os outliers extremos
+outliers <- ap2 %>%
+  filter(dwg_fin < (Q1 - (3 * IQR)) | dwg_fin > (Q3 + (3 * IQR)))
+
+cat("Número de outliers extremos: ", length(outliers$dwg_fin), "\n")
+```
 
 
+### Método Z-Score
+
+No método Z-Score, primeiro iremos padronizar (normalizar) nossa variável, o que é obtido subtraindo do valor observado a média amsotral e, em seguida, dividindo pelo desvio padrão amostral:
+
+$Z_i = \frac{X_i - \bar{X}}{s}$
+
+Após realizar esse escalonamento, adotamos o seguinte critério
+
+- $|Z_i| > 2.5$: possível outlier $(P \approx 0.012)$
+- $|Z_i| > 3$: outlier moderado $(P \approx 0.003)$
+- $|Z_i| > 4$: outlier extremo $(P \approx 0.00006)$
+
+Esse método assume que a variável possui uma distribuição normal e utiliza tanto a média quanto o desvio padrão amostral, porém, ambas as medidas são afetadas por valores extremos na nossa amostra, o que pode levar a um mascaramento de outliers e limita a sua utilização na prática.
+
+No R:
+
+```{r}
+#| label: outliers_z_score
+#| warning: false
+
+kable(
+  ap2 %>%
+  select(dwg_fin) %>%
+  mutate(
+    z_na_mao = (dwg_fin - mean(dwg_fin)) / sd(dwg_fin),
+    z = scale(dwg_fin),
+    outlier = case_when(
+      abs(z) > 4 ~ "outlier extremo",
+      abs(z) > 3 ~ "outlier moderado",
+      abs(z) > 2.5 ~ "possível outlier",
+      TRUE ~ "não outlier"
+    )
+  ) %>%
+  count(outlier),
+  col.names = c("", "Quantidade")
+)
+```
 
 
+### Método MAD (Median Absolute Deviation)
 
-Essas propriedades fundamentam a escolha entre estimadores conforme o contexto e presença de outliers.
-- Estatística descritiva univariada
-    - Representação gráfica dos dados
-    - Medidas-resumo
-        - Medidas de posição ou localização
-            - Identificação de existência de outliers univariados
-        - Medidas de dispersão ou variabilidade
-            - Amplitude
-            - Desvio-médio
-            - Variância
-            - Desvio-padrão
-            - Erro-padrão
-            - Coeficiente de variação
-    - Medidas de forma
-        - Medidas de assimetria
-        - Medidas de curtose
+Para obter o MAD, primeiro subtraímos de cada observação a mediana e, então, calculamos a mediana desse desvio em módulo (desvio absoluto):
 
+$\text{MAD} = \text{mediana}(|X_i - \text{Md}|)$
+
+Em seguida, calculamos o Score MAD modificado de cada observação como:
+
+$M_i = \frac{0.6745(X_i - \text{Md})}{\text{MAD}}$
+
+Onde $0.6745 = \Phi^{-1}(0.75)$ para consistência com $\sigma$ sob normalidade. Isso porque o $\Phi(z)$ representa a função de distribuição acumulada da distribuição normal padrão, o $Z \sim N(0,1)$, ou seja, a probabilidade acumulada até aquele valor $z$ ($\Phi(z) = P(Z \leq z)$), logo, pela função inversa $\Phi^{-1}(0.75)$ buscamos justamente o valor $z$ para o qual temos a probabilidade acumulada de 75% (o terceiro quartil da população $Z$). O MAD em uma população normal do tipo $N(0, \sigma)$ é $MAD=\sigma\Phi^{-1}(0.75)$, então, para fazer que nosso $M_i$ se comporte de modo comparável a um z-score (unidades de desvio padrão sob normalidade) nós multiplicamos pelo valor de $0.6745 = \Phi^{-1}(0.75)$:
+
+$MAD=\sigma\Phi^{-1}(0.75) \Rightarrow \frac{1}{\sigma}=\frac{\Phi^{-1}(0.75)}{MAD}$
+
+$\frac{1}{\sigma}=\frac{0.6745}{MAD}$
+
+$M_i = \frac{0.6745(X_i - \text{Md})}{\text{MAD}} = \frac{0.6745}{\text{MAD}} \cdot (X_i - \text{Md})$
+
+$M_i \approx \frac{X_i - \text{Md}}{\sigma}$
+
+Ou seja, $M_i$ é aproximadamente o z‑score robusto, expresso em unidades de "desvio padrão robusto” (robusto porque usa a medaiana).
+
+Calculado o $M_i$, adotamos como critério de identificação de outliers, aquelas observações com valor absoluto de $M_i$ superior a 3,5 ($|M_i| > 3.5$).
+
+No R:
+
+```{r}
+#| label: outliers_mad
+#| warning: false
+
+# median é o mesmo que quantile(x, .5)
+mad <- median(abs(ap2$dwg_fin - quantile(ap2$dwg_fin, probs = .5, type = 8)))
+
+kable(
+  ap2 %>%
+  select(dwg_fin) %>%
+  mutate(
+    m_i = (0.6745 * (dwg_fin - median(dwg_fin))) / mad,
+    outlier = case_when(
+      abs(m_i) > 3.5 ~ "outlier",
+      TRUE ~ "não outlier"
+    )
+  ) %>%
+  count(outlier),
+  col.names = c("", "Quantidade")
+)
+```
+
+### Teste de Grubbs
+
+O teste de Grubbs é um método que utiliza de um teste de hipótese, conceito que ainda veremos em nossos treinamentos, mas que basicamente é um procedimento estatístico usado para decidir, com base em dados de uma amostra, se há evidências suficientes para aceitar ou rejeitar uma suposição (a hipótese) sobre uma característica da população. Mais precisamente, o teste de Grubbs é um teste paramétrico (assume que a variável é aproximadamente normal) utilizado para detectar um único valor atípico (outlier) em um conjunto de dados univariado.
+
+Ele testa a hipótese de que um dos valores da amostra é um outlier, ou seja, de que ele pertence a uma população diferente ou do quão improvável é obter aquele valor extremo observado de uma população normal com as características da amostra em estudo.
+
+Considere uma amostra
+
+$x_1, x_2, \ldots, x_n$
+
+para a qual assumimos que ela vem de uma população normal ($X \sim N(\mu, \sigma^2)$). Para esses pressupostos, definimos as seguintes hipóteses:
+
+- Hipótese nula ($H_0$): Não há outliers, ou seja, todos os dados vêm de uma mesma distribuição normal.
+- Hipótese alternativa ($H_1$): Existe exatamente um outlier na amostra (uma observação de valor extremo que não é da mesma população em estudo).
+
+Para esse teste calculamos a estatística de Grubbs, definida como:
+
+$G = \max_i \frac{ |x_i - \bar{x}| }{s}$
+
+Ou seja, a observação com o maior desvio em relação à média em termos de desvios padrão (o desvio padronizado extremo).
+
+Calculado o $G$ da amostra, o comparamos com o valor crítico, o $G_{crítico}$. Se $G > G_{crítico}$, rejeitamos $H_0$, ou seja, a hipótese de que todos os dados são da mesma população normal, logo, consideramos o valor extremo como um outlier. Caso contrário, aceitamos que não há evidências estatísticas o suficiente para considerar o valor extremo como um outlier.
+
+Esse $G_{crítico}$ é obtido a partir da distribuição t de Student com $n-2$ graus de liberdade da seguinte forma:
+
+$G_{crítico} = \frac{(n-1)}{\sqrt{n}} \sqrt{ \frac{t_{\alpha/(2n),\, n-2}^2}{n-2 + t_{\alpha/(2n),\, n-2}^2} }$
+
+onde $t_{\alpha/(2n),\, n-2}$ é o quantil da distribuição t com nível de significância ajustado para $\alpha/(2n)$ (teste bilateral com ajuste para múltiplas comparações). A limitação desse teste é que ele pressupõe que os dados são aproximadamente normais e que ele testa a hipótese de um único outlier, assim, se os dados apresentam mais de um, um outlier extremo pode mascarar os outros.
+
+No R podemos aplicar esse teste da seguinte forma:
+
+```{r}
+#| label: outliers_teste_grubbs_g_crit
+#| warning: false
+
+# testando a presença de um outlier extremo na
+# variável w_age_t de ap2
+# pelo teste de Grubbs com alfa de 5%
+media_amostral <- mean(ap2$w_age_t)
+dp_amostral <- sd(ap2$w_age_t)
+n <- length(ap2$w_age_t)
+
+idx_extremo <- which.max(abs(ap2$w_age_t - media_amostral))
+valor_extremo <- ap2$w_age_t[idx_extremo]
+cat("Observação potencialmente outlier: observação de nº", idx_extremo, "e valor", valor_extremo, "\n")
+
+G <- max(abs(ap2$w_age_t - media_amostral)) / dp_amostral
+
+alpha <- 0.05
+t_crit <- qt(p = 1 - alpha/(2*n), df = n - 2)
+G_crit <- ((n - 1) / sqrt(n)) * sqrt( t_crit^2 / (n - 2 + t_crit^2) )
+
+if (G > G_crit) {
+  cat("Há evidências de 1 outlier (Rejeita H0)\n")
+} else {
+  cat("Sem evidências de outlier (Não rejeita H0)\n")
+}
+```
+
+Também podemos aplicar esse teste no R calculando o p-valor. Nesse caso, estamos assumindo que a distribuição sob $H_0$ (ausência de outliers) está relacionada à distribuição t de Student. Dessa forma, o p‑valor indica a probabilidade de observar um valor de $G$ tão extremo (ou mais) quanto o obtido, caso realmente não existam outliers. Formalmente, nosso p-valor indica:
+
+$p-valor = P(G \geq G_{obs} | H_0)$
+
+Se o p-valor for inferior ao limite que estabelecemos (o $\alpha$), rejeitamos $H_0$ e consideramos que existe evidência estatística de que há um outlier extremo. Para a obtenção do p-valor, usamos a relação entre as estatíticas $G$ e $t$:
+
+$t^2 = \frac{G^2 \cdot n \cdot (2 - n)}{G^2 \cdot n - (n - 1)^2}$ (isolando o $t^2$ da definição do $G_{crit}$)
+
+como $(2 - n) = - (n-2)$
+
+$t^2 = \frac{-G^2 \cdot n \cdot (n - 2)}{G^2 \cdot n - (n - 1)^2}$
+
+$t^2 = \frac{G^2 \cdot n \cdot (n - 2)}{(n - 1)^2 - G^2 \cdot n}$
+
+dividindo numerador e denominador por $n$
+
+$t^2 = \frac{G^2 \cdot (n - 2)}{\frac{(n - 1)^2}{n} - G^2}$
+
+como $\frac{(n - 1)^2}{n} = \frac{n^2 - 2n + 1}{n}=n - 2 + \frac{1}{n}$, então,
+
+$t^2 = \frac{G^2 \cdot (n - 2)}{(n - 2 + \frac{1}{n}) - G^2}$. Tomanda a raiz quadrada dos dois lados, chegamos à equação
+
+$t = \frac{G \sqrt{n - 2}}{\sqrt{(n - 2 + \frac{1}{n}) - G^2}}$, entretanto, a maioria dos livros adota a aproximação de $n - 2 + \frac{1}{n} \approx n - 1$ e apresenta essa relação como:
+
+$t = \frac{G \sqrt{n - 2}}{\sqrt{n - 1 - G^2}}$
+
+com $n-2$ graus de liberdade. Assim, o p-valor bilateral será calculado como:
+
+$p=2n[1-F_t(|t|;n-2)]$
+
+em que $F_t(.;v)$ é a função de distribuição acumulada da t de Student com $v$ graus de liberdade. No R:
+
+```{r}
+#| label: outliers_teste_grubbs_p_valor
+#| warning: false
+
+# testando a presença de um outlier extremo na
+# variável w_age_t de ap2
+# pelo teste de Grubbs com alfa de 5%
+media_amostral <- mean(ap2$w_age_t)
+dp_amostral <- sd(ap2$w_age_t)
+n <- length(ap2$w_age_t)
+
+idx_extremo <- which.max(abs(ap2$w_age_t - media_amostral))
+valor_extremo <- ap2$w_age_t[idx_extremo]
+cat("Observação potencialmente outlier: observação de nº", idx_extremo, "e valor", valor_extremo, "\n")
+
+G <- max(abs(ap2$w_age_t - media_amostral)) / dp_amostral
+
+# usando a definição inicial (isolando o t)
+s <- (G^2 * n * (2 - n)) / ((G^2 * n) - (n - 1)^2)
+t_iso <- sqrt(s)
+
+# usando a definição adotada em livros (aproximação de t)
+t_aprox <- sqrt(n - 2) * G / sqrt(n - 1 - G^2)
+
+cat("G =", round(G, 3), " | t (isolado) =", t_iso, " | t (aproximado) =", t_aprox, "\n")
+
+p_valor <- 2 * n * (1 - pt(abs(t_iso), df = n - 2))
+p_valor[p_valor > 1] <- 1
+
+cat("p-valor =", round(p_valor, 5), "\n")
+
+if (p_valor < .05) {
+  cat("Há evidências de 1 outlier (Rejeita H0)\n")
+} else {
+  cat("Sem evidências de outlier (Não rejeita H0)\n")
+}
+```
+
+## Medidas de dispersão ou variabilidade
+
+### Amplitude
+### Desvio-médio
+### Variância
+### Desvio-padrão
+### Erro-padrão
+### Coeficiente de variação
+
+## Medidas de forma
+
+### Assimetria
+### Curtose
+
+# o que falta
 - Estatística descritiva bivariada
     - Associação entre duas variáveis qualitativas
         - Tabelas de distribuição conjunta de frequências

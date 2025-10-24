@@ -16,7 +16,7 @@ abstract: >
   Apresenta o dicionário dos conjuntos de dados do projeto, disponibilizados como material de estudo no livro Veterinary Epidemiologic Research (Dohoo et al., 2010).
 keywords:
   - statistical analysis
-license: "CC BY"
+license: "CC BY-NC"
 copyright: 
   holder: Marcelo Paiva
   year: 2025

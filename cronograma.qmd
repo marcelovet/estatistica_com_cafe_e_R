@@ -16,7 +16,7 @@ abstract: >
   Cronograma proposto dos treinamentos.
 keywords:
   - statistical analysis
-license: "CC BY"
+license: "CC BY-NC"
 copyright: 
   holder: Marcelo Paiva
   year: 2025
