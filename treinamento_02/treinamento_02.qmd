@@ -55,6 +55,9 @@ format:
       - left=20mm
       - heightrounded
     colorlinks: true
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r}
@@ -69,6 +72,8 @@ format:
 #   "ggtext",
 #   "paletteer"
 # ), install.packages, character.only = TRUE)
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 # Pacotes
 library(tidyverse)
@@ -93,7 +98,14 @@ cores <- c("#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7")
 
 ## Pacotes necessários
 
-Pacotes (**package**) são coleções de funções, dados e documentação que estendem as capacidades do R base (aquele que você recebe na instalação padrão). São como "caixas de ferramentas" especializadas que você adiciona ao R para realizar tarefas específicas, então você tem pacotes para elaboração de gráficos, para certos tipos de análises, para manipulação de dados, para leitura (importação) de dados. Em [https://cran.r-project.org/web/views/](https://cran.r-project.org/web/views/) há uma "breve" lista de pacotes conforme a sua finalidade.
+Pacotes (**package**) são coleções de funções, dados e documentação que
+estendem as capacidades do R base (aquele que você recebe na instalação
+padrão). São como "caixas de ferramentas" especializadas que você
+adiciona ao R para realizar tarefas específicas, então você tem pacotes
+para elaboração de gráficos, para certos tipos de análises, para
+manipulação de dados, para leitura (importação) de dados. Em
+<https://cran.r-project.org/web/views/> há uma "breve" lista de pacotes
+conforme a sua finalidade.
 
 ```{r}
 # funções no R base
@@ -106,7 +118,9 @@ length(ls("package:dplyr"))
 system.file(package = "ggplot2") %>% list.files()
 ```
 
-Por padrão, ao iniciar uma sessão no R, serão carregados os pacotes e funções associados ao R base. Os demais devem ser instalados primeiramente, e depois carregados na seção para serem usados.
+Por padrão, ao iniciar uma sessão no R, serão carregados os pacotes e
+funções associados ao R base. Os demais devem ser instalados
+primeiramente, e depois carregados na seção para serem usados.
 
 ```{r}
 # pacotes carregados no seu ambiente
@@ -123,7 +137,9 @@ any(installed.packages()[, "Package"] == 'dplyr')
 "ggplot2" %in% rownames(installed.packages())
 ```
 
-A instalação de pacotes no R é feita usando a função `install.packages` ou `devtools::install_github` para pacotes que estão no github e não em um repositório de pacotes.
+A instalação de pacotes no R é feita usando a função `install.packages`
+ou `devtools::install_github` para pacotes que estão no github e não em
+um repositório de pacotes.
 
 ```{r}
 #| eval: false
@@ -146,7 +162,13 @@ devtools::install_github("tidyverse/ggplot2")
 install.packages("ggplot2", repos = "https://cloud.r-project.org/")
 ```
 
-Para carregar um pacote em uma sessão usamos `library()` ou `require()`. A diferença entre os dois é que, na ausência do pacote que você pretende carregar, `library` gera um erro, enquanto o `require` retorna um valor `FALSE` invisível, o qual pode ser usado, por exemplo, para criar uma lógica em seu script para instalar o pacote caso o mesmo não possa ser carregado ou, então, para gerar uma mensagem no terminal indicando essa ausência do pacote.
+Para carregar um pacote em uma sessão usamos `library()` ou `require()`.
+A diferença entre os dois é que, na ausência do pacote que você pretende
+carregar, `library` gera um erro, enquanto o `require` retorna um valor
+`FALSE` invisível, o qual pode ser usado, por exemplo, para criar uma
+lógica em seu script para instalar o pacote caso o mesmo não possa ser
+carregado ou, então, para gerar uma mensagem no terminal indicando essa
+ausência do pacote.
 
 ```{r}
 library(ggplot2)
@@ -169,14 +191,19 @@ pacotes <- c("ggplot2", "dplyr", "tidyr")
 x <- lapply(pacotes, library, character.only = TRUE, quietly = TRUE)
 ```
 
-Além dessas funções para instalação e carregamento de pacotes, também outras funções que devem ser conhecidas na rotina são as de atualização (`update.packages()`) e remoção (`remove.packages()`) de pacotes, descrição (`packageDescription()`), versão (`packageVersion()`) e forma recomendada pelo seus autores de citação (`citation()`) quando usada em uma publicação.
+Além dessas funções para instalação e carregamento de pacotes, também
+outras funções que devem ser conhecidas na rotina são as de atualização
+(`update.packages()`) e remoção (`remove.packages()`) de pacotes,
+descrição (`packageDescription()`), versão (`packageVersion()`) e forma
+recomendada pelo seus autores de citação (`citation()`) quando usada em
+uma publicação.
 
 ```{r}
 #| eval: false
 
 # Atualização de pacotes
-update.packages()  # todos
-update.packages(ask = FALSE)  # todos, mas exige confirmação
+update.packages()  # todos, mas exige confirmação
+update.packages(ask = FALSE) # todos
 
 # apagar um pacote
 remove.packages("nome_pacote")
@@ -191,11 +218,20 @@ packageVersion("ggplot2")
 citation("ggplot2")
 ```
 
-Algo a se ter em mente é que nada impede de vários pacotes terem o mesmo nome para funções com finalidades diferentes. Nesse caso, ao carregar esses pacotes, o último a ser carregado irá mascarar o nome da anterior no seu ambiente. Assim, para evitar conflitos, ou o uso da função errada, recomenda-se usar a função seguindo o padrão `nome_do_pacote::nome_da_função`.
+Algo a se ter em mente é que nada impede de vários pacotes terem o mesmo
+nome para funções com finalidades diferentes. Nesse caso, ao carregar
+esses pacotes, o último a ser carregado irá mascarar o nome da anterior
+no seu ambiente. Assim, para evitar conflitos, ou o uso da função
+errada, recomenda-se usar a função seguindo o padrão
+`nome_do_pacote::nome_da_função`.
 
 ## Leitura de datasets externos ao R
 
-A importação de dados é o primeiro passo em qualquer análise. O R oferece múltiplos pacotes especializados para diferentes formatos de arquivos, mas iremos focar nos pacotes de leitura dos arquivos provenientes dos softwares Excel, SAS, Stata e SPSS. Para isso, utilizaremos os pacotes `readxl` e `haven`.
+A importação de dados é o primeiro passo em qualquer análise. O R
+oferece múltiplos pacotes especializados para diferentes formatos de
+arquivos, mas iremos focar nos pacotes de leitura dos arquivos
+provenientes dos softwares Excel, SAS, Stata e SPSS. Para isso,
+utilizaremos os pacotes `readxl` e `haven`.
 
 ```{r}
 #| results: hide
@@ -215,27 +251,55 @@ library(haven)     # SAS, SPSS, STATA
 
 ### Importando dados do Excel
 
-Para leitura de arquivos do Excel nos formatos .xls e .xlsx usaremos o pacote `readxl`, o qual faz parte do conjunto de pacotes do `tidyverse`. Dele podemos usar as funções `read_excel()`, `read_xls()` ou `read_xlsx()`, os quais recebem argumentos semelhantes, com a diferença que os dois últimos são específicos ao formato do arquivo.
+Para leitura de arquivos do Excel nos formatos .xls e .xlsx usaremos o
+pacote `readxl`, o qual faz parte do conjunto de pacotes do `tidyverse`.
+Dele podemos usar as funções `read_excel()`, `read_xls()` ou
+`read_xlsx()`, os quais recebem argumentos semelhantes, com a diferença
+que os dois últimos são específicos ao formato do arquivo.
 
-O primeiro e mais importante argumento a ser fornecido para essa função é o `path`, o local onde o arquivo se encontra no seu computador. Esse caminho pode ser absoluto (desde a raiz, normalmente `/` no linux ou `C:` no windows, até o local) ou relativo ao diretório de trabalho (que pode ser verificado usando a função `getwd()`).
+O primeiro e mais importante argumento a ser fornecido para essa função
+é o `path`, o local onde o arquivo se encontra no seu computador. Esse
+caminho pode ser absoluto (desde a raiz, normalmente `/` no linux ou
+`C:` no windows, até o local) ou relativo ao diretório de trabalho (que
+pode ser verificado usando a função `getwd()`).
 
-Como os arquivos do Excel aceitam múltiplas planilhas (em diferentes abas), o argumento de `sheet` do `read_excel()` permite escolher qual aba se pretende carregar. Caso seja necessário verificar primeiro o nome das abas disponíveis no arquivo, use `excel_sheets(path)`.
+Como os arquivos do Excel aceitam múltiplas planilhas (em diferentes
+abas), o argumento de `sheet` do `read_excel()` permite escolher qual
+aba se pretende carregar. Caso seja necessário verificar primeiro o nome
+das abas disponíveis no arquivo, use `excel_sheets(path)`.
 
-Outro problema comum em arquivos do Excel são planilhas que não iniciam na linha 1 ou que apresentam um conjunto de colunas que não pretendemos usar (sem conteúdo ou preenchido com informações que não fazem parte do dateset). Para contornar esses obstáculos, podemos usar o argumento `skip` com o número de linhas iniciais que não devem ser lidas, ou usar o `range` com um `character` indicando a primeira e última células que delimitam seus dados (por exemplo, `range = "B2:D20"` indica que devem ser lidas as colunas B, C e D, das linhas 2 até a 20).
+Outro problema comum em arquivos do Excel são planilhas que não iniciam
+na linha 1 ou que apresentam um conjunto de colunas que não pretendemos
+usar (sem conteúdo ou preenchido com informações que não fazem parte do
+dateset). Para contornar esses obstáculos, podemos usar o argumento
+`skip` com o número de linhas iniciais que não devem ser lidas, ou usar
+o `range` com um `character` indicando a primeira e última células que
+delimitam seus dados (por exemplo, `range = "B2:D20"` indica que devem
+ser lidas as colunas B, C e D, das linhas 2 até a 20).
 
-Por padrão, essas funções buscam adivinhar o tipo de dados presente em cada coluna da planilha, mas é possível declarar o tipo usando o argumento col_types com um vetor com comprimento igual ao número de colunas que irá importar. Esse vetor deve, para cada coluna, usar uma das opções:
+Por padrão, essas funções buscam adivinhar o tipo de dados presente em
+cada coluna da planilha, mas é possível declarar o tipo usando o
+argumento col_types com um vetor com comprimento igual ao número de
+colunas que irá importar. Esse vetor deve, para cada coluna, usar uma
+das opções:
 
-- "skip": remove a coluna do dataset
-- "guess": deixa para a função escolher o tipo
-- "logical": booleano
-- "numeric": numérico
-- "date": data
-- "text": character
-- "list": lista
+-   "skip": remove a coluna do dataset
+-   "guess": deixa para a função escolher o tipo
+-   "logical": booleano
+-   "numeric": numérico
+-   "date": data
+-   "text": character
+-   "list": lista
 
-Também por padrão, a primeira linha é usada para obter os nomes de cada coluna. Se você não possui nomes das colunas na sua planilha use `col_names = FALSE` na função ou passe um vetor dos nomes das colunas para o argumento `col_names`.
+Também por padrão, a primeira linha é usada para obter os nomes de cada
+coluna. Se você não possui nomes das colunas na sua planilha use
+`col_names = FALSE` na função ou passe um vetor dos nomes das colunas
+para o argumento `col_names`.
 
-Um aspecto importante de qualquer conjunto de dados é saber como foram codificados os dados ausentes. O argumento `na` permite passar um vetor de `character` com os códigos usados na planilha para declarar um dado ausente, o qual será convertido para `NA` no R.
+Um aspecto importante de qualquer conjunto de dados é saber como foram
+codificados os dados ausentes. O argumento `na` permite passar um vetor
+de `character` com os códigos usados na planilha para declarar um dado
+ausente, o qual será convertido para `NA` no R.
 
 ```{r}
 excel_sheets("../datasets/excel/ap2.xlsx")
@@ -279,14 +343,24 @@ dados_na <- read_excel(
 )
 ```
 
-
 ### Importando dados do Stata
 
-Para leitura de arquivos do Stata no formato .dta usaremos o pacote `heaven`, o qual possui funções para leitura de arquivos do Stata, SPSS e SAS. Nesse treinamento vamos focar na função `read_dta()` para leitura dos arquivos do Stata (superiores a versão 13.0).
+Para leitura de arquivos do Stata no formato .dta usaremos o pacote
+`heaven`, o qual possui funções para leitura de arquivos do Stata, SPSS
+e SAS. Nesse treinamento vamos focar na função `read_dta()` para leitura
+dos arquivos do Stata (superiores a versão 13.0).
 
-Assim como no `read_excel()`, o primeiro argumento de `read_dta()` deve ser a localização do arquivo. Além disso, a função aceita como argumentos `encoding`, a codificação de carácteres usada, `skip` para remover um certo número de linhas, `col_select` para definir quais colunas serão selecionadas e `n_max` para declarar o número máximo de linhas que devem ser importadas.
+Assim como no `read_excel()`, o primeiro argumento de `read_dta()` deve
+ser a localização do arquivo. Além disso, a função aceita como
+argumentos `encoding`, a codificação de carácteres usada, `skip` para
+remover um certo número de linhas, `col_select` para definir quais
+colunas serão selecionadas e `n_max` para declarar o número máximo de
+linhas que devem ser importadas.
 
-Um diferença importante entre arquivos do Excel e do Stata é que no segundo o dataset e as suas variáveis podem conter metadados ("notes" e "labels") com informações sobre esses dados. Essas informações podem ser acessadas na função `attr()`.
+Um diferença importante entre arquivos do Excel e do Stata é que no
+segundo o dataset e as suas variáveis podem conter metadados ("notes" e
+"labels") com informações sobre esses dados. Essas informações podem ser
+acessadas na função `attr()`.
 
 ```{r}
 dados_stata <- read_dta("../datasets/stata/ap2.dta")
@@ -316,7 +390,11 @@ kable(
 
 ### Verificação e diagnóstico dos dados importados
 
-Uma vez carregados os dados, é importante avaliar a estrutura desse conjunto de dados importado. Para uma exploração inicial, será interessante avaliar, no mínimo, as dimensões desses dados (número de observações e variáveis), quais os tipos das variáveis no R, resumos estatísticos simples, quantidade de valores ausentes por variável.
+Uma vez carregados os dados, é importante avaliar a estrutura desse
+conjunto de dados importado. Para uma exploração inicial, será
+interessante avaliar, no mínimo, as dimensões desses dados (número de
+observações e variáveis), quais os tipos das variáveis no R, resumos
+estatísticos simples, quantidade de valores ausentes por variável.
 
 ```{r}
 #| eval: false
@@ -339,7 +417,12 @@ verificar_dados <- function(dados) {
 verificar_dados(dados_stata)
 ```
 
-Por fim, em grandes datasets é comum que os dados sejam registrados em múltiplos arquivos (principalmente no Excel, por causa do limite de linhas). Nesse caso, para não ser necessário carregar cada um desses arquivos e depois construir um data.frame que uni todos, podemos usar recursos de programação funcional do pacote `purrr` para importar diretamente todos os arquivos em um único data.frame.
+Por fim, em grandes datasets é comum que os dados sejam registrados em
+múltiplos arquivos (principalmente no Excel, por causa do limite de
+linhas). Nesse caso, para não ser necessário carregar cada um desses
+arquivos e depois construir um data.frame que uni todos, podemos usar
+recursos de programação funcional do pacote `purrr` para importar
+diretamente todos os arquivos em um único data.frame.
 
 ```{r}
 library(purrr)
@@ -348,30 +431,35 @@ library(purrr)
 dados <- list.files("datasets/csv", pattern = "\\.csv$", full.names = TRUE) |> map_df(read_csv2)
 ```
 
-**Quadro Resumo das funções que podem ser usadas na importação de arquivos externos ao R** 
+**Quadro Resumo das funções que podem ser usadas na importação de
+arquivos externos ao R**
 
-| Formato | Pacote | Função |
-|---------|-------------------|------------------|
-| CSV | `readr` | `read_delim()`, `read_csv()`, `read_csv2()` |
-| Excel | `readxl` | `read_excel()`, `read_xls()`, `read_xlsx()` |
-| SAS | `haven` | `read_sas()` |
-| SPSS | `haven` | `read_sav()` |
-| Stata | `haven` | `read_stata()`, `read_dta()` |
-| Múltiplos | `rio` | `import()` |
+| Formato   | Pacote   | Função                                      |
+|-----------|----------|---------------------------------------------|
+| CSV       | `readr`  | `read_delim()`, `read_csv()`, `read_csv2()` |
+| Excel     | `readxl` | `read_excel()`, `read_xls()`, `read_xlsx()` |
+| SAS       | `haven`  | `read_sas()`                                |
+| SPSS      | `haven`  | `read_sav()`                                |
+| Stata     | `haven`  | `read_stata()`, `read_dta()`                |
+| Múltiplos | `rio`    | `import()`                                  |
 
 # Manipulação de dados com os pacotes do `tidyverse`
 
-O **tidyverse** é uma coleção de pacotes R voltados para a ciência de dados, que compatilham uma mesma filosofia, gramática e estruturas de dados. Ele é composto dos seguintes pacotes:
+O **tidyverse** é uma coleção de pacotes R voltados para a ciência de
+dados, que compatilham uma mesma filosofia, gramática e estruturas de
+dados. Ele é composto dos seguintes pacotes:
 
-- tibble: extensão do `data.frame`;
-- dplyr: funções na forma de verbos que fornece a gramática para a manipulação dos dados;
-- tidyr: funções para obtenção dos dados que seguem a filosia dos "dados arrumados";
-- readr: importação de dados tabulares (csv, tsv, fwf);
-- purrr: programação funcional;
-- stringr: manipulação de strings (`character`);
-- forcats: manipulação de fatores (`factor`);
-- lubridate: manipulação de datas (`date`);
-- ggplot2: criação de gráficos.
+-   tibble: extensão do `data.frame`;
+-   dplyr: funções na forma de verbos que fornece a gramática para a
+    manipulação dos dados;
+-   tidyr: funções para obtenção dos dados que seguem a filosia dos
+    "dados arrumados";
+-   readr: importação de dados tabulares (csv, tsv, fwf);
+-   purrr: programação funcional;
+-   stringr: manipulação de strings (`character`);
+-   forcats: manipulação de fatores (`factor`);
+-   lubridate: manipulação de datas (`date`);
+-   ggplot2: criação de gráficos.
 
 ```{r}
 # Carregar todo o conjunto de pacotes
@@ -383,11 +471,12 @@ library(tidyr)
 library(readr)
 ```
 
-Como já mencionado, o `tidyverse` segue a filosofia de "dados arrumados" (*tidy data*), o que basicamente significa que:
+Como já mencionado, o `tidyverse` segue a filosofia de "dados arrumados"
+(*tidy data*), o que basicamente significa que:
 
-- **cada variável forma uma coluna;**
-- **cada unidade observacional (unidade amostral) forma uma linha;**
-- **cada célula é uma observação e um único valor**
+-   **cada variável forma uma coluna;**
+-   **cada unidade observacional (unidade amostral) forma uma linha;**
+-   **cada célula é uma observação e um único valor**
 
 Esse padrão facilita análises posteriores:
 
@@ -402,9 +491,22 @@ dados_tidy <- tibble(
 dados_tidy
 ```
 
-O `tibble` facilita a compreensão dos seus dados, uma vez que sua impressão (com `print`) apresenta o tipo de cada variável, não imprime o conjunto completo (somente as primeiras linhas) e não faz conversões automáticas de variáveis `character` para `factor`. Além disso, ele aceita nomes não sintáticos do R para as variáveis (usando \`\`).
+O `tibble` facilita a compreensão dos seus dados, uma vez que sua
+impressão (com `print`) apresenta o tipo de cada variável, não imprime o
+conjunto completo (somente as primeiras linhas) e não faz conversões
+automáticas de variáveis `character` para `factor`. Além disso, ele
+aceita nomes não sintáticos do R para as variáveis (usando \`\`).
 
-Uma diferença importante entre `tibble` e `data.frame` está na forma como você extrai uma variável do conjunto. No `data.frame` usamos os padrões `nome_do_dataframe["nome_da_coluna"]`, `nome_do_dataframe[indice_da_coluna]` ou `nome_do_dataframe$nome_da_coluna`. No `tibble` usamos os padrões `nome_do_tibble$nome_da_coluna`, `nome_do_tibble[[indice_da_coluna]]`, `nome_do_tibble[["nome_da_coluna"]]` ou, ainda, extrair por meio do pipe com `nome_do_tibble %>% .$nome_da_coluna`, `nome_do_tibble %>% .[["nome_da_coluna"]]` ou `nome_do_tibble |> pull("nome_da_coluna")`.
+Uma diferença importante entre `tibble` e `data.frame` está na forma
+como você extrai uma variável do conjunto. No `data.frame` usamos os
+padrões `nome_do_dataframe["nome_da_coluna"]`,
+`nome_do_dataframe[indice_da_coluna]` ou
+`nome_do_dataframe$nome_da_coluna`. No `tibble` usamos os padrões
+`nome_do_tibble$nome_da_coluna`, `nome_do_tibble[[indice_da_coluna]]`,
+`nome_do_tibble[["nome_da_coluna"]]` ou, ainda, extrair por meio do pipe
+com `nome_do_tibble %>% .$nome_da_coluna`,
+`nome_do_tibble %>% .[["nome_da_coluna"]]` ou
+`nome_do_tibble |> pull("nome_da_coluna")`.
 
 ```{r}
 # extraindo uma variável do tibble
@@ -413,9 +515,12 @@ dados_tidy %>% .[["idade_anos"]]
 dados_tidy |> pull("idade_anos")
 ```
 
-## O pipe (%>% e |>)
+## O pipe (%\>% e \|\>)
 
-O pipe permite agrupar em um código que parece ser uma única operação múltiplas operações (chamadas de funções), em que o resultado de uma operação e fornecido como o primeiro argumento da subsequente. Isso torna o código mais legível.
+O pipe permite agrupar em um código que parece ser uma única operação
+múltiplas operações (chamadas de funções), em que o resultado de uma
+operação e fornecido como o primeiro argumento da subsequente. Isso
+torna o código mais legível.
 
 ```{r}
 # Sem pipe, com funções aninhadas
@@ -446,7 +551,8 @@ resultado <- dados_tidy |>
 
 ## Manipulação dos dados com o `dplyr`
 
-Usamos o `select()` para obter um subconjunto do nosso dataset com somente as variáveis de interesse.
+Usamos o `select()` para obter um subconjunto do nosso dataset com
+somente as variáveis de interesse.
 
 ```{r}
 df_exemplo <- tibble(
@@ -501,7 +607,8 @@ df_exemplo %>%
   )
 ```
 
-Usamos o `filter()` para obter um subconjunto do nosso dataset com somente as observações que atendem a uma determinada condição.
+Usamos o `filter()` para obter um subconjunto do nosso dataset com
+somente as observações que atendem a uma determinada condição.
 
 ```{r}
 #| eval: false
@@ -582,7 +689,8 @@ df_exemplo %>%
   )
 ```
 
-Usamos o `arrange()` para ordenar as variáveis por uma ou mais variáveis.
+Usamos o `arrange()` para ordenar as variáveis por uma ou mais
+variáveis.
 
 ```{r}
 #| eval: false
@@ -604,7 +712,9 @@ df_exemplo %>%
   arrange(desc(is.na(temperatura)), temperatura)
 ```
 
-Para criar agregações (resumos estatíticos) usamos `summarise()` e o `group_by()` caso esse resumo deva ser calculado para cada categoria de determinada variável.
+Para criar agregações (resumos estatíticos) usamos `summarise()` e o
+`group_by()` caso esse resumo deva ser calculado para cada categoria de
+determinada variável.
 
 ```{r}
 #| eval: false
@@ -655,7 +765,8 @@ df_exemplo %>%
   arrange(rank_peso)
 ```
 
-Para obter um subconjunto de observações também podemos usar funções da família `slice_*`.
+Para obter um subconjunto de observações também podemos usar funções da
+família `slice_*`.
 
 ```{r}
 #| eval: false
@@ -684,7 +795,8 @@ df_exemplo %>%
   slice_min(idade, n = 2, with_ties = FALSE)
 ```
 
-Para obter os valores únicos de uma ou mais variáveis usamos `distinct()`.
+Para obter os valores únicos de uma ou mais variáveis usamos
+`distinct()`.
 
 ```{r}
 #| eval: false
@@ -731,7 +843,15 @@ df_exemplo %>%
 
 ## Reestruturação dos dados com o `tidyr`
 
-Algumas vezes os dados importados apresentam um conjunto de colunas que precisam ser transformadas em uma única com seu valor e outra com a categoria, ou o contrário. Para conseguir isso usamos as funções `pivot_longer()` e `pivot_wider()`. `pivot_longer()` retorna um dataset com mais observações e menos colunas, usando os nomes das colunas alvo para construir uma variável e o valor de cada coluna para construir outra. `pivot_wider()` retorna um dataset com mais colunas e menos observações, usando os valores de uma ou mais colunas alvo para criar novas variáveis e outra coluna para extrair os valores.
+Algumas vezes os dados importados apresentam um conjunto de colunas que
+precisam ser transformadas em uma única com seu valor e outra com a
+categoria, ou o contrário. Para conseguir isso usamos as funções
+`pivot_longer()` e `pivot_wider()`. `pivot_longer()` retorna um dataset
+com mais observações e menos colunas, usando os nomes das colunas alvo
+para construir uma variável e o valor de cada coluna para construir
+outra. `pivot_wider()` retorna um dataset com mais colunas e menos
+observações, usando os valores de uma ou mais colunas alvo para criar
+novas variáveis e outra coluna para extrair os valores.
 
 ```{r}
 dados_wide <- tibble(
@@ -781,7 +901,9 @@ nomes_tabela <- c("Animal", "Peso (antes)", "Peso (depois)", "Temp (antes)", "Te
 kable(medidas_wide, col.names = nomes_tabela)
 ```
 
-Também é possível separar os valores de uma variável em novas variáveis usando o `separate()` ou unir os valores de diferentes variáveis em uma única usando o `unite()`.
+Também é possível separar os valores de uma variável em novas variáveis
+usando o `separate()` ou unir os valores de diferentes variáveis em uma
+única usando o `unite()`.
 
 ```{r}
 df_exemplo_2 <- tibble(
@@ -817,7 +939,14 @@ dados_unidos <- tibble(
   separate_rows(especialidades, sep = ",")
 ```
 
-Quando temos dados ausentes (`NA`) em variáveis do nosso conjunto de dados, normalmente, algum tratamento será necessário para lidar com essas observações, seja removendo elas ou substituindo por outro valor. `fill()` substitui os valores `NA` das variáveis alvo por valores anteriores e posteriores àquela observação no conjunto de dados, enquanto `replace_na()` substitui os valores `NA` por um valor padrão. Já o `drop_na()` remove a unidade observacional inteira que apresente um `NA` nas variáveis alvo.
+Quando temos dados ausentes (`NA`) em variáveis do nosso conjunto de
+dados, normalmente, algum tratamento será necessário para lidar com
+essas observações, seja removendo elas ou substituindo por outro valor.
+`fill()` substitui os valores `NA` das variáveis alvo por valores
+anteriores e posteriores àquela observação no conjunto de dados,
+enquanto `replace_na()` substitui os valores `NA` por um valor padrão.
+Já o `drop_na()` remove a unidade observacional inteira que apresente um
+`NA` nas variáveis alvo.
 
 ```{r}
 #| eval: false
@@ -850,7 +979,19 @@ dados_na %>%
   drop_na(temperatura)
 ```
 
-Por vezes em nossa análise chegamos em um ponto onde é necessário dividir nosso dataset em multiplos conjuntos, baseado em alguma categoria, seja para aplicar algum teste ou ajustar um modelo. Esse processo, normalmente, envolveria criar várias variáveis cada uma com o dataset filtrado para a categoria de interesse e depois aplicar o teste a cada uma desses subconjuntos. Entretanto, o `tidyr` oferece uma estratégia mais elegante para esse processo por meio do aninhamento usando o `nest()`. O `nest()` permite criar um novo `tibble` em que, em uma coluna do tipo lista, cada observação se torna um `tibble` filtrado para a categoria de interesse, assim, podemos aplicar o teste de forma iterativa em cada um, por meio de funções de programação funcional do `purrr`, mantendo também o resultado em formato de lista para cada observação.
+Por vezes em nossa análise chegamos em um ponto onde é necessário
+dividir nosso dataset em multiplos conjuntos, baseado em alguma
+categoria, seja para aplicar algum teste ou ajustar um modelo. Esse
+processo, normalmente, envolveria criar várias variáveis cada uma com o
+dataset filtrado para a categoria de interesse e depois aplicar o teste
+a cada uma desses subconjuntos. Entretanto, o `tidyr` oferece uma
+estratégia mais elegante para esse processo por meio do aninhamento
+usando o `nest()`. O `nest()` permite criar um novo `tibble` em que, em
+uma coluna do tipo lista, cada observação se torna um `tibble` filtrado
+para a categoria de interesse, assim, podemos aplicar o teste de forma
+iterativa em cada um, por meio de funções de programação funcional do
+`purrr`, mantendo também o resultado em formato de lista para cada
+observação.
 
 ```{r}
 dados_aninhados <- df_exemplo %>%
@@ -874,9 +1015,19 @@ dados_aninhados$teste_media_peso_vacinado[[1]]
 
 ## Unindo diferentes tabelas com `dplyr`
 
-Outra situação com que se depara na análise de dados é a necessidade de importar dados de diferentes planilhas (tabelas), as quais depois precisamos unir em um único dataset, baseado na informação de alguma variável que ocorre em ambas as tabelas. Isso é particularmente comum quando trabalhamos com dados importados de bancos de dados relacionais, onde temos uma tabela que possui uma coluna de chave primária (valores únicos) e outra com chave estrangeira que indica que aquele registro se refere à observação única daquela outra tabela.
+Outra situação com que se depara na análise de dados é a necessidade de
+importar dados de diferentes planilhas (tabelas), as quais depois
+precisamos unir em um único dataset, baseado na informação de alguma
+variável que ocorre em ambas as tabelas. Isso é particularmente comum
+quando trabalhamos com dados importados de bancos de dados relacionais,
+onde temos uma tabela que possui uma coluna de chave primária (valores
+únicos) e outra com chave estrangeira que indica que aquele registro se
+refere à observação única daquela outra tabela.
 
-Para unir essas tabelas usamos `joins`, uma operação derivada do SQL, uma linguagem de consulta de banco de dados relacionais. `joins` guardam uma semelhança com a teoria de conjuntos (união, diferença, intersercção).
+Para unir essas tabelas usamos `joins`, uma operação derivada do SQL,
+uma linguagem de consulta de banco de dados relacionais. `joins` guardam
+uma semelhança com a teoria de conjuntos (união, diferença,
+intersercção).
 
 ![Tipos de joins do `dplyr`](joins.png "Title: Tipos de joins")
 
@@ -925,7 +1076,14 @@ animais_sem_consulta <- animais %>%
 
 ## Manipulando texto, datas e fatores com `stringr`, `lubridate` e `forcats`
 
-Quando nosso dataset possui variáveis que representam um texto, por exemplo, uma resposta aberta, é normal ter que manipular essa variável para padronizá-la antes de uma análise. O `stringr` oferece um conjunto de funções que permitem manipular dados do tipo `character`, que inclui meios de tranformar o texto em maiúsculas ou minúsculas, detectar certas palavras, contar o número de ocorrências de uma palavra, remover ou substituir uma palavra por outra ou, ainda, usar expressões regulares (*REGEX*) para tranformar seus dados iniciais.
+Quando nosso dataset possui variáveis que representam um texto, por
+exemplo, uma resposta aberta, é normal ter que manipular essa variável
+para padronizá-la antes de uma análise. O `stringr` oferece um conjunto
+de funções que permitem manipular dados do tipo `character`, que inclui
+meios de tranformar o texto em maiúsculas ou minúsculas, detectar certas
+palavras, contar o número de ocorrências de uma palavra, remover ou
+substituir uma palavra por outra ou, ainda, usar expressões regulares
+(*REGEX*) para tranformar seus dados iniciais.
 
 ```{r}
 #| eval: false
@@ -977,7 +1135,10 @@ telefones_limpos <- telefones %>%
 telefones_limpos
 ```
 
-O `lubridate` por sua vez permite trabalhar com dados temporais (data e tempo). Com ele você converter dados para os tipos `Date` e `POSIXct` (*date-time*), usar aritméticas entre datas, adcionar ou remover *timezones*, além de criar períodos, durações e intervalos.
+O `lubridate` por sua vez permite trabalhar com dados temporais (data e
+tempo). Com ele você converter dados para os tipos `Date` e `POSIXct`
+(*date-time*), usar aritméticas entre datas, adcionar ou remover
+*timezones*, além de criar períodos, durações e intervalos.
 
 ```{r}
 #| eval: false
@@ -1043,7 +1204,9 @@ tibble(
 )
 ```
 
-Para finalizar nossa seção sobre o `tidyverse` temos o pacote `forcats` para manipulação de fatores. Ele possui ferramentas para alterar ou reordenar os fatores de uma variável de forma simples.
+Para finalizar nossa seção sobre o `tidyverse` temos o pacote `forcats`
+para manipulação de fatores. Ele possui ferramentas para alterar ou
+reordenar os fatores de uma variável de forma simples.
 
 ```{r}
 #| eval: false
@@ -1081,15 +1244,32 @@ levels(dados_fatores$especie_pt)
 levels(dados_fatores$especie_agrup)
 ```
 
-Os pacotes apresentados possuem uma grande gama de ferramentas, e nem todas serão apresentadas no nosso treinamento. Caso queira aprender mais sobre elas, recomendo o livro [R para Ciência de Dados](https://r4ds.hadley.nz/), o qual possui uma versão online de acesso aberto ou a documentação dos pacotes do `tidyverse` que podem ser encontrados em [https://www.tidyverse.org/packages/]().
+Os pacotes apresentados possuem uma grande gama de ferramentas, e nem
+todas serão apresentadas no nosso treinamento. Caso queira aprender mais
+sobre elas, recomendo o livro [R para Ciência de
+Dados](https://r4ds.hadley.nz/), o qual possui uma versão online de
+acesso aberto ou a documentação dos pacotes do `tidyverse` que podem ser
+encontrados em [https://www.tidyverse.org/packages/]().
 
 # Estatística descritiva
 
-Estatísticas descritivas fazem parte de todo trabalho de análise de dados. Podemos ver ela como um passo inicial, em que você utiliza técnicas de análise exploratória para entender melhor o comportamento dos seus dados considerando o todo, por meio de tabelas, gráficos e medidas-resumo. Na estatística descritiva univariada buscamos o comportamento de uma variável isolada das demais do conjunto de dados, enquanto nas estatísticas bivariada ou multivariada exploramos o comportamento em conjunto de duas ou mais variáveis.
+Estatísticas descritivas fazem parte de todo trabalho de análise de
+dados. Podemos ver ela como um passo inicial, em que você utiliza
+técnicas de análise exploratória para entender melhor o comportamento
+dos seus dados considerando o todo, por meio de tabelas, gráficos e
+medidas-resumo. Na estatística descritiva univariada buscamos o
+comportamento de uma variável isolada das demais do conjunto de dados,
+enquanto nas estatísticas bivariada ou multivariada exploramos o
+comportamento em conjunto de duas ou mais variáveis.
 
-Para exemplificar as estatísticas descritivas em nosso treinamento, usaremos o dataset `ap2` (mais informações desse conjunto de dados podem ser verificadas no arquivo dicionário de [dados.pdf](../datasets/dicionario_dados.pdf)).
+Para exemplificar as estatísticas descritivas em nosso treinamento,
+usaremos o dataset `ap2` (mais informações desse conjunto de dados podem
+ser verificadas no arquivo dicionário de
+[dados.pdf](../datasets/dicionario_dados.pdf)).
 
-O tipo de variável em estudo irá influenciar na técnica que você escolhe para analisá-la, assim, podemos sintetizar as possibilidades de análise da seguinte forma para estatísticas univariadas:
+O tipo de variável em estudo irá influenciar na técnica que você escolhe
+para analisá-la, assim, podemos sintetizar as possibilidades de análise
+da seguinte forma para estatísticas univariadas:
 
 ```{mermaid}
 %%| label: fig1_diagrama_analises_univ_tipo
@@ -1194,25 +1374,48 @@ flowchart TD
 
 ## Tabela de distribuição de frequências (Univariada)
 
-Tabelas de frequências representam o número absoluto ou relativo de ocorrências de uma categoria (variáveis qualitativas), valor (variáveis quantitativas discretas) ou intervalo de valores (variáveis quantitativas contínuas).
+Tabelas de frequências representam o número absoluto ou relativo de
+ocorrências de uma categoria (variáveis qualitativas), valor (variáveis
+quantitativas discretas) ou intervalo de valores (variáveis
+quantitativas contínuas).
 
 Assim, a tabela será composta dos possíveis valores:
 
-- Frequência absoluta ($F_i$): contagem das observações na classe $i$;
-- Frequência relativa ($Fr_i$): contagem das observações na classe $i$ em relação ao total de observações da variável;
-- Frequência acumulada ($F_{ac_i}$): soma das observações na classe $i$ e nas anteriores a ela (só faz sentido se há noção de ordem nos dados);
-- Frequência acumulada relativa ($Fr_{ac_i}$): soma das frequências relativas até a classe $i$ (inclusive);
+-   Frequência absoluta ($F_i$): contagem das observações na classe $i$;
+-   Frequência relativa ($Fr_i$): contagem das observações na classe $i$
+    em relação ao total de observações da variável;
+-   Frequência acumulada ($F_{ac_i}$): soma das observações na classe
+    $i$ e nas anteriores a ela (só faz sentido se há noção de ordem nos
+    dados);
+-   Frequência acumulada relativa ($Fr_{ac_i}$): soma das frequências
+    relativas até a classe $i$ (inclusive);
 
-No caso de variáveis contínuas, para criarmos tabelas de frequências delas, primeiro criamos classes representado intervalos de valores, depois contamos o número de observações em cada intervalo. O número de classes e o intervalo de cada classe é arbitrário, entretanto, Bussab e Morettin (2011) sugerem o seguinte algoritmo para construção da tabela:
+No caso de variáveis contínuas, para criarmos tabelas de frequências
+delas, primeiro criamos classes representado intervalos de valores,
+depois contamos o número de observações em cada intervalo. O número de
+classes e o intervalo de cada classe é arbitrário, entretanto, Bussab e
+Morettin (2011) sugerem o seguinte algoritmo para construção da tabela:
 
-1. Ordenar os dados do menor ao maior;
-2. Calcular o número de classes ($k$) por
-  - $k=1 + 3,322 \times \log_{10}{n}$ (Equação de Sturges)
-  - $k=\sqrt{n}$
-  - $n$ é o número de observações e k deve ser arredondado para o inteiro mais próximo;
-3. Calcular o intervalo das classes, $\Delta_{h}$, como $\Delta_{h} = \frac{A}{k}$, em que $A$ é a amplitude (máximo valor menos o mínimo);
-4. Construa os intervalos iniciando pelo menor valor como primeiro limite inferior e somando $\Delta_{h}$ ao limite inferior de cada classe para obter os limites superiores. Cada intervalo, exceto o primeiro, será aberto (exclui) no limite inferior e fechado (inclui) no superior, e o limite inferior das classes após a primeira serão o limite superior da anterior (ex.: {[1, 11], ]11, 21], ]21, 31], ]31, 41]});
-5. Conte o número de observações que possuem valores dentro de cada intervalo para construir a tabela de frequências.
+1.  Ordenar os dados do menor ao maior;
+2.  Calcular o número de classes ($k$) por
+
+-   $k=1 + 3,322 \times \log_{10}{n}$ (Equação de Sturges)
+-   $k=\sqrt{n}$
+-   $n$ é o número de observações e k deve ser arredondado para o
+    inteiro mais próximo;
+
+3.  Calcular o intervalo das classes, $\Delta_{h}$, como
+    $\Delta_{h} = \frac{A}{k}$, em que $A$ é a amplitude (máximo valor
+    menos o mínimo);
+4.  Construa os intervalos iniciando pelo menor valor como primeiro
+    limite inferior e somando $\Delta_{h}$ ao limite inferior de cada
+    classe para obter os limites superiores. Cada intervalo, exceto o
+    primeiro, será aberto (exclui) no limite inferior e fechado (inclui)
+    no superior, e o limite inferior das classes após a primeira serão o
+    limite superior da anterior (ex.: {\[1, 11\], \]11, 21\], \]21,
+    31\], \]31, 41\]});
+5.  Conte o número de observações que possuem valores dentro de cada
+    intervalo para construir a tabela de frequências.
 
 No R, as tabelas de frequências podem ser obtidas da seguinte forma:
 
@@ -1318,27 +1521,64 @@ kable(tab_frequencias_continua, col.names = tabela_headers)
 
 ## Representação gráfica dos dados de uma variável
 
-Os gráficos hoje são insdispensáveis na estatística e análise de dados, servindo como uma ponte entre os dados brutos e seu comportamento em conjunto. Normalmente os usamos para detectar padrões, tendências, anomalias e relações que não seriam percebidos em tabelas ou medidas resumo.
+Os gráficos hoje são insdispensáveis na estatística e análise de dados,
+servindo como uma ponte entre os dados brutos e seu comportamento em
+conjunto. Normalmente os usamos para detectar padrões, tendências,
+anomalias e relações que não seriam percebidos em tabelas ou medidas
+resumo.
 
-Na análise exploratória de dados (EDA), histogramas, boxplots e gráficos de dispersão permitem identificar a forma da distribuição, detectar outliers e avaliar a simetria. Também usamos gráficos para auxiliar na verificação de suposições de modelos estatísticos, por exemplo, quando criamos um gráfico Q-Q para identificar desvios da normalidade.
+Na análise exploratória de dados (EDA), histogramas, boxplots e gráficos
+de dispersão permitem identificar a forma da distribuição, detectar
+outliers e avaliar a simetria. Também usamos gráficos para auxiliar na
+verificação de suposições de modelos estatísticos, por exemplo, quando
+criamos um gráfico Q-Q para identificar desvios da normalidade.
 
-Além disso, os gráficos são ferramentas para a comunicação estatística, os quais usamos para traduzir conceitos complexos em representações visuais mais intuitivas e didáticas que facilitem a compreensão por um público que não necessariamente possui um conhecimento formal de estatística, mas que podem ser o alvo dos nossos resultados, por exemplo, um gestor público ou de uma empresa cujas nossas análises poderiam (ou deveriam) trazer uma informações relevantes para aumentar a eficácia de sua administração.
+Além disso, os gráficos são ferramentas para a comunicação estatística,
+os quais usamos para traduzir conceitos complexos em representações
+visuais mais intuitivas e didáticas que facilitem a compreensão por um
+público que não necessariamente possui um conhecimento formal de
+estatística, mas que podem ser o alvo dos nossos resultados, por
+exemplo, um gestor público ou de uma empresa cujas nossas análises
+poderiam (ou deveriam) trazer uma informações relevantes para aumentar a
+eficácia de sua administração.
 
-Em contextos como epidemiologia veterinária, um gráfico de série temporal pode sugerir surtos epidêmicos ou sazonalidade de doenças, mapas de calor espaciais podem revelar clusters de casos, indicando os locais para intensificar as ações de defesa sanitária.
+Em contextos como epidemiologia veterinária, um gráfico de série
+temporal pode sugerir surtos epidêmicos ou sazonalidade de doenças,
+mapas de calor espaciais podem revelar clusters de casos, indicando os
+locais para intensificar as ações de defesa sanitária.
 
-Em nossos treinamentos, a maioria dos gráficos serão construídos usando o pacote `ggplot2` do `tidyverse`. Existem muitas fontes de informação para o aprendizado do `ggplot2` e da criação de gráficos no R, porém, deixo aqui duas recomendações que considero como um "guia de bolso" para criação de gráficos no R, que são o livro [*R Graphics Cookbook*](https://r-graphics.org/) do Winston Chang (2025), um livro online de acesso aberto com várias explicações sobre a criação de gráficos com o `ggplot2`, e o site [The R Graph Gallery](https://r-graph-gallery.com/) onde você encontra explicações e exemplos de código para a criação dos mais variados gráficos no R. Agora, se você quer um conteúdo avançado sobre o `ggplot2`, o livro online [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/) é o que você procura.
+Em nossos treinamentos, a maioria dos gráficos serão construídos usando
+o pacote `ggplot2` do `tidyverse`. Existem muitas fontes de informação
+para o aprendizado do `ggplot2` e da criação de gráficos no R, porém,
+deixo aqui duas recomendações que considero como um "guia de bolso" para
+criação de gráficos no R, que são o livro [*R Graphics
+Cookbook*](https://r-graphics.org/) do Winston Chang (2025), um livro
+online de acesso aberto com várias explicações sobre a criação de
+gráficos com o `ggplot2`, e o site [The R Graph
+Gallery](https://r-graph-gallery.com/) onde você encontra explicações e
+exemplos de código para a criação dos mais variados gráficos no R.
+Agora, se você quer um conteúdo avançado sobre o `ggplot2`, o livro
+online [ggplot2: Elegant Graphics for Data
+Analysis](https://ggplot2-book.org/) é o que você procura.
 
 ### Criação de gráficos no `ggplot2`
 
-O ggplot2 implementa os conceitos da [*Grammar of Graphics*](https://link.springer.com/book/10.1007/0-387-28695-0) de Leland Wilkinson, onde gráficos são construídos através de **camadas semânticas**, as quais são combinadas de forma modular e sistemática. Seus principais aspectos são:
+O ggplot2 implementa os conceitos da [*Grammar of
+Graphics*](https://link.springer.com/book/10.1007/0-387-28695-0) de
+Leland Wilkinson, onde gráficos são construídos através de **camadas
+semânticas**, as quais são combinadas de forma modular e sistemática.
+Seus principais aspectos são:
 
-- **Decomposição**: Todo gráfico pode ser decomposto em componentes independentes;
-- **Composição**: Componentes são combinados usando o operador `+`;
-- **Declarativo**: Você descreve O **QUE** quer, não **COMO** desenhar.
+-   **Decomposição**: Todo gráfico pode ser decomposto em componentes
+    independentes;
+-   **Composição**: Componentes são combinados usando o operador `+`;
+-   **Declarativo**: Você descreve O **QUE** quer, não **COMO**
+    desenhar.
 
-Todo gráfico criado com o `ggplot2` vai depender da seguinte estrutura mínima:
+Todo gráfico criado com o `ggplot2` vai depender da seguinte estrutura
+mínima:
 
-```r
+``` r
 ggplot(
   data = <DATA>,            # 1. Dados (fonte da informação para o gráfico)
   mapping = aes(<MAPPINGS>) # 2. Mapeamentos estéticos (quais variáveis serão usadas e onde)
@@ -1346,17 +1586,27 @@ ggplot(
   <GEOM_FUNCTION>()         # 3. Geometria (o que será desenhado)
 ```
 
-Assim, `ggplot()` inicia a construção do gráfico, indicando às camadas posteriores de construção qual o dataset fonte das variáveis (argumento `data`) e, em geral, como serão mapeadas as variáveis para o gráfico (quem será o eixo das ordenadas? e das abscissas? exitem variáveis categóricas que gostaríamos de usar como fonte para as cores do que será apresentado, ou seja, criar subconjuntos?). Iniciado o `ggplot()`, que podemos pensar como um quadro em branco, passamos a de fato desenhar nosso gráfico com `geom_*()` e outras camadas de estilização.
+Assim, `ggplot()` inicia a construção do gráfico, indicando às camadas
+posteriores de construção qual o dataset fonte das variáveis (argumento
+`data`) e, em geral, como serão mapeadas as variáveis para o gráfico
+(quem será o eixo das ordenadas? e das abscissas? exitem variáveis
+categóricas que gostaríamos de usar como fonte para as cores do que será
+apresentado, ou seja, criar subconjuntos?). Iniciado o `ggplot()`, que
+podemos pensar como um quadro em branco, passamos a de fato desenhar
+nosso gráfico com `geom_*()` e outras camadas de estilização.
 
-Além desses componentes primários, outros que costumam ser usados na construção de gráficos são:
+Além desses componentes primários, outros que costumam ser usados na
+construção de gráficos são:
 
-- **Facets**: Divisão em subgráficos
-- **Statistics (stat)**: Transformações estatísticas
-- **Coordinates (coord)**: Sistema de coordenadas
-- **Themes**: Aparência não relacionada aos dados
-- **Scales**: Controle de mapeamentos
+-   **Facets**: Divisão em subgráficos
+-   **Statistics (stat)**: Transformações estatísticas
+-   **Coordinates (coord)**: Sistema de coordenadas
+-   **Themes**: Aparência não relacionada aos dados
+-   **Scales**: Controle de mapeamentos
 
-Vamos então observar na prática como é construção do gráfico no `ggplot2`. Iniciamos com `ggplot(data=dados)`, o que gera somente o nosso painel, sem qualquer escala ainda.
+Vamos então observar na prática como é construção do gráfico no
+`ggplot2`. Iniciamos com `ggplot(data=dados)`, o que gera somente o
+nosso painel, sem qualquer escala ainda.
 
 ```{r}
 #| label: tutorial_ggplot2_1
@@ -1375,7 +1625,13 @@ p_base <- ggplot(dados)
 p_base  # Produz apenas o painel vazio
 ```
 
-O `aes()` pode ser informado no próprio `ggplot`, caso esse mapeamento vá ser usado da mesma forma por todas as demais camadas, ou pode ser informado a cada `geom_*()`, caso seja algo específico daquela geometria. Os principais elementos estéticos definidos no `aes()` são: `x` (eixo das abscissas), `y` (eixo das ordenadas), `color` (cor de delimitação), `fill` (cor de preenchimento), `size` (tamanho), `alpha` (transparência), `shape` (forma), `linetype` (tipo de linha).
+O `aes()` pode ser informado no próprio `ggplot`, caso esse mapeamento
+vá ser usado da mesma forma por todas as demais camadas, ou pode ser
+informado a cada `geom_*()`, caso seja algo específico daquela
+geometria. Os principais elementos estéticos definidos no `aes()` são:
+`x` (eixo das abscissas), `y` (eixo das ordenadas), `color` (cor de
+delimitação), `fill` (cor de preenchimento), `size` (tamanho), `alpha`
+(transparência), `shape` (forma), `linetype` (tipo de linha).
 
 ```{r}
 p_base <- ggplot(dados, aes(x = x, y = y))
@@ -1408,7 +1664,13 @@ p2
 p3
 ```
 
-Como já falado, o `ggplot2` segue um sistema de camadas, então cada operação após o `+` adiciona uma nova feição sobre o gráfico e pode inclusive sobrescrever geometrias definidas em operações anteriores, então é importante verificar a ordem em que são declarados os aspectos visuais do gráfico. Observe abaixo, como alterar a ordem de declaração das geometrias "esconde" certos pontos no gráfico da esquerda em relação ao da direita.
+Como já falado, o `ggplot2` segue um sistema de camadas, então cada
+operação após o `+` adiciona uma nova feição sobre o gráfico e pode
+inclusive sobrescrever geometrias definidas em operações anteriores,
+então é importante verificar a ordem em que são declarados os aspectos
+visuais do gráfico. Observe abaixo, como alterar a ordem de declaração
+das geometrias "esconde" certos pontos no gráfico da esquerda em relação
+ao da direita.
 
 ```{r}
 #| label: tutorial_ggplot2_3
@@ -1430,7 +1692,9 @@ p_ordem1
 p_ordem2
 ```
 
-Quando definimos um `aes()` na chamada de `ggplot()`, ele será herdado pelas demais camadas, porém, ao usarmos ele em uma geometria, ele só será usado nela.
+Quando definimos um `aes()` na chamada de `ggplot()`, ele será herdado
+pelas demais camadas, porém, ao usarmos ele em uma geometria, ele só
+será usado nela.
 
 ```{r}
 #| label: tutorial_ggplot2_4
@@ -1453,9 +1717,15 @@ p_heranca
 p_sem_heranca
 ```
 
-Quando queremos criar múltiplos gráficos da mesma geometria, segundo uma variável alvo, podemos usar o `facet_*()` para criação de vários subpainéis. 
+Quando queremos criar múltiplos gráficos da mesma geometria, segundo uma
+variável alvo, podemos usar o `facet_*()` para criação de vários
+subpainéis.
 
-Com `facet_wrap(~ variavel_alvo)` os painéis são dispostos horizontalmente considerando o número de categorias. Por padrão, os painéis serão dispostos em uma tabela quadrada, mas essa disposição pode ser alterada usando os argumentos `nrow` para o número de linhas e `ncol` para o número de colunas.
+Com `facet_wrap(~ variavel_alvo)` os painéis são dispostos
+horizontalmente considerando o número de categorias. Por padrão, os
+painéis serão dispostos em uma tabela quadrada, mas essa disposição pode
+ser alterada usando os argumentos `nrow` para o número de linhas e
+`ncol` para o número de colunas.
 
 ```{r}
 #| label: tutorial_ggplot2_5
@@ -1470,7 +1740,15 @@ p_wrap <- ggplot(dados, aes(x, y)) +
 p_wrap
 ```
 
-Observe na figura acima que o nome das categorias são exibidas como *headers* de cada painel, assim, se queremos alterar o título da categoria de cada painel, seria necessário alterar a própria variável (usando por exemplo o `recode()` se for um dado do tipo `factor`). O argumento `labeller = label_both` faz com que o título do painel também apresente o nome da variável. Aspectos visuais do título serão alterados na camada de `theme()` do gráfico no `ggplot2`, a qual será apresentada mais adiante no treinamento, mas podemos alterar tanto características do texto (`strip.text`) quanto do fundo do título (`strip.background`).
+Observe na figura acima que o nome das categorias são exibidas como
+*headers* de cada painel, assim, se queremos alterar o título da
+categoria de cada painel, seria necessário alterar a própria variável
+(usando por exemplo o `recode()` se for um dado do tipo `factor`). O
+argumento `labeller = label_both` faz com que o título do painel também
+apresente o nome da variável. Aspectos visuais do título serão alterados
+na camada de `theme()` do gráfico no `ggplot2`, a qual será apresentada
+mais adiante no treinamento, mas podemos alterar tanto características
+do texto (`strip.text`) quanto do fundo do título (`strip.background`).
 
 ```{r}
 #| label: tutorial_ggplot2_6
@@ -1491,7 +1769,10 @@ p_wrap <- dados %>%
 p_wrap
 ```
 
-Já o `facet_grid(variavel_alvo_linha ~ variavel_alvo_coluna)` permite criar painéis a partir de subconjuntos de uma variável para as colunas e outra para as linhas do gráfico. As mesmas técnicas de estilização do `facet_wrap` se aplicam ao `facet_grid`.
+Já o `facet_grid(variavel_alvo_linha ~ variavel_alvo_coluna)` permite
+criar painéis a partir de subconjuntos de uma variável para as colunas e
+outra para as linhas do gráfico. As mesmas técnicas de estilização do
+`facet_wrap` se aplicam ao `facet_grid`.
 
 ```{r}
 #| label: tutorial_ggplot2_7
@@ -1512,11 +1793,25 @@ p_grid <- ggplot(dados, aes(x, y)) +
 p_grid
 ```
 
-Para controlar a escala das estéticas mapeadas no gráfico do `ggplot2` usamos as funções da família `scale_*`. `scale_*` segue um padrão de nome onde primeiro declaramos qual estética queremos controlar (x, y, size...) e em seguida a forma ou transformação que consideramos para a variável mapeada.
+Para controlar a escala das estéticas mapeadas no gráfico do `ggplot2`
+usamos as funções da família `scale_*`. `scale_*` segue um padrão de
+nome onde primeiro declaramos qual estética queremos controlar (x, y,
+size...) e em seguida a forma ou transformação que consideramos para a
+variável mapeada.
 
-Para escalas de posição (eixos x e y), usamos `scale_*_continuous` para controlar a escala que varia em um intervalo contínuo e `scale_*_discrete` se queremos que cada valor único da variável mapeada seja tratada como uma categoria.
+Para escalas de posição (eixos x e y), usamos `scale_*_continuous` para
+controlar a escala que varia em um intervalo contínuo e
+`scale_*_discrete` se queremos que cada valor único da variável mapeada
+seja tratada como uma categoria.
 
-Com `scale_*_continuous` podemos controlar os limites do eixo alvo com `limits = c(minimo, maximo)` e suas marcações com `breaks` e `minor_breaks`. `breaks` e `minor_breaks` recebe um vetor das posições das marcações ou uma função que, a partir dos limites do eixo, calculará as posições das marcações. Além disso, podemos usar o argumento `transform` para transformações dos dados naquela escala, por exemplo, aplicando a raiz quadrada ou o log, e podemos usar `labels` para alterar o texto exibido em cada marcação do eixo.
+Com `scale_*_continuous` podemos controlar os limites do eixo alvo com
+`limits = c(minimo, maximo)` e suas marcações com `breaks` e
+`minor_breaks`. `breaks` e `minor_breaks` recebe um vetor das posições
+das marcações ou uma função que, a partir dos limites do eixo, calculará
+as posições das marcações. Além disso, podemos usar o argumento
+`transform` para transformações dos dados naquela escala, por exemplo,
+aplicando a raiz quadrada ou o log, e podemos usar `labels` para alterar
+o texto exibido em cada marcação do eixo.
 
 ```{r}
 #| label: tutorial_ggplot2_8
@@ -1539,7 +1834,8 @@ p_scales <- ggplot(dados, aes(x, y, color = tamanho)) +
 p_scales
 ```
 
-Com `scale_*_discrete` podemos também definir o nome do eixo, o texto das marcações e outras características como no `scale_*_continuous`.
+Com `scale_*_discrete` podemos também definir o nome do eixo, o texto
+das marcações e outras características como no `scale_*_continuous`.
 
 ```{r}
 #| label: tutorial_ggplot2_9
@@ -1561,7 +1857,10 @@ ggplot(dados, aes(x = grupo)) +
   )
 ```
 
-Em ambos, `limits` define o próprio limite para os dados mapeados, então, devemos tomar cuidado, principalmente em gráficos que calculam estatísticas para sua construção, já que dados fora desses limites serão desconsiderados
+Em ambos, `limits` define o próprio limite para os dados mapeados,
+então, devemos tomar cuidado, principalmente em gráficos que calculam
+estatísticas para sua construção, já que dados fora desses limites serão
+desconsiderados
 
 ```{r}
 #| label: tutorial_ggplot2_10
@@ -1583,7 +1882,10 @@ p_cat
 p_cat_scales
 ```
 
-Se queremos limitar nossa escala no gráfico, sem alterar esse mapeamento e, consequentemente, haver perda de dados, podemos usar `coord_cartesian` e definir nossos limites para as ordenadas com `ylim` e as abscissas com `xlim`.
+Se queremos limitar nossa escala no gráfico, sem alterar esse mapeamento
+e, consequentemente, haver perda de dados, podemos usar
+`coord_cartesian` e definir nossos limites para as ordenadas com `ylim`
+e as abscissas com `xlim`.
 
 ```{r}
 #| label: tutorial_ggplot2_11
@@ -1596,9 +1898,22 @@ p_cat <- ggplot(dados, aes(grupo, y)) +
 p_cat
 ```
 
-Para alterar escalas de cores e preenchimentos usamos `scale_color_*` e `scale_fill_*`. Para criar um gradiente contínuo podemos usar `scale_*_gradient`, o qual aceita os parâmetros `low` e `high` como os valores das cores a usar para criar seu gradiente de cores. Então, se usados ambos, será criado uma escala com um gradiente de cores variando entre a cor em `low` (menor valor dos dados e maior intensidade da cor declara em `low`) e a cor em `high` (maior valor dos dados e maior intensidade da cor declara em `high`). Se declarado somente `low`, teremos um gradiente criado a partir de uma única cor, com a maior intensidade no menor valor.
+Para alterar escalas de cores e preenchimentos usamos `scale_color_*` e
+`scale_fill_*`. Para criar um gradiente contínuo podemos usar
+`scale_*_gradient`, o qual aceita os parâmetros `low` e `high` como os
+valores das cores a usar para criar seu gradiente de cores. Então, se
+usados ambos, será criado uma escala com um gradiente de cores variando
+entre a cor em `low` (menor valor dos dados e maior intensidade da cor
+declara em `low`) e a cor em `high` (maior valor dos dados e maior
+intensidade da cor declara em `high`). Se declarado somente `low`,
+teremos um gradiente criado a partir de uma única cor, com a maior
+intensidade no menor valor.
 
-Para criar uma escala de cor divergente (gradiente com três cores, com um delas indicando um ponto central), podemos usar `scale_*_gradient2`. Além disso, podemos criar um gradiente com *n* cores com `scale_*_gradientn⁠` (nesse caso, deve ser fornecido um vetor dos nomes de cores a usar no gradiente).
+Para criar uma escala de cor divergente (gradiente com três cores, com
+um delas indicando um ponto central), podemos usar `scale_*_gradient2`.
+Além disso, podemos criar um gradiente com *n* cores com
+`scale_*_gradientn⁠` (nesse caso, deve ser fornecido um vetor dos nomes
+de cores a usar no gradiente).
 
 ```{r}
 #| label: tutorial_ggplot2_12
@@ -1632,9 +1947,13 @@ ggplot(dados, aes(x, y, color = tamanho, size = tamanho)) +
   scale_color_gradientn(colors = c("blue", "red", "grey", "green"))
 ```
 
-Para escalas de cores discretas, por exemplo, para diferenciar categorias, podemos usar `scale_*_manual` com o vetor de cores de cada categoria.
+Para escalas de cores discretas, por exemplo, para diferenciar
+categorias, podemos usar `scale_*_manual` com o vetor de cores de cada
+categoria.
 
-Para escalas de tamanho (`size`) podemos alterar o comportamento com `scale_radius()` se queremos uma escala contínua de variação, ou `scale_size_binned()` se queremos criar quebras.
+Para escalas de tamanho (`size`) podemos alterar o comportamento com
+`scale_radius()` se queremos uma escala contínua de variação, ou
+`scale_size_binned()` se queremos criar quebras.
 
 ```{r}
 #| label: tutorial_ggplot2_13
@@ -1668,7 +1987,16 @@ ggplot(dados, aes(x, y, color = grupo, size = tamanho)) +
   )
 ```
 
-Embora seja possível definir manualmente as cores que queremos usar nas escalas, a escolha de cores interfere em muito em como o público conseguirá identificar padrões no gráfico. Por isso, recomendo usar funções que já fornecem paletas de cores criadas com uma finalidade específica como as do ColorBrewer com `scale_*_brewer` ou do pacote `paletteer`. ColorBrewer possui um [site](https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3) onde é possível testar a paleta de cores que queremos usar. Usando o `scale_*_brewer`, definimos o tipo de paleta (seq" para sequencial, "div" para divergente ou "qual" para qualitativo) e o nome da paleta.
+Embora seja possível definir manualmente as cores que queremos usar nas
+escalas, a escolha de cores interfere em muito em como o público
+conseguirá identificar padrões no gráfico. Por isso, recomendo usar
+funções que já fornecem paletas de cores criadas com uma finalidade
+específica como as do ColorBrewer com `scale_*_brewer` ou do pacote
+`paletteer`. ColorBrewer possui um
+[site](https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3) onde é
+possível testar a paleta de cores que queremos usar. Usando o
+`scale_*_brewer`, definimos o tipo de paleta (seq" para sequencial,
+"div" para divergente ou "qual" para qualitativo) e o nome da paleta.
 
 ```{r}
 #| label: tutorial_ggplot2_14
@@ -1687,7 +2015,11 @@ ggplot(dados, aes(grupo, fill = grupo)) +
   scale_fill_brewer(palette = "Pastel1")
 ```
 
-O pacote `paletter` também possui um [site](https://r-graph-gallery.com/color-palette-finder) para escolher sua paleta. Para usá-lo precisamos instalar o pacote e depois utilizar as funções adequadas ao tipo de dados (`scale_*_paletteer_c` para contínuas e `scale_*_paletteer_d` para discretas).
+O pacote `paletter` também possui um
+[site](https://r-graph-gallery.com/color-palette-finder) para escolher
+sua paleta. Para usá-lo precisamos instalar o pacote e depois utilizar
+as funções adequadas ao tipo de dados (`scale_*_paletteer_c` para
+contínuas e `scale_*_paletteer_d` para discretas).
 
 ```{r}
 #| label: tutorial_ggplot2_15
@@ -1711,7 +2043,17 @@ ggplot(dados, aes(grupo, fill = grupo)) +
   scale_fill_paletteer_d("nbapalettes::supersonics_holiday")
 ```
 
-Para finalizar nossa introdução à criação de gráficos com o `ggplot2` vamos ver como personalizar nosso gráfico. A camada de legendas e títulos do gráfico podem ser alteradas com `labs()`. Os argumentos `title`, `subtitle` e `caption` criam textos para o título, subtítulo e nota de rodapé do gráfico, respectivamente. Outros elementos como as legendas e nomes dos eixos são representados pelo nome do argumento usado no `aes()`, por exemplo, o argumento `color` declara o título da legenda que representa as categorias dessa estética no gráfico. Caso queira remover o título de uma legenda ou eixo atribua o valor `element_blank()`, que indica ao `ggplot2` para não desenhar nada para aquele elemento.
+Para finalizar nossa introdução à criação de gráficos com o `ggplot2`
+vamos ver como personalizar nosso gráfico. A camada de legendas e
+títulos do gráfico podem ser alteradas com `labs()`. Os argumentos
+`title`, `subtitle` e `caption` criam textos para o título, subtítulo e
+nota de rodapé do gráfico, respectivamente. Outros elementos como as
+legendas e nomes dos eixos são representados pelo nome do argumento
+usado no `aes()`, por exemplo, o argumento `color` declara o título da
+legenda que representa as categorias dessa estética no gráfico. Caso
+queira remover o título de uma legenda ou eixo atribua o valor
+`element_blank()`, que indica ao `ggplot2` para não desenhar nada para
+aquele elemento.
 
 ```{r}
 #| label: tutorial_ggplot2_16
@@ -1736,7 +2078,12 @@ p_base <- ggplot(
 p_base
 ```
 
-Além do padrão temático inicial contruído no `ggplot2`, o pacote fornece alguns temas já contruídos que podemos usar em nosso gráfico como modelo de estilo e ir adicionando novas personalizações conforme a necessidade. Os seguintes temas estão disponíveis: `theme_gray`, `theme_bw`, `theme_linedraw`, `theme_light`, `theme_dark`, `theme_minimal`, `theme_classic` e `theme_void`.
+Além do padrão temático inicial contruído no `ggplot2`, o pacote fornece
+alguns temas já contruídos que podemos usar em nosso gráfico como modelo
+de estilo e ir adicionando novas personalizações conforme a necessidade.
+Os seguintes temas estão disponíveis: `theme_gray`, `theme_bw`,
+`theme_linedraw`, `theme_light`, `theme_dark`, `theme_minimal`,
+`theme_classic` e `theme_void`.
 
 ```{r}
 #| label: tutorial_ggplot2_17
@@ -1763,9 +2110,27 @@ p_base + theme_classic()
 p_base + theme_void()
 ```
 
-Cada um desses temas predefinidos possuem argumentos para certo controle de sua aparência (verifique os argumentos na documentação deles com `help(nome_do_tema)`), porém, quando queremos alterar algum elemento de aparência do gráfico, normalmente usaremos `theme()`. `theme()` permite personalizar todos componentes não definidos pelos seus dados. Sua utilização envolve declarar um argumento com o nome do componente que queremos modificar e fornecer um objeto do tipo `element_*`. `element_*` representam elementos temáticos: `element_blank` para declarar que o componente não deve ser desenhado, `element_rect` para bordas e planos de fundo, `element_line` para linhas, `element_text` para componentes de texto, `element_polygon` para polígonos e `element_point` para pontos.
+Cada um desses temas predefinidos possuem argumentos para certo controle
+de sua aparência (verifique os argumentos na documentação deles com
+`help(nome_do_tema)`), porém, quando queremos alterar algum elemento de
+aparência do gráfico, normalmente usaremos `theme()`. `theme()` permite
+personalizar todos componentes não definidos pelos seus dados. Sua
+utilização envolve declarar um argumento com o nome do componente que
+queremos modificar e fornecer um objeto do tipo `element_*`. `element_*`
+representam elementos temáticos: `element_blank` para declarar que o
+componente não deve ser desenhado, `element_rect` para bordas e planos
+de fundo, `element_line` para linhas, `element_text` para componentes de
+texto, `element_polygon` para polígonos e `element_point` para pontos.
 
-Então, por exemplo, para personalizar o texto do título e subtítulo podemos usar em `theme()` o `plot.title = element_text(args)` e `plot.subtitle = element_text(args)`, para alterar a legenda dos eixos usar o `axis.title = element_text(args)`, para alterar as linhas de guia no gráfico usar `panel.grid.major = element_rect()` e `panel.grid.minor = element_rect()`. Além disso, alguns argumentos de `theme` não recebem `element_`, como o `legend.position`, no qual você declara onde as legendas serão alocadas (topo, abaixo, esquerda ou direita).
+Então, por exemplo, para personalizar o texto do título e subtítulo
+podemos usar em `theme()` o `plot.title = element_text(args)` e
+`plot.subtitle = element_text(args)`, para alterar a legenda dos eixos
+usar o `axis.title = element_text(args)`, para alterar as linhas de guia
+no gráfico usar `panel.grid.major = element_rect()` e
+`panel.grid.minor = element_rect()`. Além disso, alguns argumentos de
+`theme` não recebem `element_`, como o `legend.position`, no qual você
+declara onde as legendas serão alocadas (topo, abaixo, esquerda ou
+direita).
 
 ```{r}
 #| label: tutorial_ggplot2_18
@@ -1800,13 +2165,26 @@ p_base +
   )
 ```
 
-Embora o `ggplot2` traga muitas possibilidades de criação de gráficos, há sempre espaço para inovações e especializações na comunidade do R, então recomendo o site [ggplot2 extensions](https://exts.ggplot2.tidyverse.org/gallery/) que traz uma série de pacotes baseados no `ggplot2`, mas com um "temperinho a mais" para determinados objetivos que poderiam ser particularmente difíceis ou tediosos de alcançar usando somente o `ggplot2` ("não reinvente a roda se ela já foi criada").
+Embora o `ggplot2` traga muitas possibilidades de criação de gráficos,
+há sempre espaço para inovações e especializações na comunidade do R,
+então recomendo o site [ggplot2
+extensions](https://exts.ggplot2.tidyverse.org/gallery/) que traz uma
+série de pacotes baseados no `ggplot2`, mas com um "temperinho a mais"
+para determinados objetivos que poderiam ser particularmente difíceis ou
+tediosos de alcançar usando somente o `ggplot2` ("não reinvente a roda
+se ela já foi criada").
 
 ### Representação gráfica de variáveis qualitativas (Univariada)
 
 #### Gráfico de barras
 
-Apresenta por meio de barras as frequências absolutas ou relativas de cada possível categoria (ou valor). Nesse caso o comprimento ou altura da barra representa sua frequência, enquanto cada barra representa uma classe. Embora seja mais usual para dados qualitativos, também é possível usar o gráfico de barras para representar variáveis discretas (desde que o número de possíveis valores não seja alto), ou para variáveis contínuas agrupadas em intervalos.
+Apresenta por meio de barras as frequências absolutas ou relativas de
+cada possível categoria (ou valor). Nesse caso o comprimento ou altura
+da barra representa sua frequência, enquanto cada barra representa uma
+classe. Embora seja mais usual para dados qualitativos, também é
+possível usar o gráfico de barras para representar variáveis discretas
+(desde que o número de possíveis valores não seja alto), ou para
+variáveis contínuas agrupadas em intervalos.
 
 ```{r}
 #| label: est_descritiva_graficos_barras_1
@@ -1862,7 +2240,6 @@ ggplot(ap2) +
   coord_flip()
 ```
 
-
 ```{r}
 #| label: est_descritiva_graficos_barras_2
 #| fig-cap: "Exemplos de gráficos de barras para variáveis discretas"
@@ -1900,7 +2277,6 @@ ggplot(ap2) +
   ) +
   plot_theme
 ```
-
 
 ```{r}
 #| label: est_descritiva_graficos_barras_3
@@ -1975,7 +2351,12 @@ ggplot(frequencias_dwg_fin) +
 
 ### Gráfico de setores ou pizza
 
-O gráfico de setores divide um círculo de raio arbitrário em $n$ partes ($n$ igual ao número de categorias), sendo a área de cada parte correspondente à frequência relativa da categoria. Em geral, não é um gráfico indicado quando temos muitas categorias ou diferenças muito pequenas entre as frequências de cada categoria, já que visualmente torna-se difícil detectar essas diferenças.
+O gráfico de setores divide um círculo de raio arbitrário em $n$ partes
+($n$ igual ao número de categorias), sendo a área de cada parte
+correspondente à frequência relativa da categoria. Em geral, não é um
+gráfico indicado quando temos muitas categorias ou diferenças muito
+pequenas entre as frequências de cada categoria, já que visualmente
+torna-se difícil detectar essas diferenças.
 
 ```{r}
 #| label: est_descritiva_graficos_setores_1
@@ -1996,10 +2377,13 @@ ggplot(contagem, aes(x="", y=quantidade, fill=vacc_mp)) +
   labs(fill = "Estado Vacinal")
 ```
 
-
 ### Diagrama de Pareto
 
-O diagrama de Pareto é um gráfico de barras sobreposto por um gráfico de linhas e pontos. Nele as barras representam as frequências das categorias em ordem decrescente, enquanto as linhas representam a frequência acumulada. É uma ferramenta visual, normalmente, utilizada para avaliar as principais causas de problemas em linhas de produção.
+O diagrama de Pareto é um gráfico de barras sobreposto por um gráfico de
+linhas e pontos. Nele as barras representam as frequências das
+categorias em ordem decrescente, enquanto as linhas representam a
+frequência acumulada. É uma ferramenta visual, normalmente, utilizada
+para avaliar as principais causas de problemas em linhas de produção.
 
 ```{r}
 #| label: est_descritiva_graficos_pareto_1
@@ -2110,9 +2494,20 @@ ggplot(mortalidade_producao, aes(x = causa)) +
 
 ### Outras opções gráficas para variáveis qualitativas
 
-As opções a seguir, embora não sejam tão comuns para análise exploratória e estatítica descritiva em relatórios científicos, podem ser interessantes em apresentações e divulgações científicas, pelo possibilibilidade de conseguir um visual mais atrativo para o público, principalmente quando trabalhamos com mais de uma variável no mesmo gráfico (como veremos mais a frente).
+As opções a seguir, embora não sejam tão comuns para análise
+exploratória e estatítica descritiva em relatórios científicos, podem
+ser interessantes em apresentações e divulgações científicas, pelo
+possibilibilidade de conseguir um visual mais atrativo para o público,
+principalmente quando trabalhamos com mais de uma variável no mesmo
+gráfico (como veremos mais a frente).
 
-O gráfico de waffle utiliza uma grade de pequenos quadrados de tamanhos iguais para representar partes de um todo, semelhante a um gráfico de pizza, com cada quadrado representando uma determinada porcentagem ou valor. Esse gráfico permite demonstrar proporções e o progresso em direção a uma meta, e são fáceis de entender devido à sua estrutura de grade simples. Eles podem ser criados com um número fixo de células, por exemplo, em uma grade de $10 \times 10$ cada célula 1%.
+O gráfico de waffle utiliza uma grade de pequenos quadrados de tamanhos
+iguais para representar partes de um todo, semelhante a um gráfico de
+pizza, com cada quadrado representando uma determinada porcentagem ou
+valor. Esse gráfico permite demonstrar proporções e o progresso em
+direção a uma meta, e são fáceis de entender devido à sua estrutura de
+grade simples. Eles podem ser criados com um número fixo de células, por
+exemplo, em uma grade de $10 \times 10$ cada célula 1%.
 
 ```{r}
 #| label: est_descritiva_graficos_outros_waffle
@@ -2290,7 +2685,16 @@ criar_waffle_multiplo(
 )
 ```
 
-O gráfico de pontos de Cleveland é um tipo de visualização de dados que utiliza pontos para representar valores de diferentes categorias, servindo como uma alternativa ao gráfico de barras. Ele exibe um único ponto para cada categoria no ponto correspondente à sua frequência, facilitando a comparação de valores e a identificação de padrões. Por vezes, ele é ligado ao eixo das abscissas (ou ordenadas para gráficos na horizontal) por uma linha, de modo que a altura represente também a frequência. Outra utilização interessante para esse gráfico seria para mostrar variações das frequências (ou outro valor) em relação à outro valor de referência, como no segundo exemplo abaixo.
+O gráfico de pontos de Cleveland é um tipo de visualização de dados que
+utiliza pontos para representar valores de diferentes categorias,
+servindo como uma alternativa ao gráfico de barras. Ele exibe um único
+ponto para cada categoria no ponto correspondente à sua frequência,
+facilitando a comparação de valores e a identificação de padrões. Por
+vezes, ele é ligado ao eixo das abscissas (ou ordenadas para gráficos na
+horizontal) por uma linha, de modo que a altura represente também a
+frequência. Outra utilização interessante para esse gráfico seria para
+mostrar variações das frequências (ou outro valor) em relação à outro
+valor de referência, como no segundo exemplo abaixo.
 
 ```{r}
 #| label: est_descritiva_graficos_outros_cleveland_1
@@ -2365,7 +2769,11 @@ ggplot(exemplo_df, aes(x=mes, y=total)) +
 
 ```
 
-O treemap representa dados hierárquicos através de retângulos aninhados, em que o tamanho do retângulo é proporcional a uma variável quantitativa (frequências, por exemplo), a cor representa categorias ou outra variável quantitativa e a hierarquia é observada por retângulos dentro de retângulos, demontrando os níveis de agrupamento.
+O treemap representa dados hierárquicos através de retângulos aninhados,
+em que o tamanho do retângulo é proporcional a uma variável quantitativa
+(frequências, por exemplo), a cor representa categorias ou outra
+variável quantitativa e a hierarquia é observada por retângulos dentro
+de retângulos, demontrando os níveis de agrupamento.
 
 ```{r}
 #| label: est_descritiva_graficos_outros_treemap_1
@@ -2388,7 +2796,11 @@ bvd_test %>%
   theme(legend.position = "none")
 ```
 
-Isso pode ser particularmente interessante em apresentações, quando queremos apresentar contagens de variáveis em múltiplos níveis (considerando várias variáveis), ou quando temos muitas categorias e queremos deixar evidente a importância de determinada categoria em relação às demais.
+Isso pode ser particularmente interessante em apresentações, quando
+queremos apresentar contagens de variáveis em múltiplos níveis
+(considerando várias variáveis), ou quando temos muitas categorias e
+queremos deixar evidente a importância de determinada categoria em
+relação às demais.
 
 ```{r}
 #| label: est_descritiva_graficos_outros_treemap_func_treemap_to_plotly
@@ -2480,7 +2892,12 @@ bvd_test %>%
   )
 ```
 
-Por fim temos o empacotamento circular ou treemap circular, que assim como treemap permite visualizar uma organização hierárquica. Nele, cada nó da árvore é representado como um círculo e seus subnós são representados como círculos dentro dele. O tamanho de cada círculo pode ser proporcional a um valor específico (como a frequência da distribuição).
+Por fim temos o empacotamento circular ou treemap circular, que assim
+como treemap permite visualizar uma organização hierárquica. Nele, cada
+nó da árvore é representado como um círculo e seus subnós são
+representados como círculos dentro dele. O tamanho de cada círculo pode
+ser proporcional a um valor específico (como a frequência da
+distribuição).
 
 ```{r}
 #| label: est_descritiva_graficos_outros_circular_packing
@@ -2521,7 +2938,13 @@ ggplot() +
 
 #### Gráfico de linhas e pontos
 
-No gráficos de linhas e pontos, os pontos no gráfico, posicionados por pares de valores indicando a abcissa (X) e ordenadas (Y), são ligados por segmentos de reta. Apesar de sua construção depender de dois valores, o que indicaria a necessidade de duas variáveis, se uma delas varia em iontervalos regulares (por exemplo, meses do ano), então, estamos criando um gráfico para descrever o comportamento de uma única variável quantitativa ao longo desse intervalo regular.
+No gráficos de linhas e pontos, os pontos no gráfico, posicionados por
+pares de valores indicando a abcissa (X) e ordenadas (Y), são ligados
+por segmentos de reta. Apesar de sua construção depender de dois
+valores, o que indicaria a necessidade de duas variáveis, se uma delas
+varia em iontervalos regulares (por exemplo, meses do ano), então,
+estamos criando um gráfico para descrever o comportamento de uma única
+variável quantitativa ao longo desse intervalo regular.
 
 ```{r}
 #| label: est_descritiva_graficos_linhas
@@ -2559,14 +2982,31 @@ ggplot(air_quality, aes(x = data, y = temperatura)) +
 
 #### Histograma
 
-O histograma é uma representação gráfica da distribuição de frequências de uma variável contínua (ou discreta com muitos valores). Ele divide o intervalo de valores em classes (*bins*) e mostra quantas observações caem em cada classe através de barras adjacentes. Normalmente, construímos um histograma para visualizar a forma, centro e dispersão da distribuição dos dados.
+O histograma é uma representação gráfica da distribuição de frequências
+de uma variável contínua (ou discreta com muitos valores). Ele divide o
+intervalo de valores em classes (*bins*) e mostra quantas observações
+caem em cada classe através de barras adjacentes. Normalmente,
+construímos um histograma para visualizar a forma, centro e dispersão da
+distribuição dos dados.
 
-Para construir um histograma precisamos calcular os seguintes elementos: 
+Para construir um histograma precisamos calcular os seguintes elementos:
 
-- **Classes (bins)**: Intervalos que irão agrupar nossa variável quantitativa (serão representadas como a largura de cada barra)
-- **Frequência**: Contagem de observações em cada classe  (serão representadas como a altura de cada barra)
+-   **Classes (bins)**: Intervalos que irão agrupar nossa variável
+    quantitativa (serão representadas como a largura de cada barra)
+-   **Frequência**: Contagem de observações em cada classe (serão
+    representadas como a altura de cada barra)
 
-O número de classes e largura do intervalo de cada classe, quando adotamos um intervalo igual para todas as classes, pode ser calculado da mesma forma que foi explicado na tabela de frequências de variáveis contínuas. Já o valor em cada classe pode ser calculado como a frequência absoluta ($F_i$, o número de observações na classe $i$), frequência relativa ($F_i / n$, em que $n$ é o número de observações) ou como densidade ($F_i / (n \times h_i)$, em que $n$ é o número de observações e $h_i$ é a amplitude da classe). O interessante de usar a densidade no histograma é que obtemos um estimador não paramétrico da fdp (função densidade de probabilidade) da distribuição, considerando que $F_i / n \to P(X \in [a,b))$ quando $n \to \infty$.
+O número de classes e largura do intervalo de cada classe, quando
+adotamos um intervalo igual para todas as classes, pode ser calculado da
+mesma forma que foi explicado na tabela de frequências de variáveis
+contínuas. Já o valor em cada classe pode ser calculado como a
+frequência absoluta ($F_i$, o número de observações na classe $i$),
+frequência relativa ($F_i / n$, em que $n$ é o número de observações) ou
+como densidade ($F_i / (n \times h_i)$, em que $n$ é o número de
+observações e $h_i$ é a amplitude da classe). O interessante de usar a
+densidade no histograma é que obtemos um estimador não paramétrico da
+fdp (função densidade de probabilidade) da distribuição, considerando
+que $F_i / n \to P(X \in [a,b))$ quando $n \to \infty$.
 
 ```{r}
 #| label: est_descritiva_graficos_histograma
@@ -2665,38 +3105,60 @@ ggplot(ap2) +
 
 ```
 
-Gráficos de histograma também costumam ser associados a estimativas Kernel de densidade (KDE), um método de suavização não paramétrico da fdp de variáveis aleatórias contínuas a partir de uma amostra de dados. Entretanto, como ainda não introduzimos os conceitos básicos de probabilidade e distribuições de probabilidade, deixarei para explicar melhor a KDE após esses assuntos.
+Gráficos de histograma também costumam ser associados a estimativas
+Kernel de densidade (KDE), um método de suavização não paramétrico da
+fdp de variáveis aleatórias contínuas a partir de uma amostra de dados.
+Entretanto, como ainda não introduzimos os conceitos básicos de
+probabilidade e distribuições de probabilidade, deixarei para explicar
+melhor a KDE após esses assuntos.
 
 #### Boxplot ou diagrama de caixa
 
-O boxplot (diagrama de caixa) é uma representação gráfica que resume a distribuição de uma variável quantitativa através de cinco estatísticas de ordem, permitindo visualizar simultaneamente medidas de posição, dispersão e identificação de valores atípicos.
+O boxplot (diagrama de caixa) é uma representação gráfica que resume a
+distribuição de uma variável quantitativa através de cinco estatísticas
+de ordem, permitindo visualizar simultaneamente medidas de posição,
+dispersão e identificação de valores atípicos.
 
-Seja $X_1, X_2, ..., X_n$ uma amostra aleatória. As estatísticas de ordem $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ são os valores amostrais ordenados. Para essa amostra ordenada, definimos:
+Seja $X_1, X_2, ..., X_n$ uma amostra aleatória. As estatísticas de
+ordem $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ são os valores
+amostrais ordenados. Para essa amostra ordenada, definimos:
 
-- **Primeiro Quartil** ($Q_1$): $Q_1 = X_{(\lceil 0.25n \rceil)}$
-- **Mediana** ($Q_2$ ou $\tilde{x}$): 
-  
-  $$\tilde{x} = \begin{cases}
-  X_{(\frac{n+1}{2})} & \text{se } n \text{ é ímpar} \\
-  \frac{X_{(\frac{n}{2})} + X_{(\frac{n}{2}+1)}}{2} & \text{se } n \text{ é par}
-  \end{cases}$$
+-   **Primeiro Quartil** ($Q_1$): $Q_1 = X_{(\lceil 0.25n \rceil)}$
 
-- **Terceiro Quartil** ($Q_3$): $Q_3 = X_{(\lceil 0.75n \rceil)}$
-- **Amplitude Interquartílica** ($\text{IQR}$): $\text{IQR} = Q_3 - Q_1$. O IQR representa a dispersão dos 50% dados centrais, sendo uma medida robusta de variabilidade.
+-   **Mediana** ($Q_2$ ou $\tilde{x}$):
+
+    $$\tilde{x} = \begin{cases}
+    X_{(\frac{n+1}{2})} & \text{se } n \text{ é ímpar} \\
+    \frac{X_{(\frac{n}{2})} + X_{(\frac{n}{2}+1)}}{2} & \text{se } n \text{ é par}
+    \end{cases}$$
+
+-   **Terceiro Quartil** ($Q_3$): $Q_3 = X_{(\lceil 0.75n \rceil)}$
+
+-   **Amplitude Interquartílica** ($\text{IQR}$):
+    $\text{IQR} = Q_3 - Q_1$. O IQR representa a dispersão dos 50% dados
+    centrais, sendo uma medida robusta de variabilidade.
 
 Para a construção do boxplot usamos os seguintes elementos:
 
-1. **Caixa**: Retângulo delimitado por $Q_1$ e $Q_3$
-2. **Linha mediana**: Segmento em $Q_2$ dentro da caixa
-3. **Whiskers** (bigodes): Estendem-se até os valores extremos não-outliers
-4. **Outliers**: Pontos além dos whiskers
+1.  **Caixa**: Retângulo delimitado por $Q_1$ e $Q_3$
+2.  **Linha mediana**: Segmento em $Q_2$ dentro da caixa
+3.  **Whiskers** (bigodes): Estendem-se até os valores extremos
+    não-outliers
+4.  **Outliers**: Pontos além dos whiskers
 
-Existem várias formas de definir o limite dos whiskers, mas, em geral usamos o critério de Tukey:
+Existem várias formas de definir o limite dos whiskers, mas, em geral
+usamos o critério de Tukey:
 
-- **Limite Inferior**: $L_I = Q_1 - 1.5 \times \text{IQR}$
-- **Limite Superior**: $L_S = Q_3 + 1.5 \times \text{IQR}$
+-   **Limite Inferior**: $L_I = Q_1 - 1.5 \times \text{IQR}$
+-   **Limite Superior**: $L_S = Q_3 + 1.5 \times \text{IQR}$
 
-Calculados os limites inferior e superior, o whisker inferior será $\min\{x_i : x_i \geq L_I\}$, ou seja, o menor valor entre o mínimo dos dados e o $L_I$, enquanto o whisker superior será $\max\{x_i : x_i \leq L_S\}$, o maior valor entre o máximo dos dados e o $L_S$. Valores superiores ao whisker superior ou inferiores ao whisker inferior serão considerados *outliers* e representados como pontos no gráfico.
+Calculados os limites inferior e superior, o whisker inferior será
+$\min\{x_i : x_i \geq L_I\}$, ou seja, o menor valor entre o mínimo dos
+dados e o $L_I$, enquanto o whisker superior será
+$\max\{x_i : x_i \leq L_S\}$, o maior valor entre o máximo dos dados e o
+$L_S$. Valores superiores ao whisker superior ou inferiores ao whisker
+inferior serão considerados *outliers* e representados como pontos no
+gráfico.
 
 ```{r}
 #| label: est_descritiva_graficos_boxplot
@@ -2732,7 +3194,9 @@ ggplot(ap2, aes(y = w_age_t, x = 1)) +
   )
 ```
 
-Com algumas manipulações podemos combinar os gráficos de histograma, densidade estimada e boxplot, para uma visualização ainda mais completa do comportamento dos nossos dados.
+Com algumas manipulações podemos combinar os gráficos de histograma,
+densidade estimada e boxplot, para uma visualização ainda mais completa
+do comportamento dos nossos dados.
 
 ```{r}
 #| label: est_descritiva_graficos_hisbox
@@ -2841,17 +3305,36 @@ criar_hist_boxplot(
 )
 ```
 
-Uma propriedade importante do boxplot é que ele usa a mediana como ponto central, uma medida mais robusta que a média para dados com outliers muito extremos. Além disso, em dados com distribuição normal $X \sim N(\mu, \sigma^2): P(L_I \leq X \leq L_S) \approx 0.9930$, ou seja, a proporção esperada de outliers nos dados é de aproximadamente 0,7%.
+Uma propriedade importante do boxplot é que ele usa a mediana como ponto
+central, uma medida mais robusta que a média para dados com outliers
+muito extremos. Além disso, em dados com distribuição normal
+$X \sim N(\mu, \sigma^2): P(L_I \leq X \leq L_S) \approx 0.9930$, ou
+seja, a proporção esperada de outliers nos dados é de aproximadamente
+0,7%.
 
-Além disso, o boxplot permite avaliar assimetrias na distribuição em relação à mediana (pelo tamanho das caixas):
+Além disso, o boxplot permite avaliar assimetrias na distribuição em
+relação à mediana (pelo tamanho das caixas):
 
-- **Simétrica**: $Q_2 - Q_1 \approx Q_3 - Q_2$, caixas de mesmo tamanho;
-- **Assimétrica à direita**: $Q_3 - Q_2 > Q_2 - Q_1$, caixa superior maior;
-- **Assimétrica à esquerda**: $Q_2 - Q_1 > Q_3 - Q_2$, caixa inferior maior.
+-   **Simétrica**: $Q_2 - Q_1 \approx Q_3 - Q_2$, caixas de mesmo
+    tamanho;
+-   **Assimétrica à direita**: $Q_3 - Q_2 > Q_2 - Q_1$, caixa superior
+    maior;
+-   **Assimétrica à esquerda**: $Q_2 - Q_1 > Q_3 - Q_2$, caixa inferior
+    maior.
 
-Alguns aspectos que devem ser levados em consideração na análise e uso do boxplot são o fato dele não demonstrar possíveis multimodalidades (mais de uma moda), ser instável para amostras pequenas (< 20) e o fato de que o critério de Tukey ($1.5 \times \text{IQR}$) nem sempre será adequado para definir o que é um outlier (é sempre importante avaliar cada um desses dados considerados outliers de forma individual e seu real impacto no teste ou modelo que será utilizado posteriormente).
+Alguns aspectos que devem ser levados em consideração na análise e uso
+do boxplot são o fato dele não demonstrar possíveis multimodalidades
+(mais de uma moda), ser instável para amostras pequenas (\< 20) e o fato
+de que o critério de Tukey ($1.5 \times \text{IQR}$) nem sempre será
+adequado para definir o que é um outlier (é sempre importante avaliar
+cada um desses dados considerados outliers de forma individual e seu
+real impacto no teste ou modelo que será utilizado posteriormente).
 
-Uma alternativa ao boxplot é o gráfico de violino. Esse gráfico nada mais é que um gráfico de densidade espelhado, obtido pela KDE, que dá essa forma parecida com um violino. Como ainda não apresentamos formalmente os conceitos da KDE, nesse momento irei apresentar somente a maneira de obter esse gráfico.
+Uma alternativa ao boxplot é o gráfico de violino. Esse gráfico nada
+mais é que um gráfico de densidade espelhado, obtido pela KDE, que dá
+essa forma parecida com um violino. Como ainda não apresentamos
+formalmente os conceitos da KDE, nesse momento irei apresentar somente a
+maneira de obter esse gráfico.
 
 ```{r}
 #| label: est_descritiva_graficos_violin
@@ -2903,34 +3386,54 @@ ggplot(ap2, aes(y = w_age_t, x = 0)) +
 
 ## Medidas-resumo
 
-Como o próprio nome indica, medidas-resumo tentam representar o comportamento de uma variável em estudo por meio de um valor. Com exceção da moda (valor mais frequente de uma variável), as medidas-resumo são calculadas normalmente para variáveis quantitativas.
+Como o próprio nome indica, medidas-resumo tentam representar o
+comportamento de uma variável em estudo por meio de um valor. Com
+exceção da moda (valor mais frequente de uma variável), as
+medidas-resumo são calculadas normalmente para variáveis quantitativas.
 
 ## Medidas de posição ou localização
 
-Medidas de posição indicam a localização dos dados em relação ao intervalos de valores que a variável em estudo assume. Elas podem ser agrupadas em medidas de tendência central (média, mediana e moda) e medidas separatrizes (quartis, decis e percentis).
+Medidas de posição indicam a localização dos dados em relação ao
+intervalos de valores que a variável em estudo assume. Elas podem ser
+agrupadas em medidas de tendência central (média, mediana e moda) e
+medidas separatrizes (quartis, decis e percentis).
 
 #### Média
 
-A média aritmética ou média simples representa o valor central no intervalo de valores assumidos pela variável. Em uma população de tamanho $N$ representamos a média simples como $\mu$, enquanto, em uma amostra de tamanho $n$, indicamos a média amostral como $\bar{X}$.
+A média aritmética ou média simples representa o valor central no
+intervalo de valores assumidos pela variável. Em uma população de
+tamanho $N$ representamos a média simples como $\mu$, enquanto, em uma
+amostra de tamanho $n$, indicamos a média amostral como $\bar{X}$.
 
-A média aritmética de uma variável é a soma de todos os valores registrados no estudo dividido pelo total de observações. Ou seja,
+A média aritmética de uma variável é a soma de todos os valores
+registrados no estudo dividido pelo total de observações. Ou seja,
 
 $$
 \bar{X} = \frac{\sum_{i=1}^n x_i}{n}
 $$
 
-em que $x_i$ é o valor da observação $i$, com $i=1,2,...,n$ e $n$ é o número de observações.
+em que $x_i$ é o valor da observação $i$, com $i=1,2,...,n$ e $n$ é o
+número de observações.
 
-Pensando em dados de uma população de uma variável aleatória $X$ com função probabilidade (variável discreta) ou função densidade de probabilidade (variável contínua), $\mu$ é definido como
+Pensando em dados de uma população de uma variável aleatória $X$ com
+função probabilidade (variável discreta) ou função densidade de
+probabilidade (variável contínua), $\mu$ é definido como
 
-- Variável aleatória discreta: $\mu = E[X] = \sum_{x} x \cdot P(X = x)$;
-- Variável aleatória contínua: $\mu = E[X] = \int_{-\infty}^{\infty} x \cdot f(x)dx$.
+-   Variável aleatória discreta:
+    $\mu = E[X] = \sum_{x} x \cdot P(X = x)$;
+-   Variável aleatória contínua:
+    $\mu = E[X] = \int_{-\infty}^{\infty} x \cdot f(x)dx$.
 
-A média simples é uma medida de posição altamente utilizada na estatística por apresentar uma série de propriedades interessantes, que serão apresentadas a seguir:
+A média simples é uma medida de posição altamente utilizada na
+estatística por apresentar uma série de propriedades interessantes, que
+serão apresentadas a seguir:
 
 1 - **Linearidade**
 
-A esperança (média populacional) preserva operações lineares, ou seja, $E[aX + b] = aE[X] + b$. Se você multiplicar uma variável por uma constante ou somar uma constante, a média será transformada da mesma forma.
+A esperança (média populacional) preserva operações lineares, ou seja,
+$E[aX + b] = aE[X] + b$. Se você multiplicar uma variável por uma
+constante ou somar uma constante, a média será transformada da mesma
+forma.
 
 Exemplo para uma variável discreta:
 
@@ -2939,13 +3442,21 @@ $= \sum_{x} ax \cdot P(X = x) + \sum_{x} b \cdot P(X = x)$
 $= a\sum_{x} x \cdot P(X = x) + b\sum_{x} P(X = x)$
 $= aE[X] + b \cdot 1 = aE[X] + b = a\mu + b$
 
-Essa propriedade facilita cálculos quando alteramos a escala da variável (em uma transformação linear) e permite a padronização de variáveis para o valor $Z$, definido como $Z = \frac{X - \mu}{\sigma}$, que tem $E[Z] = 0$.
+Essa propriedade facilita cálculos quando alteramos a escala da variável
+(em uma transformação linear) e permite a padronização de variáveis para
+o valor $Z$, definido como $Z = \frac{X - \mu}{\sigma}$, que tem
+$E[Z] = 0$.
 
 2 - **Minimização de erro quadrático**:
 
-A média é o valor que minimiza a soma dos quadrados dos desvios ($\bar{X} = \arg\min_c \sum_{i=1}^{n} (X_i - c)^2$). Se você imaginar os dados como pontos em uma reta,  a média é o ponto que representa a menor soma das distâncias (as quadrado) entre os dados e esse ponto.
+A média é o valor que minimiza a soma dos quadrados dos desvios
+($\bar{X} = \arg\min_c \sum_{i=1}^{n} (X_i - c)^2$). Se você imaginar os
+dados como pontos em uma reta, a média é o ponto que representa a menor
+soma das distâncias (as quadrado) entre os dados e esse ponto.
 
-Demonstrando essa propriedade, buscamos um valor $c$ que minimize $g(c) = \sum_{i=1}^{n} (X_i - c)^2$, ou seja, que apresente o menor desvio quadrático. Desenvolvendo essa equação:
+Demonstrando essa propriedade, buscamos um valor $c$ que minimize
+$g(c) = \sum_{i=1}^{n} (X_i - c)^2$, ou seja, que apresente o menor
+desvio quadrático. Desenvolvendo essa equação:
 
 **Passo 1:** Expandir o quadrado
 
@@ -2957,16 +3468,29 @@ $= \sum_{i=1}^{n} X_i^2 - 2c\sum_{i=1}^{n} X_i + nc^2$
 
 Para obter essa derivada vamos aplicar algumas regras de derivadas
 
-1. **Derivada de uma constante**: Se $k$ é constante, $\frac{d}{dc}(k) = 0$
-2. **Regra da potência**: $\frac{d}{dc}(c^n) = nc^{n-1}$
-3. **Regra da constante multiplicativa**: $\frac{d}{dc}(k \cdot c) = k$
-4. **Linearidade da derivada**: $\frac{d}{dc}(f + g) = \frac{df}{dc} + \frac{dg}{dc}$
+1.  **Derivada de uma constante**: Se $k$ é constante,
+    $\frac{d}{dc}(k) = 0$
+2.  **Regra da potência**: $\frac{d}{dc}(c^n) = nc^{n-1}$
+3.  **Regra da constante multiplicativa**: $\frac{d}{dc}(k \cdot c) = k$
+4.  **Linearidade da derivada**:
+    $\frac{d}{dc}(f + g) = \frac{df}{dc} + \frac{dg}{dc}$
 
 nosso $g(c)$ possui 3 termos,
 
 $g(c) = \underbrace{\sum_{i=1}^{n} X_i^2}_{\text{Termo 1}} - \underbrace{2c\sum_{i=1}^{n} X_i}_{\text{Termo 2}} + \underbrace{nc^2}_{\text{Termo 3}}$
 
-então, para o Termo 1, $\sum_{i=1}^{n} X_i^2$, como ele não depende de $c$, o tratamos como uma constante, logo, $\frac{d}{dc}\left(\sum_{i=1}^{n} X_i^2\right) = 0$. Para o Termo 2, $-2c\sum_{i=1}^{n} X_i$, podemos reescrevê-lo como $-2\left(\sum_{i=1}^{n} X_i\right) \cdot c$, então $\sum_{i=1}^{n} X_i$ novamente é uma constante em relação ao $c$ (que trataremos como $K = \sum_{i=1}^{n} X_i$), portanto, buscamos a derivada em relação ao $c$ de $-2Kc$, assim, usando a regra da constante multiplicativa, $\frac{d}{dc}(-2Kc) = -2K = -2\sum_{i=1}^{n} X_i$. Para o Termo 3, $nc^2$, $n$ é uma constante e aplicamos a regra da potência, logo, $\frac{d}{dc}(nc^2) = n \cdot 2c^{2-1} = 2nc$. Combinando todos esses termos (linearidade da deriva ou regra da soma), obtemos
+então, para o Termo 1, $\sum_{i=1}^{n} X_i^2$, como ele não depende de
+$c$, o tratamos como uma constante, logo,
+$\frac{d}{dc}\left(\sum_{i=1}^{n} X_i^2\right) = 0$. Para o Termo 2,
+$-2c\sum_{i=1}^{n} X_i$, podemos reescrevê-lo como
+$-2\left(\sum_{i=1}^{n} X_i\right) \cdot c$, então $\sum_{i=1}^{n} X_i$
+novamente é uma constante em relação ao $c$ (que trataremos como
+$K = \sum_{i=1}^{n} X_i$), portanto, buscamos a derivada em relação ao
+$c$ de $-2Kc$, assim, usando a regra da constante multiplicativa,
+$\frac{d}{dc}(-2Kc) = -2K = -2\sum_{i=1}^{n} X_i$. Para o Termo 3,
+$nc^2$, $n$ é uma constante e aplicamos a regra da potência, logo,
+$\frac{d}{dc}(nc^2) = n \cdot 2c^{2-1} = 2nc$. Combinando todos esses
+termos (linearidade da deriva ou regra da soma), obtemos
 
 $\frac{dg}{dc} = -2\sum_{i=1}^{n} X_i + 2nc$
 
@@ -2980,15 +3504,35 @@ $c = \frac{1}{n}\sum_{i=1}^{n} X_i = \bar{X}$
 
 3 - **Propriedade dos desvios**
 
-A soma dos desvios em relação à média é sempre zero ($\sum_{i=1}^{n} (X_i - \bar{X}) = 0$), logo, os desvios positivos e negativos se cancelam. Assim, a média aritmética é o centro do intervalo dos valores da variável. A consequência dessa propriedade ocorre no momento de calcularmos a variabilidade dos dados (o quanto variam em relação a média). Como os desvios se cancelam, a estratégia adotada para conseguir calcular medidas de dispersão seria somar os desvios absolutos ($\sum_{i=1}^{n} |X_i - \bar{X}|$) ou os desvios quadráticos (($\sum_{i=1}^{n} (X_i - \bar{X})^2$)). A segunda opção acaba sendo a mais adotada, pela sua relação com os momentos (que aprenderemos em treinamentos futuros) e outras características que serão explicadas no tópico das medidas de dispersão.
+A soma dos desvios em relação à média é sempre zero
+($\sum_{i=1}^{n} (X_i - \bar{X}) = 0$), logo, os desvios positivos e
+negativos se cancelam. Assim, a média aritmética é o centro do intervalo
+dos valores da variável. A consequência dessa propriedade ocorre no
+momento de calcularmos a variabilidade dos dados (o quanto variam em
+relação a média). Como os desvios se cancelam, a estratégia adotada para
+conseguir calcular medidas de dispersão seria somar os desvios absolutos
+($\sum_{i=1}^{n} |X_i - \bar{X}|$) ou os desvios quadráticos
+(($\sum_{i=1}^{n} (X_i - \bar{X})^2$)). A segunda opção acaba sendo a
+mais adotada, pela sua relação com os momentos (que aprenderemos em
+treinamentos futuros) e outras características que serão explicadas no
+tópico das medidas de dispersão.
 
 4 - **Teorema do Limite Central**
 
-A distribuição da média amostral se aproxima de uma normal quando $n$ aumenta. Se $X_1, ..., X_n$ são i.i.d. com $E[X_i] = \mu$ e $\text{Var}(X_i) = \sigma^2 < \infty$, então, $\frac{\bar{X} - \mu}{\sigma/\sqrt{n}} \xrightarrow{d} N(0, 1)$ quando $n \to \infty$, ou, de forma equivalente, $\bar{X} \xrightarrow{d} N\left(\mu, \frac{\sigma^2}{n}\right)$.
+A distribuição da média amostral se aproxima de uma normal quando $n$
+aumenta. Se $X_1, ..., X_n$ são i.i.d. com $E[X_i] = \mu$ e
+$\text{Var}(X_i) = \sigma^2 < \infty$, então,
+$\frac{\bar{X} - \mu}{\sigma/\sqrt{n}} \xrightarrow{d} N(0, 1)$ quando
+$n \to \infty$, ou, de forma equivalente,
+$\bar{X} \xrightarrow{d} N\left(\mu, \frac{\sigma^2}{n}\right)$.
 
 5 - **Média aritmética como um estimador**
 
-A média simples é um estimador não enviesado da média populacional ($E[\bar{X}] = \mu$). Ou seja, se repetimos um experimento aleatório várias vezes e para cada tentativa registramos a média amostral, conforme o número de tentativas aumenta, a média das médias amostrais de cada experimento se aproxima cada vez mais da média populacional.
+A média simples é um estimador não enviesado da média populacional
+($E[\bar{X}] = \mu$). Ou seja, se repetimos um experimento aleatório
+várias vezes e para cada tentativa registramos a média amostral,
+conforme o número de tentativas aumenta, a média das médias amostrais de
+cada experimento se aproxima cada vez mais da média populacional.
 
 $E[\bar{X}] = E\left[\frac{1}{n}\sum_{i=1}^{n} X_i\right]$
 
@@ -2996,9 +3540,13 @@ $= \frac{1}{n}\sum_{i=1}^{n} E[X_i]$
 
 $= \frac{1}{n}\sum_{i=1}^{n} \mu = \frac{n\mu}{n} = \mu$
 
-A média é também um estimador consistente ($\bar{X} \xrightarrow{p} \mu$), ou seja, conforme o $n$ amostral aumenta, a probabilidade de $\bar{X}$ estar próximo de $\mu$ tende a 1 ($P(|\bar{X} - \mu| \leq \epsilon) \to 1 \text{ quando } n \to \infty$).
+A média é também um estimador consistente
+($\bar{X} \xrightarrow{p} \mu$), ou seja, conforme o $n$ amostral
+aumenta, a probabilidade de $\bar{X}$ estar próximo de $\mu$ tende a 1
+($P(|\bar{X} - \mu| \leq \epsilon) \to 1 \text{ quando } n \to \infty$).
 
-Além disso, entre todos os estimadores não-viesados que são combinações lineares dos dados, a média tem a menor variância.
+Além disso, entre todos os estimadores não-viesados que são combinações
+lineares dos dados, a média tem a menor variância.
 
 $\text{Var}(\bar{X}) = \text{Var}\left(\frac{1}{n}\sum_{i=1}^{n} X_i\right)$
 
@@ -3010,13 +3558,27 @@ $= \frac{1}{n^2} \cdot n\sigma^2 = \frac{\sigma^2}{n}$
 
 Ou seja, $\text{Var}(\hat{\mu}) \geq \text{Var}(\bar{X}) = \sigma^2/n$.
 
-Na média simples, todas as observações possui o mesmo peso ou importância no seu cálculo, porém, quando queremos atribuir diferentes pesos ($w_i$) para cada observação, podemos calcular a média ponderada como
+Na média simples, todas as observações possui o mesmo peso ou
+importância no seu cálculo, porém, quando queremos atribuir diferentes
+pesos ($w_i$) para cada observação, podemos calcular a média ponderada
+como
 
-$\bar{X}_w = \frac{\sum_{i=1}^{n} w_i X_i}{\sum_{i=1}^{n} w_i}$, onde $w_i > 0$, ou $\bar{X}_w = \sum_{i=1}^{n} w_{r_i} X_i$, onde $w_{r_i}$ é o peso relativo ($\frac{w_i}{\sum_{i=1}^{n} w_i}$).
+$\bar{X}_w = \frac{\sum_{i=1}^{n} w_i X_i}{\sum_{i=1}^{n} w_i}$, onde
+$w_i > 0$, ou $\bar{X}_w = \sum_{i=1}^{n} w_{r_i} X_i$, onde $w_{r_i}$ é
+o peso relativo ($\frac{w_i}{\sum_{i=1}^{n} w_i}$).
 
-A média ponderada é particularmente útil quando precisamos obter a média amostral, mas nosso conjunto de dados foi registrado de uma forma em que uma váriavel apresenta os valores de interesse e outra apresenta o número de vezes em que foi observado aquele determinado valor.
+A média ponderada é particularmente útil quando precisamos obter a média
+amostral, mas nosso conjunto de dados foi registrado de uma forma em que
+uma váriavel apresenta os valores de interesse e outra apresenta o
+número de vezes em que foi observado aquele determinado valor.
 
-No R calculamos a média simples com a função `mean()`. Um aspecto importante a se considerar quando usando essa função (e qualquer outra função do R que realiza operações matemáticas) é que valores ausentes (`NA`) contaminam seus resultados, ou seja, se houver uma observação `NA` na sua variável, o resultado da operação por padrão também é `NA`. Para contornar esse problema, usamos o argumento `na.rm = TRUE`, assim, esses valores são removidos antes de ser calculada a média.
+No R calculamos a média simples com a função `mean()`. Um aspecto
+importante a se considerar quando usando essa função (e qualquer outra
+função do R que realiza operações matemáticas) é que valores ausentes
+(`NA`) contaminam seus resultados, ou seja, se houver uma observação
+`NA` na sua variável, o resultado da operação por padrão também é `NA`.
+Para contornar esse problema, usamos o argumento `na.rm = TRUE`, assim,
+esses valores são removidos antes de ser calculada a média.
 
 ```{r}
 #| label: medidas_resumo_media_simples
@@ -3055,17 +3617,37 @@ m3 <- round(sum(dataset_alunos$notas * (dataset_alunos$n_alunos / sum(dataset_al
 m1 == m2 & m2 == m3
 ```
 
-Para dados agrupados, no caso de variáveis discretas calculamos a média usando a média ponderada, em que cada peso representará a frequência observada daquele valor. Já para variáveis contínuas agrupadas, cada classe não representa um valor, mas sim um intervalo, então estimamos a média usando o ponto médio de cada classe (cada intervalo) como o o valor observado e a frequência de observações daquela classe como o peso. Ou seja,
+Para dados agrupados, no caso de variáveis discretas calculamos a média
+usando a média ponderada, em que cada peso representará a frequência
+observada daquele valor. Já para variáveis contínuas agrupadas, cada
+classe não representa um valor, mas sim um intervalo, então estimamos a
+média usando o ponto médio de cada classe (cada intervalo) como o o
+valor observado e a frequência de observações daquela classe como o
+peso. Ou seja,
 
-$\bar{X} = \frac{\sum_{i=1}^k x_i \times F_i}{\sum_{i=1}^k F_i} = \frac{\sum_{i=1}^k x_i \times F_i}{n}$, em que $k$ é o número de classes, $x_i$ é o ponto médio do intervalo da classe $i$ e $F_i$ é a frequência observada na classe $i$.
+$\bar{X} = \frac{\sum_{i=1}^k x_i \times F_i}{\sum_{i=1}^k F_i} = \frac{\sum_{i=1}^k x_i \times F_i}{n}$,
+em que $k$ é o número de classes, $x_i$ é o ponto médio do intervalo da
+classe $i$ e $F_i$ é a frequência observada na classe $i$.
 
-Um aspecto importante da média amostral é que ela é "puxada" na direção das observações extremas, ou seja, valores muito discrepantes em relação aos demais. Para tentar diluir esse efeito de *outliers* da amostra na hora de avaliar a posição central dos dados, podemos calcular a média aparada ou a média winsorizada.
+Um aspecto importante da média amostral é que ela é "puxada" na direção
+das observações extremas, ou seja, valores muito discrepantes em relação
+aos demais. Para tentar diluir esse efeito de *outliers* da amostra na
+hora de avaliar a posição central dos dados, podemos calcular a média
+aparada ou a média winsorizada.
 
-A média aparada remove $\alpha\%$ das observações extremas (de forma igual nos limites inferior e superior) de uma variável ordenada antes de calcular a média. Ela é expressa como:
+A média aparada remove $\alpha\%$ das observações extremas (de forma
+igual nos limites inferior e superior) de uma variável ordenada antes de
+calcular a média. Ela é expressa como:
 
-$\bar{X}_{\alpha} = \frac{1}{n-2k}\sum_{i=k+1}^{n-k} X_{(i)}$, em que $\alpha$ é a proporção a ser removida e $k$ é o número efetivo de observações que serão removidas do cálculo da média aparada ($n \times \alpha / 2$).
+$\bar{X}_{\alpha} = \frac{1}{n-2k}\sum_{i=k+1}^{n-k} X_{(i)}$, em que
+$\alpha$ é a proporção a ser removida e $k$ é o número efetivo de
+observações que serão removidas do cálculo da média aparada
+($n \times \alpha / 2$).
 
-No R a média aparada também é obtida pela função `mean()` usando o argumento `trim = valor`, sendo que o valor passado ao `trim` corresponde ao $\alpha / 2$, ou seja, a proporção a ser removida em cada extremo.
+No R a média aparada também é obtida pela função `mean()` usando o
+argumento `trim = valor`, sendo que o valor passado ao `trim`
+corresponde ao $\alpha / 2$, ou seja, a proporção a ser removida em cada
+extremo.
 
 ```{r}
 #| label: medidas_resumo_media_aparada
@@ -3083,9 +3665,15 @@ ap2 %>%
   kable()
 ```
 
-A média winsorizada, por sua vez, substitui os valores extremos pelos percentis correspondentes. Por exemplo, se queremos uma média winsorizada de $\alpha = 10\%$, iremos substituir todos os valores abaixo do percentil 10% pelo valor desse percentil e subtituir todos valores acima do percentil 90% pelo valor desse percentil.
+A média winsorizada, por sua vez, substitui os valores extremos pelos
+percentis correspondentes. Por exemplo, se queremos uma média
+winsorizada de $\alpha = 10\%$, iremos substituir todos os valores
+abaixo do percentil 10% pelo valor desse percentil e subtituir todos
+valores acima do percentil 90% pelo valor desse percentil.
 
-No R não temos uma função, a não ser em pacotes específicos, da média winsorizada, porém podemos facilmente criar nossa própria função para calculá-la:
+No R não temos uma função, a não ser em pacotes específicos, da média
+winsorizada, porém podemos facilmente criar nossa própria função para
+calculá-la:
 
 ```{r}
 #| label: medidas_resumo_media_winsorizada
@@ -3130,139 +3718,244 @@ ap2 %>%
   kable()
 ```
 
-
 #### Mediana
 
-A mediana ($Md$) é uma medida de posição do centro da distribuição dos dados ordenados de forma crescente, de modo que $P(X \leq Md) \geq \frac{1}{2}$ e $P(X \geq m) \geq \frac{1}{2}$.
+A mediana ($Md$) é uma medida de posição do centro da distribuição dos
+dados ordenados de forma crescente, de modo que
+$P(X \leq Md) \geq \frac{1}{2}$ e $P(X \geq m) \geq \frac{1}{2}$.
 
-Seja $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ a nossa variável ordenada de forma crescente, definimos $Md$ como
+Seja $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ a nossa variável
+ordenada de forma crescente, definimos $Md$ como
 
 $\text{Md} = \begin{cases} X_{(\frac{n+1}{2})} & \text{se } n \text{ é ímpar} \\ \frac{X_{(\frac{n}{2})} + X_{(\frac{n}{2}+1)}}{2} & \text{se } n \text{ é par} \end{cases}$,
 
-em que $n$ é o número de observações e $X_{(i)}$ é o valor da variável na posição $i$.
+em que $n$ é o número de observações e $X_{(i)}$ é o valor da variável
+na posição $i$.
 
-Algo importante para se compreender da mediana (e medidas separatrizes em geral) é que ela representa um valor para o qual 50% dos dados são menores ou iguais àquele valor, enquanto os outros 50% não necessariamente serão maiores que aquele valor (podem ser iguais). Para exemplificar, imagine uma amostra de 11 observações, cuja mediana será dada pelo 6º valor ordenado dessa avariável ($(11 + 1)/2=6$). Se nossa amostra ordenada for representada por
+Algo importante para se compreender da mediana (e medidas separatrizes
+em geral) é que ela representa um valor para o qual 50% dos dados são
+menores ou iguais àquele valor, enquanto os outros 50% não
+necessariamente serão maiores que aquele valor (podem ser iguais). Para
+exemplificar, imagine uma amostra de 11 observações, cuja mediana será
+dada pelo 6º valor ordenado dessa avariável ($(11 + 1)/2=6$). Se nossa
+amostra ordenada for representada por
 
 $1 \quad 2 \quad 3 \quad 4 \quad 5 \quad *6* \quad 7 \quad 8 \quad 9 \quad 10 \quad 11$
 
-de fato, 50% das observações serão menores ou iguais à mediana, enquanto os demais foram maiores. Porém se nossa amostra fosse
+de fato, 50% das observações serão menores ou iguais à mediana, enquanto
+os demais foram maiores. Porém se nossa amostra fosse
 
 $1 \quad 2 \quad 3 \quad 4 \quad 5 \quad *6* \quad 6 \quad 6 \quad 6 \quad 8 \quad 9$
 
-agora, 50% das observações continuam sendo menores ou iguais à mediana, porém não podemos 50% dos valores observados são maiores que 6. Conclusão, o correto a se afirmar sobre a mediana é que 50% dos valores são menores ou **iguais** à mediana ou 50% dos valores são maiores ou **iguais** à mediana.
+agora, 50% das observações continuam sendo menores ou iguais à mediana,
+porém não podemos 50% dos valores observados são maiores que 6.
+Conclusão, o correto a se afirmar sobre a mediana é que 50% dos valores
+são menores ou **iguais** à mediana ou 50% dos valores são maiores ou
+**iguais** à mediana.
 
 Como propriedades da mediana, nós temos:
 
 1 - **Minimização do desvio absoluto**
 
-A mediana é o valor que minimiza a soma das distâncias absolutas de todos os pontos até ela.
+A mediana é o valor que minimiza a soma das distâncias absolutas de
+todos os pontos até ela.
 
 $\text{Md} = \arg\min_c \sum_{i=1}^{n} |X_i - c|$
 
-Demonstrando essa propriedade, buscamos um valor $c$ que minimize $g(c) = \sum_{i=1}^{n} |X_i - c|$, ou seja, que apresente o menor desvio absoluto (lembrando que $|X_i - c|$ representa a distância de cada ponto $X_i$ até $c$). Desenvolvendo essa equação:
+Demonstrando essa propriedade, buscamos um valor $c$ que minimize
+$g(c) = \sum_{i=1}^{n} |X_i - c|$, ou seja, que apresente o menor desvio
+absoluto (lembrando que $|X_i - c|$ representa a distância de cada ponto
+$X_i$ até $c$). Desenvolvendo essa equação:
 
 **Passo 1**: Analisar a derivada de $|x|$
 
-- Para $x > 0$: $\frac{d|x|}{dx} = 1$
-- Para $x < 0$: $\frac{d|x|}{dx} = -1$
-- Em $x = 0$: a derivada não existe (ponto de não-diferenciabilidade)
+-   Para $x > 0$: $\frac{d|x|}{dx} = 1$
+-   Para $x < 0$: $\frac{d|x|}{dx} = -1$
+-   Em $x = 0$: a derivada não existe (ponto de não-diferenciabilidade)
 
 **Passo 2**: Calcular a derivada de $g(c)$ por partes
 
-Seja $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ a nossa variável ordenada, para um $c$ no intervalo $(X_{(k)}, X_{(k+1)})$:
+Seja $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ a nossa variável
+ordenada, para um $c$ no intervalo $(X_{(k)}, X_{(k+1)})$:
 
-- Temos exatamente $k$ valores menores que $c$: $X_{(1)}, ..., X_{(k)}$
-- Temos exatamente $n-k$ valores maiores que $c$: $X_{(k+1)}, ..., X_{(n)}$
+-   Temos exatamente $k$ valores menores que $c$:
+    $X_{(1)}, ..., X_{(k)}$
+-   Temos exatamente $n-k$ valores maiores que $c$:
+    $X_{(k+1)}, ..., X_{(n)}$
 
 Aplicando a regra da cadeia em cada parte
 
-- Para $X_i < c$: $\frac{d|X_i - c|}{dc} = \frac{d|X_i - c|}{d(X_i - c)} \cdot \frac{d(X_i - c)}{dc} = (-1) \cdot (-1) = 1$
-- Para $X_i > c$: $\frac{d|X_i - c|}{dc} = \frac{d|X_i - c|}{d(X_i - c)} \cdot \frac{d(X_i - c)}{dc} = (1) \cdot (-1) = -1$
+-   Para $X_i < c$:
+    $\frac{d|X_i - c|}{dc} = \frac{d|X_i - c|}{d(X_i - c)} \cdot \frac{d(X_i - c)}{dc} = (-1) \cdot (-1) = 1$
+-   Para $X_i > c$:
+    $\frac{d|X_i - c|}{dc} = \frac{d|X_i - c|}{d(X_i - c)} \cdot \frac{d(X_i - c)}{dc} = (1) \cdot (-1) = -1$
 
 **Passo 3**: Somar as derivadas
 
-Então no intervalo $(X_{(k)}, X_{(k+1)})$ temos $g'(c) = \sum_{i: X_i < c} 1 + \sum_{i: X_i > c} (-1) = k - (n-k) = 2k - n$.
+Então no intervalo $(X_{(k)}, X_{(k+1)})$ temos
+$g'(c) = \sum_{i: X_i < c} 1 + \sum_{i: X_i > c} (-1) = k - (n-k) = 2k - n$.
 
 **Passo 4**: Encontrar o ponto crítico
 
-$g'(c) = 0$ quando $2k - n = 0$, ou seja, quando $k = n/2$. Assim, obtemos o valor que minimiza o desvio absoluto quando usamos um valor $c$, tal que $X_{(n/2)} < c < X_{(\frac{n}{2}+1)}$, e a mediana é justamente a medida que cumpre esses requisitos.
+$g'(c) = 0$ quando $2k - n = 0$, ou seja, quando $k = n/2$. Assim,
+obtemos o valor que minimiza o desvio absoluto quando usamos um valor
+$c$, tal que $X_{(n/2)} < c < X_{(\frac{n}{2}+1)}$, e a mediana é
+justamente a medida que cumpre esses requisitos.
 
 2 - **Equivariância**
 
-Se $Y = aX + b$ $(a > 0)$, então $\text{Med}(Y) = a \cdot \text{Med}(X) + b$. Observe que, sejam $X_1, X_2, ..., X_n$ as observações de $X$, então $Y_i = aX_i + b$ para $i = 1, 2, ..., n$. Como os $X_i$ são deslocados por $b$ no mesmo sentido e "esticados" ou "comprimidos" por $a$ na mesma intensidade e direção (pois $a > 0$), então a ordem é preservada. Logo, se $X_i < X_j$ então $aX_i + b < aX_j + b$, portanto, $Y_i < Y_j$. Resumindo, a posição da mediana em $Y$ é a mesma posição da mediana em $X$, com isso a $\text{Med}(Y) = Y_{(\frac{n+1}{2})} = aX_{(\frac{n+1}{2})} + b = a \cdot \text{Med}(X) + b$.
+Se $Y = aX + b$ $(a > 0)$, então
+$\text{Med}(Y) = a \cdot \text{Med}(X) + b$. Observe que, sejam
+$X_1, X_2, ..., X_n$ as observações de $X$, então $Y_i = aX_i + b$ para
+$i = 1, 2, ..., n$. Como os $X_i$ são deslocados por $b$ no mesmo
+sentido e "esticados" ou "comprimidos" por $a$ na mesma intensidade e
+direção (pois $a > 0$), então a ordem é preservada. Logo, se $X_i < X_j$
+então $aX_i + b < aX_j + b$, portanto, $Y_i < Y_j$. Resumindo, a posição
+da mediana em $Y$ é a mesma posição da mediana em $X$, com isso a
+$\text{Med}(Y) = Y_{(\frac{n+1}{2})} = aX_{(\frac{n+1}{2})} + b = a \cdot \text{Med}(X) + b$.
 
 3 - **Robustez**
 
-A mediana apresenta ponto de ruptura de 50%, o que, de forma bem simplista, significa que precisaríamos substituir cerca de metade das observações por valores arbitrários para que a variável não forneça informação suficiente sobre a verdadeira localização da mediana. Na prática, significa que ela sofre menos alterações se decidirmos substituir outliers por uma medida de posição (como a própria mediana, a média, ou um percentil).
+A mediana apresenta ponto de ruptura de 50%, o que, de forma bem
+simplista, significa que precisaríamos substituir cerca de metade das
+observações por valores arbitrários para que a variável não forneça
+informação suficiente sobre a verdadeira localização da mediana. Na
+prática, significa que ela sofre menos alterações se decidirmos
+substituir outliers por uma medida de posição (como a própria mediana, a
+média, ou um percentil).
 
 4 - **Distribuição assintótica da mediana** (para variáveis contínuas)
 
-Uma distribuição assintótica descreve o **comportamento limite** da distribuição de um estimador (ou estatística) quando o tamanho da amostra, $n$, cresce indefinidamente, ou seja, quando $n \to \infty$. Quando nós calculamos uma estatística (por exemplo, a média, a variância ou a mediana amostral), sua distribuição exata depende do tamanho da amostra e da distribuição dos dados. À medida que o $n$ cresce, muitas estatísticas passam a ter distribuições que semelhantes a alguma forma simples e bem conhecida, por exemplo, a distribuição normal. Essa distribuição limite é o que chamamos de **distribuição assintótica**.
+Uma distribuição assintótica descreve o **comportamento limite** da
+distribuição de um estimador (ou estatística) quando o tamanho da
+amostra, $n$, cresce indefinidamente, ou seja, quando $n \to \infty$.
+Quando nós calculamos uma estatística (por exemplo, a média, a variância
+ou a mediana amostral), sua distribuição exata depende do tamanho da
+amostra e da distribuição dos dados. À medida que o $n$ cresce, muitas
+estatísticas passam a ter distribuições que semelhantes a alguma forma
+simples e bem conhecida, por exemplo, a distribuição normal. Essa
+distribuição limite é o que chamamos de **distribuição assintótica**.
 
-No caso da mediana, temos o teorema que $\sqrt{n}(\text{Md} - \theta) \xrightarrow{d} N\left(0, \frac{1}{4f(\theta)^2}\right)$, onde $\theta$ é a mediana populacional e $f(\theta)$ é a densidade no ponto $\theta$, ou seja, quando $n$ é grande, a distribuição da variável transformada $\sqrt{n}(\text{Md} - \theta)$ se aproxima de uma normal $N(0,\,1/(4f(\theta)^2))$. 
+No caso da mediana, temos o teorema que
+$\sqrt{n}(\text{Md} - \theta) \xrightarrow{d} N\left(0, \frac{1}{4f(\theta)^2}\right)$,
+onde $\theta$ é a mediana populacional e $f(\theta)$ é a densidade no
+ponto $\theta$, ou seja, quando $n$ é grande, a distribuição da variável
+transformada $\sqrt{n}(\text{Md} - \theta)$ se aproxima de uma normal
+$N(0,\,1/(4f(\theta)^2))$.
 
-Simplificando, a mediana amostral é aproximadamente normal quando a amostra é grande, com variância decrescendo a uma taxa de $1/n$, ou seja, a mediana, assim como a média, se torna cada vez mais precisa (mais próxima da mediana populacional) quando você tem mais dados. E essa precisão crescente se reflete matematicamente pela variância decrescendo a uma taxa de $1/n$.
+Simplificando, a mediana amostral é aproximadamente normal quando a
+amostra é grande, com variância decrescendo a uma taxa de $1/n$, ou
+seja, a mediana, assim como a média, se torna cada vez mais precisa
+(mais próxima da mediana populacional) quando você tem mais dados. E
+essa precisão crescente se reflete matematicamente pela variância
+decrescendo a uma taxa de $1/n$.
 
-Se definimos $Y_n = \sqrt{n}(\text{Md} - \theta)$, então, $\text{Md} - \theta = \frac{Y_n}{\sqrt{n}}$. Calculando a variância assintótica da $\text{Md}$ teremos $\operatorname{Var}(\text{Md}) = \operatorname{Var}\left(\frac{Y_n}{\sqrt{n}}\right)$ ($\theta$ é constante e não altera a variância). Como multiplicar uma variável aleatória por uma constante $1/\sqrt{n}$ multiplica sua variância por $1/n$, então, $\operatorname{Var}(\text{Md}) \approx \frac{1}{n} \operatorname{Var}(Y_n)$. Agora, se $\operatorname{Var}(Y_n) \to \frac{1}{4f(\theta)^2}$, então $\operatorname{Var}(\text{Md}) \approx \frac{1}{4n f(\theta)^2}$, onde o único elemento que varia é $n$, por isso que a variância da distribuição amostral da mediana vai decrescendo a uma taxa de $1/n$ conforme $n$ aumenta.
+Se definimos $Y_n = \sqrt{n}(\text{Md} - \theta)$, então,
+$\text{Md} - \theta = \frac{Y_n}{\sqrt{n}}$. Calculando a variância
+assintótica da $\text{Md}$ teremos
+$\operatorname{Var}(\text{Md}) = \operatorname{Var}\left(\frac{Y_n}{\sqrt{n}}\right)$
+($\theta$ é constante e não altera a variância). Como multiplicar uma
+variável aleatória por uma constante $1/\sqrt{n}$ multiplica sua
+variância por $1/n$, então,
+$\operatorname{Var}(\text{Md}) \approx \frac{1}{n} \operatorname{Var}(Y_n)$.
+Agora, se $\operatorname{Var}(Y_n) \to \frac{1}{4f(\theta)^2}$, então
+$\operatorname{Var}(\text{Md}) \approx \frac{1}{4n f(\theta)^2}$, onde o
+único elemento que varia é $n$, por isso que a variância da distribuição
+amostral da mediana vai decrescendo a uma taxa de $1/n$ conforme $n$
+aumenta.
 
-Para calcular a mediana de dados agrupados de uma variável discreta, usamos o mesmo método dos dados não agrupados, ou seja, calculamos a posição das observações que serão usadas para calcular a mediana, e utilizamos o valor da categoria em que cada posição está. Por exemplo, imagine a seguinte variável discreta agrupada:
+Para calcular a mediana de dados agrupados de uma variável discreta,
+usamos o mesmo método dos dados não agrupados, ou seja, calculamos a
+posição das observações que serão usadas para calcular a mediana, e
+utilizamos o valor da categoria em que cada posição está. Por exemplo,
+imagine a seguinte variável discreta agrupada:
 
 | Número de crias | $F_i$ | $F_{ac}$ |
-|:----------------|-----|-------:|
-|1| 6| 6|
-|2|20|26|
-|3|14|40|
-|4| 3|43|
-|5| 1|44|
+|:----------------|-------|---------:|
+| 1               | 6     |        6 |
+| 2               | 20    |       26 |
+| 3               | 14    |       40 |
+| 4               | 3     |       43 |
+| 5               | 1     |       44 |
 
-Como $n$ é par, a mediana é a soma dos elementos na posição $n/2 = 22$ e $(n/2)+1 = 23$ divido por $2$. Olhando a frequência acumulada, vemos que ambos estão na categoria 2, logo, a mediana é $Md = (2+2) / 2 = 2$.
+Como $n$ é par, a mediana é a soma dos elementos na posição $n/2 = 22$ e
+$(n/2)+1 = 23$ divido por $2$. Olhando a frequência acumulada, vemos que
+ambos estão na categoria 2, logo, a mediana é $Md = (2+2) / 2 = 2$.
 
-Para dados agrupados de uma variável contínua, primeiro calculamos a posição da mediana como $n/2$ e identificamos a classe em que contém a posição mediana, a partir da avaliação das frequências acumuladas. Essa classe, agora denominada classe mediana ($C_{Md}$) será a base para calcularmos a mediana segundo a expressão:
+Para dados agrupados de uma variável contínua, primeiro calculamos a
+posição da mediana como $n/2$ e identificamos a classe em que contém a
+posição mediana, a partir da avaliação das frequências acumuladas. Essa
+classe, agora denominada classe mediana ($C_{Md}$) será a base para
+calcularmos a mediana segundo a expressão:
 
 $Md = LI_{C_{Md}} + \frac{(\frac{n}{2} - F_{ac({C_{Md}}-1)})}{F_{C_{Md}}} \times A_{C_{Md}}$
 
 em que
 
-- $LI_{C_{Md}}$ é o limite inferior do intervalo da classe mediana
-- $F_{ac({C_{Md}}-1)}$ é a frequência acumulada da classe anterior à classe mediana
-- $F_{C_{Md}}$ é a frequência absoluta da classe mediana
-- $n$ é o total de observações, e
-- $A_{C_{Md}}$ é a amplitude da classe mediana (limite superior menos o inferior).
+-   $LI_{C_{Md}}$ é o limite inferior do intervalo da classe mediana
+-   $F_{ac({C_{Md}}-1)}$ é a frequência acumulada da classe anterior à
+    classe mediana
+-   $F_{C_{Md}}$ é a frequência absoluta da classe mediana
+-   $n$ é o total de observações, e
+-   $A_{C_{Md}}$ é a amplitude da classe mediana (limite superior menos
+    o inferior).
 
-Como a mediana é uma medida separatriz, o segundo quartil (ou quantil de ordem 0,5), deixarei para apresentar o exemplo de sua obtenção no R no tópico de **medidas separatrizes**.
+Como a mediana é uma medida separatriz, o segundo quartil (ou quantil de
+ordem 0,5), deixarei para apresentar o exemplo de sua obtenção no R no
+tópico de **medidas separatrizes**.
 
 #### Moda
 
-A moda é o valor de maior frequência (mais observado). De forma mais formal, para uma variável discreta a moda é $\text{Mo} = \arg\max_x P(X = x)$, enquanto para uma variável contínua a moda é $\text{Mo} = \arg\max_x f(x)$, ou seja, o valor com maior probabilidade de ocorrência daquela variável.
+A moda é o valor de maior frequência (mais observado). De forma mais
+formal, para uma variável discreta a moda é
+$\text{Mo} = \arg\max_x P(X = x)$, enquanto para uma variável contínua a
+moda é $\text{Mo} = \arg\max_x f(x)$, ou seja, o valor com maior
+probabilidade de ocorrência daquela variável.
 
-Para dados qualitativos ou quantitativos discretos, iremos calcular as frequências de cada valor/categoria e a classe (unimodal) ou classes (bi ou multimodal) de maior frequência serão a moda.
+Para dados qualitativos ou quantitativos discretos, iremos calcular as
+frequências de cada valor/categoria e a classe (unimodal) ou classes (bi
+ou multimodal) de maior frequência serão a moda.
 
-Já para dados contínuos, iremos primeiro agrupá-los (seguindo aquelas regras apresentadas anteriormente para tabelas de frequência) e depois estimar a moda usando o método de Czuber ou o método de King (raramente é usado atualmente).
+Já para dados contínuos, iremos primeiro agrupá-los (seguindo aquelas
+regras apresentadas anteriormente para tabelas de frequência) e depois
+estimar a moda usando o método de Czuber ou o método de King (raramente
+é usado atualmente).
 
-No método de Czuber, primeiro identificamos a classe que contém a moda (aquela de maior frequência absoluta). Essa classe, agora denominada classe modal ($C_{Mo}$) será a base para calcularmos a moda segundo a expressão:
+No método de Czuber, primeiro identificamos a classe que contém a moda
+(aquela de maior frequência absoluta). Essa classe, agora denominada
+classe modal ($C_{Mo}$) será a base para calcularmos a moda segundo a
+expressão:
 
 $Mo = LI_{C_{Mo}} + \frac{(F_{C_{Mo}} - F_{C_{Mo-1}})}{2 \times F_{C_{Mo}} - (F_{C_{Mo-1}} + F_{C_{Mo+1}})} \times A_{C_{Mo}}$
 
 em que
 
-- $LI_{C_{Mo}}$ é o limite inferior do intervalo da classe modal
-- $F_{C_{Mo}}$ é a frequência absoluta da classe modal
-- $F_{C_{Mo-1}}$ é a frequência absoluta da classe anterior à classe modal
-- $F_{C_{Mo+1}}$ é a frequência absoluta da classe posterior à classe modal
-- $A_{C_{Mo}}$ é a amplitude da classe modal (limite superior menos o inferior).
+-   $LI_{C_{Mo}}$ é o limite inferior do intervalo da classe modal
+-   $F_{C_{Mo}}$ é a frequência absoluta da classe modal
+-   $F_{C_{Mo-1}}$ é a frequência absoluta da classe anterior à classe
+    modal
+-   $F_{C_{Mo+1}}$ é a frequência absoluta da classe posterior à classe
+    modal
+-   $A_{C_{Mo}}$ é a amplitude da classe modal (limite superior menos o
+    inferior).
 
-No método de King, também identificamos a classe que contém a moda e calculamos a moda segundo a expressão:
+No método de King, também identificamos a classe que contém a moda e
+calculamos a moda segundo a expressão:
 
 $Mo = LI_{C_{Mo}} + \frac{F_{C_{Mo+1}}}{(F_{C_{Mo-1}} + F_{C_{Mo+1}})} \times A_{C_{Mo}}$
 
 em que
 
-- $LI_{C_{Mo}}$ é o limite inferior do intervalo da classe modal
-- $F_{C_{Mo-1}}$ é a frequência absoluta da classe anterior à classe modal
-- $F_{C_{Mo+1}}$ é a frequência absoluta da classe posterior à classe modal
-- $A_{C_{Mo}}$ é a amplitude da classe modal (limite superior menos o inferior).
+-   $LI_{C_{Mo}}$ é o limite inferior do intervalo da classe modal
+-   $F_{C_{Mo-1}}$ é a frequência absoluta da classe anterior à classe
+    modal
+-   $F_{C_{Mo+1}}$ é a frequência absoluta da classe posterior à classe
+    modal
+-   $A_{C_{Mo}}$ é a amplitude da classe modal (limite superior menos o
+    inferior).
 
-No R não há uma função no `base` para obtenção da moda, entrentanto, iremos criar a nossa própria:
+No R não há uma função no `base` para obtenção da moda, entrentanto,
+iremos criar a nossa própria:
 
 ```{r}
 #| label: medidas_resumo_moda
@@ -3454,62 +4147,101 @@ kable(tibble(
 
 #### Medidas separatrizes
 
-Medidas separatrizes são valores que dividem um conjunto de dados ordenados em partes iguais, ajudando a descrever como os dados se distribuem. Elas indicam a posição relativa de um valor dentro da amostra ou população. As principais são os **quartis** (dividem em 4 partes iguais, 25%, 50%, 75% e 100% ou Q1, Q2/Mediana, Q3 e Q4), **decis** (10 partes) e **percentis** (100 partes). Cada medida separatriz corresponde a um **quantil** (varia entre 0 e 1) específico, por exemplo, o 1º quartil (Q1) é o quantil de ordem 0,25, ou seja, 25% dos dados são menores ou iguais a ele. Essas medidas são úteis para resumir e interpretar a dispersão e a concentração dos dados de forma mais detalhada do que apenas a média ou a mediana.
+Medidas separatrizes são valores que dividem um conjunto de dados
+ordenados em partes iguais, ajudando a descrever como os dados se
+distribuem. Elas indicam a posição relativa de um valor dentro da
+amostra ou população. As principais são os **quartis** (dividem em 4
+partes iguais, 25%, 50%, 75% e 100% ou Q1, Q2/Mediana, Q3 e Q4),
+**decis** (10 partes) e **percentis** (100 partes). Cada medida
+separatriz corresponde a um **quantil** (varia entre 0 e 1) específico,
+por exemplo, o 1º quartil (Q1) é o quantil de ordem 0,25, ou seja, 25%
+dos dados são menores ou iguais a ele. Essas medidas são úteis para
+resumir e interpretar a dispersão e a concentração dos dados de forma
+mais detalhada do que apenas a média ou a mediana.
 
 A definição formal de quantis para uma população é a seguinte:
 
-O quantil de ordem $p$, em que $0 < p < 1$, é o valor $q_p$ tal que $P(X \leq q_p) \geq p$ e $P(X \geq q_p) \geq 1-p$, ou seja, a probabilidade de uma observação daquela variável ser menor ou igual ao $q_p$ é maior ou igual a $p$ (ordem do quantil).
+O quantil de ordem $p$, em que $0 < p < 1$, é o valor $q_p$ tal que
+$P(X \leq q_p) \geq p$ e $P(X \geq q_p) \geq 1-p$, ou seja, a
+probabilidade de uma observação daquela variável ser menor ou igual ao
+$q_p$ é maior ou igual a $p$ (ordem do quantil).
 
-Para uma variável $X$, a sua função de distribuição acumulada (FDA) é denotada por $F(x) = P(X \leq x)$, então, $q_p = F^{-1}(p) = \inf\{x : F(x) \geq p\}$, ou seja, o quantil é a inversa da FDA para o valor $p$ ou menor valor de $x$ que ainda satisfaz a condição de que a probabilidade acumulada é maior ou igual a $p$ (isso para garantir a validade da definição mesmo em distribuições discretas em que a $F(x)$ possui saltos).
+Para uma variável $X$, a sua função de distribuição acumulada (FDA) é
+denotada por $F(x) = P(X \leq x)$, então,
+$q_p = F^{-1}(p) = \inf\{x : F(x) \geq p\}$, ou seja, o quantil é a
+inversa da FDA para o valor $p$ ou menor valor de $x$ que ainda satisfaz
+a condição de que a probabilidade acumulada é maior ou igual a $p$ (isso
+para garantir a validade da definição mesmo em distribuições discretas
+em que a $F(x)$ possui saltos).
 
-Na prática, não teremos os dados populacionais para calcular o quantil, por isso iremos estimá-los a partir da nossa amostra. Então, para uma amostra de tamanho $n$, tal que nossas observações ordenadas sejam $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$, iremos estimar o quantil de ordem $p$ a partir desses dados.
+Na prática, não teremos os dados populacionais para calcular o quantil,
+por isso iremos estimá-los a partir da nossa amostra. Então, para uma
+amostra de tamanho $n$, tal que nossas observações ordenadas sejam
+$X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$, iremos estimar o quantil
+de ordem $p$ a partir desses dados.
 
-No R, a função `quantile()` adota os métodos de estimação dos quantis propostos por Hyndman e Fan [-@HyndmanFan1996], sendo que o método usado pela função é determinado no argumento `type`.
+No R, a função `quantile()` adota os métodos de estimação dos quantis
+propostos por Hyndman e Fan [-@HyndmanFan1996], sendo que o método usado
+pela função é determinado no argumento `type`.
 
-Ao estimar um quantil amostral, cada método o estima segundo a definição:
+Ao estimar um quantil amostral, cada método o estima segundo a
+definição:
 
 $Q_i(p) = (1 - \gamma) x_{(j)} + \gamma x_{(j+1)}$,
 
 onde:
 
-- $i$ é o método escolhido (representado na função do R por um valor discreto entre 1 e 9);
-- $p$ é a ordem do quantil estimado;
-- $j = \lfloor np + m \rfloor$ (o menor valor inteiro do resultado de $np + m$, onde $n$ é o tamanho da amostra);
-- $m$ é um **parâmetro de deslocamento** que muda conforme o método escolhido;
-- $\gamma$ é um valor calculado de acordo com o método escolhido e com $g$; e
-- $g = n p + m - j$.
+-   $i$ é o método escolhido (representado na função do R por um valor
+    discreto entre 1 e 9);
+-   $p$ é a ordem do quantil estimado;
+-   $j = \lfloor np + m \rfloor$ (o menor valor inteiro do resultado de
+    $np + m$, onde $n$ é o tamanho da amostra);
+-   $m$ é um **parâmetro de deslocamento** que muda conforme o método
+    escolhido;
+-   $\gamma$ é um valor calculado de acordo com o método escolhido e com
+    $g$; e
+-   $g = n p + m - j$.
 
 Os métodos são dividos em dois grupos:
 
-**Discretos (tipos 1–3):**
+**Discretos (tipos 1--3):**
 
-| Tipo | Descrição | Parâmetro $m$ | $\gamma$ | Observação |
-|------|------------|----------------|---------------------------|-------------|
-| **1** | Inverso da função de distribuição empírica (*ECDF*) | $m = 0$ | $\gamma = 0$ se $g = 0$, senão $1$ | Método “Nearest Rank” |
-| **2** | ECDF com média nos pontos de descontinuidade | $m = 0$ | $\gamma = 0.5$ se $g = 0$, senão $1$ | Padrão antigo do SAS — suaviza empates |
-| **3** | Valor de ordem mais próximo ("nearest even order statistic") | $m = -0.5$ | $\gamma = 0$ se $g = 0$ e $j$ par, senão $1$ | Escolhe o valor mais próximo de $np$; usado no SAS até 2010 |
+| Tipo  | Descrição                                                    | Parâmetro $m$ | $\gamma$                                     | Observação                                                  |
+|-------------|-------------|-------------|---------------------|-------------|
+| **1** | Inverso da função de distribuição empírica (*ECDF*)          | $m = 0$       | $\gamma = 0$ se $g = 0$, senão $1$           | Método "Nearest Rank"                                       |
+| **2** | ECDF com média nos pontos de descontinuidade                 | $m = 0$       | $\gamma = 0.5$ se $g = 0$, senão $1$         | Padrão antigo do SAS --- suaviza empates                    |
+| **3** | Valor de ordem mais próximo ("nearest even order statistic") | $m = -0.5$    | $\gamma = 0$ se $g = 0$ e $j$ par, senão $1$ | Escolhe o valor mais próximo de $np$; usado no SAS até 2010 |
 
-Esses métodos retornam sempre um valor existente nos dados (ou média de valores adjacentes).
+Esses métodos retornam sempre um valor existente nos dados (ou média de
+valores adjacentes).
 
-**Contínuos (tipos 4–9):**
+**Contínuos (tipos 4--9):**
 
-Nesses métodos, o $Q(p)$ é tratado como uma função contínua de $p$ e eles usam $\gamma = g$ (que é a parte decimal de $n p + m$). Esses métodos são equivalentes a uma interpolação linear na forma:
+Nesses métodos, o $Q(p)$ é tratado como uma função contínua de $p$ e
+eles usam $\gamma = g$ (que é a parte decimal de $n p + m$). Esses
+métodos são equivalentes a uma interpolação linear na forma:
 
 $Q(p) = x_{(k)} + \frac{p - p_k}{p_{k+1} - p_k} (x_{(k+1)} - x_{(k)})$
 
-- $x_{(k)}$ é o k‑ésimo valor da amostra (depois de ordenada),
-- $p_k$ é a probabilidade acumulada teórica associada a esse valor, ou seja, o valor da função de distribuição empírica (ECDF) correspondente a $x_{(k)}$. Justamente por ser probabilidade teórica associada ao k‑ésimo valor ordenado da amostra, ele nos permite avaliar o viés e a suavidade do estimador de quantil.
+-   $x_{(k)}$ é o k‑ésimo valor da amostra (depois de ordenada),
+-   $p_k$ é a probabilidade acumulada teórica associada a esse valor, ou
+    seja, o valor da função de distribuição empírica (ECDF)
+    correspondente a $x_{(k)}$. Justamente por ser probabilidade teórica
+    associada ao k‑ésimo valor ordenado da amostra, ele nos permite
+    avaliar o viés e a suavidade do estimador de quantil.
 
-| Tipo | Parâmetro $m$ | Probabilidade associada $p_k$ | Interpretação e uso |
-|------|------------------------------|-----------------------------------|---------------------|
-| **4** | $m = 0$ | $p_k = \frac{k}{n}$ | Interpolação linear da ECDF (usada raramente; simples porém ligeiramente enviesada). |
-| **5** | $m = 0.5$ | $p_k = \frac{k - 0.5}{n}$ | Gera uma função linear definida por partes em que as "quebras" ocorrem no meio dos degraus da ECDF (popular entre hidrólogos). |
-| **6** | $m = p$ | $p_k = \frac{k}{n + 1}$ | Baseada no valor esperado das estatísticas de ordem (usada pelo SPSS e Minitab). |
-| **7** (**Padrão do R**) | $m = 1 - p$ | $p_k = \frac{k - 1}{n - 1}$ | Interpolação dos modas das estatísticas de ordem. Retorna valores suavizados entre os dados. |
-| **8** | $m = (p + 1)/3$ | $p_k = \frac{k - 1/3}{n + 1/3}$ | Aproximadamente uma mediana não enviezada, adequada para qualquer distribuição. Recomendado por Hyndman e Fan [-@HyndmanFan1996]. |
-| **9** | $m = p/4 + 3/8$ | $p_k = \frac{k - 3/8}{n + 1/4}$ | Aproximadamente não enviezados se $x$ vem de uma distribuição Normal (usado em análises robustas). |
+| Tipo                    | Parâmetro $m$   | Probabilidade associada $p_k$   | Interpretação e uso                                                                                                               |
+|---------------|--------------------|-----------------------|---------------|
+| **4**                   | $m = 0$         | $p_k = \frac{k}{n}$             | Interpolação linear da ECDF (usada raramente; simples porém ligeiramente enviesada).                                              |
+| **5**                   | $m = 0.5$       | $p_k = \frac{k - 0.5}{n}$       | Gera uma função linear definida por partes em que as "quebras" ocorrem no meio dos degraus da ECDF (popular entre hidrólogos).    |
+| **6**                   | $m = p$         | $p_k = \frac{k}{n + 1}$         | Baseada no valor esperado das estatísticas de ordem (usada pelo SPSS e Minitab).                                                  |
+| **7** (**Padrão do R**) | $m = 1 - p$     | $p_k = \frac{k - 1}{n - 1}$     | Interpolação dos modas das estatísticas de ordem. Retorna valores suavizados entre os dados.                                      |
+| **8**                   | $m = (p + 1)/3$ | $p_k = \frac{k - 1/3}{n + 1/3}$ | Aproximadamente uma mediana não enviezada, adequada para qualquer distribuição. Recomendado por Hyndman e Fan [-@HyndmanFan1996]. |
+| **9**                   | $m = p/4 + 3/8$ | $p_k = \frac{k - 3/8}{n + 1/4}$ | Aproximadamente não enviezados se $x$ vem de uma distribuição Normal (usado em análises robustas).                                |
 
-Bom, de qualquer forma os próprios idealizadores dessa função indicam fortemente o uso do tipo 8 em seu artigo, então, quem sou eu para dizer o contrário 😁. Vamos ver um exemplo de sua utilização:
+Bom, de qualquer forma os próprios idealizadores dessa função indicam
+fortemente o uso do tipo 8 em seu artigo, então, quem sou eu para dizer
+o contrário 😁. Vamos ver um exemplo de sua utilização:
 
 ```{r}
 #| label: medidas_resumo_quantis
@@ -3537,30 +4269,66 @@ kable(
 )
 ```
 
-Quartis são considerados estimadores resistentes (não afetados por até 25% de valores extremos) e basicamente dividem os dados em 4 partes com aproximadamente $n/4$ observações cada. Além disso, são a base para o cálculo da amplitude interquartil (IQR), a medida usada na construção do boxplot, obtido por $\text{IQR} = Q_3 - Q_1$. O IQR em uma distribuição normal também apresenta uma característica interessante em relação ao desvio padrão, pois ele é $\approx 1.349\sigma$, o que permite usá-lo como um estimador robusto do desvio padrão ($\hat{\sigma}_{\text{robusto}} = \text{IQR}/1.349$) se consideramos que a amostra é de uma distribuição normal.
+Quartis são considerados estimadores resistentes (não afetados por até
+25% de valores extremos) e basicamente dividem os dados em 4 partes com
+aproximadamente $n/4$ observações cada. Além disso, são a base para o
+cálculo da amplitude interquartil (IQR), a medida usada na construção do
+boxplot, obtido por $\text{IQR} = Q_3 - Q_1$. O IQR em uma distribuição
+normal também apresenta uma característica interessante em relação ao
+desvio padrão, pois ele é $\approx 1.349\sigma$, o que permite usá-lo
+como um estimador robusto do desvio padrão
+($\hat{\sigma}_{\text{robusto}} = \text{IQR}/1.349$) se consideramos que
+a amostra é de uma distribuição normal.
 
 ## Identificação de outliers
 
-Consideramos outliers as observações que apresentam medidas muito discrepantes em relação às demais do conjunto de observações em estudo (amostra). Essas observações discrepantes podem ter impacto nas medidas de resumo calculadas, o que mais a frente levará a distorções nos resultados das análises que dependem dessas medidas, por exemplo, ao tentar ajustar essa amostra a uma distribuição de probabilidade conhecida (como a normal) para a realização de algum teste de hipótese ou modelagem estatística.
+Consideramos outliers as observações que apresentam medidas muito
+discrepantes em relação às demais do conjunto de observações em estudo
+(amostra). Essas observações discrepantes podem ter impacto nas medidas
+de resumo calculadas, o que mais a frente levará a distorções nos
+resultados das análises que dependem dessas medidas, por exemplo, ao
+tentar ajustar essa amostra a uma distribuição de probabilidade
+conhecida (como a normal) para a realização de algum teste de hipótese
+ou modelagem estatística.
 
-Antes de decidir o que será feito com essas observações, precisamos identificar o que levou a tais valores discrepantes, se isso decorre de erros na medição ou na execução da seleção dos indivíduos amostrados, ou se realmente representa a variabilidade real da população em estudo.
+Antes de decidir o que será feito com essas observações, precisamos
+identificar o que levou a tais valores discrepantes, se isso decorre de
+erros na medição ou na execução da seleção dos indivíduos amostrados, ou
+se realmente representa a variabilidade real da população em estudo.
 
-Há vários métodos de detecção de outliers e nesse momento apresentarei alguns específicos para quando estamos avaliando somente uma variável, que são: o **método de Tukey** pela avaliação do boxplot, o **método do Z-Score**, o **método MAD** (*median absolute deviation*) e o **teste de Grubbs**.
+Há vários métodos de detecção de outliers e nesse momento apresentarei
+alguns específicos para quando estamos avaliando somente uma variável,
+que são: o **método de Tukey** pela avaliação do boxplot, o **método do
+Z-Score**, o **método MAD** (*median absolute deviation*) e o **teste de
+Grubbs**.
 
 ### Método de Tukey (boxplot)
 
-Esse método já foi apresentado quando apresentei o boxplot na representação gráfica de dados univariados. Nele, calculamos o intervalo interquartil (IQR) e serão considerados outliers os valores $X_i$ que são menores que um limite inferior ou maiores que um limite superior. Esses limites são calculados como:
+Esse método já foi apresentado quando apresentei o boxplot na
+representação gráfica de dados univariados. Nele, calculamos o intervalo
+interquartil (IQR) e serão considerados outliers os valores $X_i$ que
+são menores que um limite inferior ou maiores que um limite superior.
+Esses limites são calculados como:
 
 Limite Inferior - $\text{LI} = Q_1 - k \cdot \text{IQR}$
 
 Limite Superior - $\text{LS} = Q_3 + k \cdot \text{IQR}$
 
-Onde $Q_1$ é o primeiro quartil (quantil de ordem 25%), $Q_3$ é o terceiro quartil (quantil de ordem 75%) e $k$ assume os valores de $k = 1.5$ para identificação de outliers moderados ou $k = 3$ para outliers extremos. Então qualquer valor fora desses limites serão considerados outliers e deverão receber uma maior atenção nossa para verificar se há algum erro em sua caracterização ou se precisaremos adotar alguma abordagem para que não prejudiquem nossas análises.
+Onde $Q_1$ é o primeiro quartil (quantil de ordem 25%), $Q_3$ é o
+terceiro quartil (quantil de ordem 75%) e $k$ assume os valores de
+$k = 1.5$ para identificação de outliers moderados ou $k = 3$ para
+outliers extremos. Então qualquer valor fora desses limites serão
+considerados outliers e deverão receber uma maior atenção nossa para
+verificar se há algum erro em sua caracterização ou se precisaremos
+adotar alguma abordagem para que não prejudiquem nossas análises.
 
-A justificativa para a adoção desse método de detecção de outliers está na distribuição normal, uma vez que a probabilidade de uma observação estar fora desses limites na distribuição normal é de 0.35% para $k = 1.5$ e de 0.002% para $k = 3$, ou seja:
+A justificativa para a adoção desse método de detecção de outliers está
+na distribuição normal, uma vez que a probabilidade de uma observação
+estar fora desses limites na distribuição normal é de 0.35% para
+$k = 1.5$ e de 0.002% para $k = 3$, ou seja:
 
-- $P(X < Q_1 - 1.5 \cdot \text{IQR}) \approx P(X > Q_3 + 1.5 \cdot \text{IQR}) \approx 0.0035$
-- $P(X < Q_1 - 3 \cdot \text{IQR}) \approx P(X > Q_3 + 3 \cdot \text{IQR}) \approx 0.00002$
+-   $P(X < Q_1 - 1.5 \cdot \text{IQR}) \approx P(X > Q_3 + 1.5 \cdot \text{IQR}) \approx 0.0035$
+-   $P(X < Q_1 - 3 \cdot \text{IQR}) \approx P(X > Q_3 + 3 \cdot \text{IQR}) \approx 0.00002$
 
 No R, isso podemos aplicar esse método da seguinte forma:
 
@@ -3585,20 +4353,25 @@ outliers <- ap2 %>%
 cat("Número de outliers extremos: ", length(outliers$dwg_fin), "\n")
 ```
 
-
 ### Método Z-Score
 
-No método Z-Score, primeiro iremos padronizar (normalizar) nossa variável, o que é obtido subtraindo do valor observado a média amsotral e, em seguida, dividindo pelo desvio padrão amostral:
+No método Z-Score, primeiro iremos padronizar (normalizar) nossa
+variável, o que é obtido subtraindo do valor observado a média amsotral
+e, em seguida, dividindo pelo desvio padrão amostral:
 
 $Z_i = \frac{X_i - \bar{X}}{s}$
 
 Após realizar esse escalonamento, adotamos o seguinte critério
 
-- $|Z_i| > 2.5$: possível outlier $(P \approx 0.012)$
-- $|Z_i| > 3$: outlier moderado $(P \approx 0.003)$
-- $|Z_i| > 4$: outlier extremo $(P \approx 0.00006)$
+-   $|Z_i| > 2.5$: possível outlier $(P \approx 0.012)$
+-   $|Z_i| > 3$: outlier moderado $(P \approx 0.003)$
+-   $|Z_i| > 4$: outlier extremo $(P \approx 0.00006)$
 
-Esse método assume que a variável possui uma distribuição normal e utiliza tanto a média quanto o desvio padrão amostral, porém, ambas as medidas são afetadas por valores extremos na nossa amostra, o que pode levar a um mascaramento de outliers e limita a sua utilização na prática.
+Esse método assume que a variável possui uma distribuição normal e
+utiliza tanto a média quanto o desvio padrão amostral, porém, ambas as
+medidas são afetadas por valores extremos na nossa amostra, o que pode
+levar a um mascaramento de outliers e limita a sua utilização na
+prática.
 
 No R:
 
@@ -3624,10 +4397,10 @@ kable(
 )
 ```
 
-
 ### Método MAD (Median Absolute Deviation)
 
-Para obter o MAD, primeiro subtraímos de cada observação a mediana e, então, calculamos a mediana desse desvio em módulo (desvio absoluto):
+Para obter o MAD, primeiro subtraímos de cada observação a mediana e,
+então, calculamos a mediana desse desvio em módulo (desvio absoluto):
 
 $\text{MAD} = \text{mediana}(|X_i - \text{Md}|)$
 
@@ -3635,7 +4408,17 @@ Em seguida, calculamos o Score MAD modificado de cada observação como:
 
 $M_i = \frac{0.6745(X_i - \text{Md})}{\text{MAD}}$
 
-Onde $0.6745 = \Phi^{-1}(0.75)$ para consistência com $\sigma$ sob normalidade. Isso porque o $\Phi(z)$ representa a função de distribuição acumulada da distribuição normal padrão, o $Z \sim N(0,1)$, ou seja, a probabilidade acumulada até aquele valor $z$ ($\Phi(z) = P(Z \leq z)$), logo, pela função inversa $\Phi^{-1}(0.75)$ buscamos justamente o valor $z$ para o qual temos a probabilidade acumulada de 75% (o terceiro quartil da população $Z$). O MAD em uma população normal do tipo $N(0, \sigma)$ é $MAD=\sigma\Phi^{-1}(0.75)$, então, para fazer que nosso $M_i$ se comporte de modo comparável a um z-score (unidades de desvio padrão sob normalidade) nós multiplicamos pelo valor de $0.6745 = \Phi^{-1}(0.75)$:
+Onde $0.6745 = \Phi^{-1}(0.75)$ para consistência com $\sigma$ sob
+normalidade. Isso porque o $\Phi(z)$ representa a função de distribuição
+acumulada da distribuição normal padrão, o $Z \sim N(0,1)$, ou seja, a
+probabilidade acumulada até aquele valor $z$ ($\Phi(z) = P(Z \leq z)$),
+logo, pela função inversa $\Phi^{-1}(0.75)$ buscamos justamente o valor
+$z$ para o qual temos a probabilidade acumulada de 75% (o terceiro
+quartil da população $Z$). O MAD em uma população normal do tipo
+$N(0, \sigma)$ é $MAD=\sigma\Phi^{-1}(0.75)$, então, para fazer que
+nosso $M_i$ se comporte de modo comparável a um z-score (unidades de
+desvio padrão sob normalidade) nós multiplicamos pelo valor de
+$0.6745 = \Phi^{-1}(0.75)$:
 
 $MAD=\sigma\Phi^{-1}(0.75) \Rightarrow \frac{1}{\sigma}=\frac{\Phi^{-1}(0.75)}{MAD}$
 
@@ -3645,9 +4428,12 @@ $M_i = \frac{0.6745(X_i - \text{Md})}{\text{MAD}} = \frac{0.6745}{\text{MAD}} \c
 
 $M_i \approx \frac{X_i - \text{Md}}{\sigma}$
 
-Ou seja, $M_i$ é aproximadamente o z‑score robusto, expresso em unidades de "desvio padrão robusto” (robusto porque usa a medaiana).
+Ou seja, $M_i$ é aproximadamente o z‑score robusto, expresso em unidades
+de "desvio padrão robusto" (robusto porque usa a medaiana).
 
-Calculado o $M_i$, adotamos como critério de identificação de outliers, aquelas observações com valor absoluto de $M_i$ superior a 3,5 ($|M_i| > 3.5$).
+Calculado o $M_i$, adotamos como critério de identificação de outliers,
+aquelas observações com valor absoluto de $M_i$ superior a 3,5
+($|M_i| > 3.5$).
 
 No R:
 
@@ -3675,32 +4461,59 @@ kable(
 
 ### Teste de Grubbs
 
-O teste de Grubbs é um método que utiliza de um teste de hipótese, conceito que ainda veremos em nossos treinamentos, mas que basicamente é um procedimento estatístico usado para decidir, com base em dados de uma amostra, se há evidências suficientes para aceitar ou rejeitar uma suposição (a hipótese) sobre uma característica da população. Mais precisamente, o teste de Grubbs é um teste paramétrico (assume que a variável é aproximadamente normal) utilizado para detectar um único valor atípico (outlier) em um conjunto de dados univariado.
+O teste de Grubbs é um método que utiliza de um teste de hipótese,
+conceito que ainda veremos em nossos treinamentos, mas que basicamente é
+um procedimento estatístico usado para decidir, com base em dados de uma
+amostra, se há evidências suficientes para aceitar ou rejeitar uma
+suposição (a hipótese) sobre uma característica da população. Mais
+precisamente, o teste de Grubbs é um teste paramétrico (assume que a
+variável é aproximadamente normal) utilizado para detectar um único
+valor atípico (outlier) em um conjunto de dados univariado.
 
-Ele testa a hipótese de que um dos valores da amostra é um outlier, ou seja, de que ele pertence a uma população diferente ou do quão improvável é obter aquele valor extremo observado de uma população normal com as características da amostra em estudo.
+Ele testa a hipótese de que um dos valores da amostra é um outlier, ou
+seja, de que ele pertence a uma população diferente ou do quão
+improvável é obter aquele valor extremo observado de uma população
+normal com as características da amostra em estudo.
 
 Considere uma amostra
 
 $x_1, x_2, \ldots, x_n$
 
-para a qual assumimos que ela vem de uma população normal ($X \sim N(\mu, \sigma^2)$). Para esses pressupostos, definimos as seguintes hipóteses:
+para a qual assumimos que ela vem de uma população normal
+($X \sim N(\mu, \sigma^2)$). Para esses pressupostos, definimos as
+seguintes hipóteses:
 
-- Hipótese nula ($H_0$): Não há outliers, ou seja, todos os dados vêm de uma mesma distribuição normal.
-- Hipótese alternativa ($H_1$): Existe exatamente um outlier na amostra (uma observação de valor extremo que não é da mesma população em estudo).
+-   Hipótese nula ($H_0$): Não há outliers, ou seja, todos os dados vêm
+    de uma mesma distribuição normal.
+-   Hipótese alternativa ($H_1$): Existe exatamente um outlier na
+    amostra (uma observação de valor extremo que não é da mesma
+    população em estudo).
 
 Para esse teste calculamos a estatística de Grubbs, definida como:
 
 $G = \max_i \frac{ |x_i - \bar{x}| }{s}$
 
-Ou seja, a observação com o maior desvio em relação à média em termos de desvios padrão (o desvio padronizado extremo).
+Ou seja, a observação com o maior desvio em relação à média em termos de
+desvios padrão (o desvio padronizado extremo).
 
-Calculado o $G$ da amostra, o comparamos com o valor crítico, o $G_{crítico}$. Se $G > G_{crítico}$, rejeitamos $H_0$, ou seja, a hipótese de que todos os dados são da mesma população normal, logo, consideramos o valor extremo como um outlier. Caso contrário, aceitamos que não há evidências estatísticas o suficiente para considerar o valor extremo como um outlier.
+Calculado o $G$ da amostra, o comparamos com o valor crítico, o
+$G_{crítico}$. Se $G > G_{crítico}$, rejeitamos $H_0$, ou seja, a
+hipótese de que todos os dados são da mesma população normal, logo,
+consideramos o valor extremo como um outlier. Caso contrário, aceitamos
+que não há evidências estatísticas o suficiente para considerar o valor
+extremo como um outlier.
 
-Esse $G_{crítico}$ é obtido a partir da distribuição t de Student com $n-2$ graus de liberdade da seguinte forma:
+Esse $G_{crítico}$ é obtido a partir da distribuição t de Student com
+$n-2$ graus de liberdade da seguinte forma:
 
 $G_{crítico} = \frac{(n-1)}{\sqrt{n}} \sqrt{ \frac{t_{\alpha/(2n),\, n-2}^2}{n-2 + t_{\alpha/(2n),\, n-2}^2} }$
 
-onde $t_{\alpha/(2n),\, n-2}$ é o quantil da distribuição t com nível de significância ajustado para $\alpha/(2n)$ (teste bilateral com ajuste para múltiplas comparações). A limitação desse teste é que ele pressupõe que os dados são aproximadamente normais e que ele testa a hipótese de um único outlier, assim, se os dados apresentam mais de um, um outlier extremo pode mascarar os outros.
+onde $t_{\alpha/(2n),\, n-2}$ é o quantil da distribuição t com nível de
+significância ajustado para $\alpha/(2n)$ (teste bilateral com ajuste
+para múltiplas comparações). A limitação desse teste é que ele pressupõe
+que os dados são aproximadamente normais e que ele testa a hipótese de
+um único outlier, assim, se os dados apresentam mais de um, um outlier
+extremo pode mascarar os outros.
 
 No R podemos aplicar esse teste da seguinte forma:
 
@@ -3732,13 +4545,22 @@ if (G > G_crit) {
 }
 ```
 
-Também podemos aplicar esse teste no R calculando o p-valor. Nesse caso, estamos assumindo que a distribuição sob $H_0$ (ausência de outliers) está relacionada à distribuição t de Student. Dessa forma, o p‑valor indica a probabilidade de observar um valor de $G$ tão extremo (ou mais) quanto o obtido, caso realmente não existam outliers. Formalmente, nosso p-valor indica:
+Também podemos aplicar esse teste no R calculando o p-valor. Nesse caso,
+estamos assumindo que a distribuição sob $H_0$ (ausência de outliers)
+está relacionada à distribuição t de Student. Dessa forma, o p‑valor
+indica a probabilidade de observar um valor de $G$ tão extremo (ou mais)
+quanto o obtido, caso realmente não existam outliers. Formalmente, nosso
+p-valor indica:
 
 $p-valor = P(G \geq G_{obs} | H_0)$
 
-Se o p-valor for inferior ao limite que estabelecemos (o $\alpha$), rejeitamos $H_0$ e consideramos que existe evidência estatística de que há um outlier extremo. Para a obtenção do p-valor, usamos a relação entre as estatíticas $G$ e $t$:
+Se o p-valor for inferior ao limite que estabelecemos (o $\alpha$),
+rejeitamos $H_0$ e consideramos que existe evidência estatística de que
+há um outlier extremo. Para a obtenção do p-valor, usamos a relação
+entre as estatíticas $G$ e $t$:
 
-$t^2 = \frac{G^2 \cdot n \cdot (2 - n)}{G^2 \cdot n - (n - 1)^2}$ (isolando o $t^2$ da definição do $G_{crit}$)
+$t^2 = \frac{G^2 \cdot n \cdot (2 - n)}{G^2 \cdot n - (n - 1)^2}$
+(isolando o $t^2$ da definição do $G_{crit}$)
 
 como $(2 - n) = - (n-2)$
 
@@ -3750,19 +4572,25 @@ dividindo numerador e denominador por $n$
 
 $t^2 = \frac{G^2 \cdot (n - 2)}{\frac{(n - 1)^2}{n} - G^2}$
 
-como $\frac{(n - 1)^2}{n} = \frac{n^2 - 2n + 1}{n}=n - 2 + \frac{1}{n}$, então,
+como $\frac{(n - 1)^2}{n} = \frac{n^2 - 2n + 1}{n}=n - 2 + \frac{1}{n}$,
+então,
 
-$t^2 = \frac{G^2 \cdot (n - 2)}{(n - 2 + \frac{1}{n}) - G^2}$. Tomanda a raiz quadrada dos dois lados, chegamos à equação
+$t^2 = \frac{G^2 \cdot (n - 2)}{(n - 2 + \frac{1}{n}) - G^2}$. Tomanda a
+raiz quadrada dos dois lados, chegamos à equação
 
-$t = \frac{G \sqrt{n - 2}}{\sqrt{(n - 2 + \frac{1}{n}) - G^2}}$, entretanto, a maioria dos livros adota a aproximação de $n - 2 + \frac{1}{n} \approx n - 1$ e apresenta essa relação como:
+$t = \frac{G \sqrt{n - 2}}{\sqrt{(n - 2 + \frac{1}{n}) - G^2}}$,
+entretanto, a maioria dos livros adota a aproximação de
+$n - 2 + \frac{1}{n} \approx n - 1$ e apresenta essa relação como:
 
 $t = \frac{G \sqrt{n - 2}}{\sqrt{n - 1 - G^2}}$
 
-com $n-2$ graus de liberdade. Assim, o p-valor bilateral será calculado como:
+com $n-2$ graus de liberdade. Assim, o p-valor bilateral será calculado
+como:
 
 $p=2n[1-F_t(|t|;n-2)]$
 
-em que $F_t(.;v)$ é a função de distribuição acumulada da t de Student com $v$ graus de liberdade. No R:
+em que $F_t(.;v)$ é a função de distribuição acumulada da t de Student
+com $v$ graus de liberdade. No R:
 
 ```{r}
 #| label: outliers_teste_grubbs_p_valor
@@ -3804,29 +4632,426 @@ if (p_valor < .05) {
 
 ## Medidas de dispersão ou variabilidade
 
-### Amplitude
+As medidas de dispersão ou de variabilidade quantificam o grau em que os
+dados se afastam do seu valor central (como a média, mediana ou moda).
+Enquanto as medidas de tendência central descrevem "onde" os dados se
+concentram, as medidas de dispersão informam "quanto" eles se espalham
+em torno desse centro.
+
+Formalmente, se temos um conjunto de observações
+$X_1, X_2, \ldots, X_n$, as medidas de dispersão descrevem o
+comportamento da variabilidade desses valores.
+
+Além disso, essas medidas (principalmente a variância) são essenciais na
+inferência estatística, processo pelo qual extrapolamos um conhecimento
+sobre uma população a partir de dados de uma amostra dela, pois a
+variância é base de estimativas, testes de hipóteses e cálculo de
+intervalos de confiança.
+
+### Amplitude ou *range*
+
+É a medida de dispersão mais simples e representa a diferença entre o
+maior e menor valor do conjunto de observações. Formalmente, definimos a
+amplitude ($R$) como:
+
+$R = X_{(n)} - X_{(1)} = \max\{X_1, \ldots, X_n\} - \min\{X_1, \ldots, X_n\}$
+
+Essa medida é extremamente sensível a outliers, afinal, basta um outlier
+para alterar seu valor.
+
+Embora a amplitude não seja uma medida comum na
+epidemiologia veterinária, ela pode ser bem útil na área de controle de
+qualidade de processos, por exemplo, aplicado à indústria e laboratórios.
+Nesse contexto a amplitude é utilizada na construção dos gráficos **$\bar{x}$ e R**,
+ou gráfico de médias e amplitudes.
+
+Em uma indústria devemos ter padronização entre produtos, por exemplo,
+em uma indústria farmacêutica, não esperamos, na verdade não é aceitável, uma grande variação
+na concentração de um fármaco entre comprimidos ou lotes. Então, para controlar o processo de
+produção desse nosso remédio hipotético é necessário analisar o comprimido, após sua produção.
+Mas essa análise levará a perda do produto e são muitos os comprimidos produzidos a cada dia,
+então nossa solução é coletar uma amostra. Porém, essa amostra deverá ser coletada regularmente
+pois podem ocorrer eventos que alterem a qualidade em um curto espaço de tempo, por exemplo,
+entre turnos talvez pela experiência do grupo de pessoas que trabalham em cada turno, ou até
+no mesmo turno, caso ocorra alguma falha em uma esteira de produção. Ou seja, precisamos de
+amostras coletadas regularmente em um intervalo não muito grande. Um tamanho de amostra grande
+seria inviável (economicamente) nesse caso, por isso são coletadas amostras pequenas ($1 < n \leq 10$)
+em um intervalo regular do processo produtivo, sob condições semelhantes e avalia-se o comportamento da
+distribuição da amplitude e das médias amostrais no gráfico **$\bar{x}$ e R**.
+
+Esse gráfico é na verdade um composto de dois gráficos: o gráfico de variação do processo (gráfico R) e o gráfico de médias do processo (gráfico $\bar{x}$).
+
+O gráfico R monitora a variabilidade dentro de cada subgrupo (amostra) pela amplitude ($R_i = max(x_{ij}) - min(x_{ij})$), e apresenta como linha central a amplitude média das amostras ($\bar{R} = \frac{1}{m}\sum_{i=1}^m R_i$, em que $m$ é o número de amostragens realizadas). A partir de $\bar{R}$ calculamos os limites de controle do gráfico R como:
+
+- *Lower control limit* - $LCL_R = D_{3}\bar{R}$
+- *Upper control limit* - $UCL_R = D_{4}\bar{R}$
+
+em que $D_{3}$ e $D_{4}$ são valores tabelados de manuais estatísticos que dependem do tamanho da amostra ($n$). Esse $D_n$ deriva das propriedades estatísticas esperadas da distribuição de amplitudes amostrais sob a condição de normalidade dos dados.
+
+Essas propriedades nos informam que, considerando uma variável normal $X \sim Normal(\mu, \sigma^2)$ e sua amplitude amostral $R=X_{(n)} - X_{(1)}$, podemos, a partir da padronização da variável, descrever a amplitude como:
+
+$Z_i = \frac{X_i - \mu}{\sigma} \quad \Longrightarrow \quad R = \sigma \, R_Z = \sigma \, (Z_{(n)} - Z_{(1)})$
+
+Então, a esperança da amplitude é $E[R] = \sigma E[R_Z]$, um valor que depende do desvio padrão da variável e da média da amplitude da amostra padronizada $Z_i$. Como essa esperança de $Z_i$ vem de uma $Normal(0,1)$, ela depende unicamente do tamanho da amostra ($n$), por isso convenciona-se denominá-la $d_2(n)$ ("2" por ser uma média da diferença entre os dois extremos da amostra padronizada).
+
+Pela definição anterior, $E[R] = d_2(n)\sigma$, portanto, $\hat{\sigma} = \frac{\bar{R}}{d_2(n)}$, ou seja, uma estimativa do desvio padrão da variável baseado na média das amplitudes amostrais e no tamanho amostral ($n$). Além disso, $SD[R] = d_3(n)\sigma$, sendo $d_3(n)$ também um valor tabelado derivado da $Z_i$ para um tamanho amostral $n$, então, definindo $\pm3\sigma_R$ como limites do gráfico R chegamos à
+
+$LCL_R = \bar{R} - 3\sigma_R \Rightarrow LCL_R = \bar{R} - 3d_3(n)\sigma$,
+
+e substituindo $\sigma$ por $\hat{\sigma} = \frac{\bar{R}}{d_2(n)}$
+
+$LCL_R = \bar{R} - 3d_3(n)\frac{\bar{R}}{d_2(n)} \Rightarrow LCL_R = (1-3\frac{d_3(n)}{d_2(n)})\bar{R}$.
+
+Usando a mesma lógica para o limite superior obtemos $UCL_R = \bar{R} + 3d_3(n)\frac{\bar{R}}{d_2(n)} \Rightarrow UCL_R = (1+3\frac{d_3(n)}{d_2(n)})\bar{R}$. 
+
+Ou seja, $D_{3}=1-3\frac{d_3(n)}{d_2(n)}$ e $D_{4}=1+3\frac{d_3(n)}{d_2(n)}$.
+
+Então na avaliação do gráfico R, caso existam pontos fora dos limites, o processo é considerado fora de controle, mesmo que as médias das amostras pareçam estáveis. Caso estejam dentro do limite, a variabilidade do processo é considerado sob controle estatístico e então partimos para a análise do gráfico $\bar{x}$.
+
+No gráfico $\bar{x}$ calculamos a média de cada subgrupo ($\bar{x_i}=\frac{1}{n}\sum_{j=1}^n x_{ij}$) para os pontos do gráfico, a linha central do gráfico como a média das médias amostrais ($\bar{x}=\frac{1}{m}\sum_{i=1}^m \bar{x_i}$) e os limites como:
+
+- *Lower control limit* - $LCL_{\bar{x}} = \bar{x} - A_{2}\bar{R}$
+- *Upper control limit* - $UCL_{\bar{x}} = \bar{x} + A_{2}\bar{R}$
+
+em que $A_{2}$ também é um valor tabelado dependente do $n$ amostral.
+
+Se os dados são normais e o processo está sob controle, então, a distribuição das médias amostrais também é normal, na forma $\bar{X}_i \sim N( \mu, \frac{\sigma^2}{n})$. Nesse caso, 95,45% das médias amostrais estarão a $\pm2\sigma/\sqrt{n}$ de $\mu$ e 99,73%  delas estarão a $\pm3\sigma/\sqrt{n}$ da média populacional. 
+
+Assim, nossos limites conceituais deveriam ser $\text{CL}_{\bar{X}} = \mu \pm 3\cdot\frac{\sigma}{\sqrt{n}}$, mas já que não sabemos o $\sigma$, usamos a relação anterior da amplitude para estimar o desvio padrão e calculamos os limites como $\text{UCL}_{\bar{X}} = \bar{X} + 3\cdot \frac{\bar{R}}{d_2\sqrt{n}}$ e $\text{LCL}_{\bar{X}} = \bar{X} - 3\cdot \frac{\bar{R}}{d_2\sqrt{n}}$. Ou seja, $A_2 = \frac{3}{d_2\sqrt{n}}$.
+
+Nesse gráfico de $\bar{x}$, se os valores estão dentro dos limites, considera-se que o nível médio do processo está sob controle, mas em caso contrário, consideramos que existem evidências de alteracão sistemática ou deslocamento da média.
+
+As limitações desse método derivam de seus pressupostos:
+
+1. A característica de qualidade medida é bem modelada por uma variável de distribuição normal;
+2. Os parâmetros de $\mu$ e $\sigma$ são iguais para todas as amostras e independentes entre amostragens;
+3. O procedimento de medição é consistente e padronizado entre amostras.
+
+Além disso, esse método é menos eficiente que o **gráfico $\bar{x}$ e s**, que usa o desvio padrão amostral, principalmente para amostras maiores ($n > 10$) e também é menos sensível para pequenas mudanças no processo (alterações inferiores a $1,5\sigma$).
+
+Abaixo segue um exemplo do gráfico $\bar{x}$ e R:
+
+```{r}
+#| label: dispersao_amplitude
+#| warning: false
+
+set.seed(123)
+mu <- 100 # média da nossa pop simulada
+sigma <- 2 # dp da nossa pop simulada
+n <- 5 # tamanho de cada amostra
+m <- 25 # número de amostras
+
+dados <- tibble(
+  subgrupo = rep(1:m, each = n),
+  obs = rep(1:n, m),
+  valor = rnorm(m * n, mean = mu, sd = sigma)
+)
+
+# media e amplitude de cada amostra
+resumo <- dados %>%
+  group_by(subgrupo) %>%
+  summarise(
+    xbar = mean(valor),
+    R = max(valor) - min(valor)
+  )
+
+# medias da distribuicao amostral
+xbar_bar <- mean(resumo$xbar)
+R_bar <- mean(resumo$R)
+
+A2 <- 0.577
+D3 <- 0.000
+D4 <- 2.114
+
+# componentes dos gráficos
+limites <- tibble(
+  tipo = c("xbar", "R"),
+  centro = c(xbar_bar, R_bar),
+  LCL = c(xbar_bar - A2 * R_bar, D3 * R_bar),
+  UCL = c(xbar_bar + A2 * R_bar, D4 * R_bar)
+)
+
+# gráfico R
+g_R <- ggplot(resumo, aes(x = subgrupo, y = R)) +
+  geom_line(color = "gray30") +
+  geom_point(size = 2, color = "royalblue") +
+  geom_hline(yintercept = limites$centro[limites$tipo=="R"], color="blue", lwd=0.8) +
+  geom_hline(yintercept = limites$UCL[limites$tipo=="R"], color="red", lty=2, lwd=0.8) +
+  geom_hline(yintercept = limites$LCL[limites$tipo=="R"], color="red", lty=2, lwd=0.8) +
+  labs(
+    title = "Gráfico R — Amplitude dos Subgrupos",
+    x = "Subgrupo",
+    y = "Amplitude (R)"
+  ) +
+  theme_minimal(base_size = 13)
+
+g_xbar <- ggplot(resumo, aes(x = subgrupo, y = xbar)) +
+  geom_line(color = "gray40") +
+  geom_point(size = 2, color = "darkgreen") +
+  geom_hline(yintercept = limites$centro[limites$tipo=="xbar"], color="blue", lwd=0.8) +
+  geom_hline(yintercept = limites$UCL[limites$tipo=="xbar"], color="red", lty=2, lwd=0.8) +
+  geom_hline(yintercept = limites$LCL[limites$tipo=="xbar"], color="red", lty=2, lwd=0.8) +
+  labs(
+    title = expression("Gráfico " ~ bar(x) ~ "— Médias dos Subgrupos" ),
+    x = "Subgrupo",
+    y = expression(bar(x))
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+```{r}
+#| label: grafico_r_xbar
+#| fig-cap: "Exemplo de gráfico x e R"
+#| fig-subcap: 
+#|  - "Gráfico R"
+#|  - "Gráfico x"
+#| layout-ncol: 2
+#| warning: false
+g_R
+g_xbar
+```
+
+Uma outra medida de amplitude ou intervalo da qual já falamos é o Intervalo Interquartil ($IQR = Q_3 - Q_1$). Essa medida de dispersão é mais robusta que a amplitude tomada pelos extremos, uma vez que seriam necessários 25% dos dados em um dos seus limites compostos por outliers para afetar essa medida. Além disso, para uma distribuição normal $E[IQR] \approx 1.349\sigma$, e podemos pensar nele como uma medida robusta da amplitude de variação dos 50% dados centrais da população.
+
 ### Desvio-médio
+
 ### Variância
+
 ### Desvio-padrão
+
 ### Erro-padrão
+
 ### Coeficiente de variação
+
+## 2. **Desvio Médio Absoluto**
+
+### **Definição Formal**
+
+Em relação a uma medida de centro (c): \[ DM(c) = \frac{1}{n}
+\sum\_{i=1}\^{n} \|X_i - c\| \]
+
+Casos especiais: \[ DM\_{\bar{X}} = \frac{1}{n}\sum \|X_i - \bar{X}\|,
+\quad DM\_{Md} = \frac{1}{n}\sum \|X_i - Md\| \]
+
+### **Propriedades Matemáticas**
+
+#### **2.1 Minimização**
+
+\[ \min\_c E\[\|X - c\|\] \text{ é atingido em } c = \text{Mediana}(X)
+\]
+
+Demonstração:\
+Seja ( g(c) = E\[\|X - c\|\] ). Para ( c \in (x\_{(k)}, x\_{(k+1)}) ):
+\[ \frac{\partial g(c)}{\partial c} = P(X \< c) - P(X \> c) \] Logo,
+(g'(c)=0) quando (P(X \< c) = P(X \> c) = \frac{1}{2}), isto é, (c =
+Md).
+
+#### **2.2 Relação com outros desvios**
+
+Para ( X \sim \mathcal{N}(\mu, \sigma\^2) ): \[ E\[\|X - \mu\|\] =
+\sigma\sqrt{\frac{2}{\pi}} \approx 0.798\sigma, \quad E\[\|X - Md\|\]
+\approx 0.806\sigma \]
+
+#### **2.3 Propriedades gerais**
+
+\[
+
+```{=tex}
+\begin{aligned}
+&\text{(1) Subaditividade: } &&DM(X+Y) \le DM(X) + DM(Y)\\
+&\text{(2) Homogeneidade: } &&DM(aX) = |a|\,DM(X)\\
+&\text{(3) Invariância translacional: } &&DM(X+b) = DM(X)
+\end{aligned}
+```
+\]
+
+------------------------------------------------------------------------
+
+## 3. **Variância**
+
+### **Definição Formal**
+
+#### **População**
+
+\[ \sigma\^2 = Var(X) = E\[(X - \mu)\^2\] = E\[X\^2\] - (E\[X\])\^2 \]
+
+#### **Amostra**
+
+\[ s\^2 = \frac{1}{n-1}\sum*{i=1}\^{n}(X_i -* \bar{X})\^2 =
+\frac{1}{n-1}\left(\sum{i=1}\^{n} X_i\^2 - n\bar{X}\^2\right) \]
+
+------------------------------------------------------------------------
+
+### **Correção de Bessel**
+
+Se ( X_i \stackrel{iid}{\sim} (\mu, \sigma\^2) ), então: \[ E\[s\^2\] =
+\sigma\^2 \]
+
+**Demonstração:** \[
+
+```{=tex}
+\begin{aligned}
+E\left[\sum (X_i - \bar{X})^2\right]
+&= E\left[\sum (X_i - \mu + \mu - \bar{X})^2\right]\\
+&= n\sigma^2 + nVar(\bar{X}) - 2nCov(X_i - \mu, \bar{X}-\mu) \\
+&= n\sigma^2 - \sigma^2 = (n-1)\sigma^2
+\end{aligned}
+```
+\] Portanto, (E\[s\^2\] = \frac{(n-1)\sigma^2}{n-1} = \sigma\^2).
+
+------------------------------------------------------------------------
+
+### **Decomposição da Variância**
+
+**Lei da Variância Total:** \[ Var(X) = E\[Var(X\|Y)\] + Var(E\[X\|Y\])
+\]
+
+**Decomposição ANOVA:** \[ \sum*{i=1}\^{n}(X_i -* \mu)\^2 =
+\sum{i=1}\^{n}(X_i - \bar{X})\^2 + n(\bar{X} - \mu)\^2 \]
+
+------------------------------------------------------------------------
+
+### **Propriedades Fundamentais**
+
+\[
+
+```{=tex}
+\begin{aligned}
+&Var(aX + b) = a^2 Var(X)\\
+&Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y)\\
+&\text{Se } X,Y \text{ independentes: } Var(X+Y) = Var(X)+Var(Y)
+\end{aligned}
+```
+\]
+
+\[ P(\|X - \mu\| \ge k\sigma) \le \frac{1}{k^2}
+\quad \text{(Desigualdade de Chebyshev)} \]
+
+\[ \sigma\^2 = \min\_c E\[(X - c)\^2\] \]
+
+------------------------------------------------------------------------
+
+### **Distribuição da Variância Amostral**
+
+Se ( X_i \stackrel{iid}{\sim} \mathcal{N}(\mu, \sigma\^2) ): \[
+\frac{(n-1)s^2}{\sigma^2} \sim \chi\^2\_{n-1} \]
+
+Consequências: \[ E\[s\^2\]=\sigma\^2,
+\quad Var(s\^2)=\frac{2\sigma^4}{n-1}, \quad s\^2 \perp \bar{X} \]
+
+Assintoticamente: \[ \sqrt{n}(s\^2 - \sigma\^2) \xrightarrow{d}
+\mathcal{N}(0, \mu\_4 - \sigma\^4) \]
+
+onde (\mu\_4 = E\[(X - \mu)\^4\]).
+
+------------------------------------------------------------------------
+
+## 4. **Desvio-Padrão**
+
+\[ \sigma = \sqrt{\sigma^2}, \quad s = \sqrt{s^2} \]
+
+#### **Viés do Desvio-Padrão**
+
+\[ E\[s\] = \sigma , c_4(n), \quad c_4(n) = \sqrt{\frac{2}{n-1}}
+\cdot \frac{\Gamma(n/2)}{\Gamma((n-1)/2)} \] Correção: \[ s\_{corr} =
+\frac{s}{c_4(n)} \]
+
+Assintoticamente: \[ \sqrt{n}(s - \sigma) \xrightarrow{d}
+\mathcal{N}\left(0, \frac{\mu_4 - \sigma^4}{4\sigma^2}\right) \] Para
+Normal: (\sqrt{n}(s - \sigma) \xrightarrow{d} \mathcal{N}(0,
+\sigma\^2/2)).
+
+------------------------------------------------------------------------
+
+### **Estimadores Robustos**
+
+\[ MAD = \text{mediana}(\|X_i - \text{mediana}(X)\|),
+\quad \hat{\sigma}\_{MAD} = 1.4826 \cdot MAD \]
+
+\[ Q_n = 2.2219 \cdot { \|X_i - X_j\|; i \< j }\_{(k)}, \quad k =
+\binom{h}{2}, , h = \lfloor n/2 \rfloor + 1 \]
+
+------------------------------------------------------------------------
+
+## 5. **Erro-Padrão**
+
+\[ SE(\hat{\theta}) = \sqrt{Var(\hat{\theta})} \]
+
+### **Para a média**
+
+\[ SE(\bar{X}) =
+
+```{=tex}
+\begin{cases}
+\dfrac{\sigma}{\sqrt{n}}, & \text{se } \sigma \text{ conhecido} \\
+\dfrac{s}{\sqrt{n}}, & \text{se } \sigma \text{ desconhecido}
+\end{cases}
+```
+\]
+
+Método delta: \[ \text{Se } \sqrt{n}(T_n - \theta) \xrightarrow{d}
+\mathcal{N}(0, v\^2), \Rightarrow SE(T_n) \approx \frac{v}{\sqrt{n}} \]
+
+Bootstrap: \[ SE\_{boot}(\hat{\theta}) =
+\sqrt{\frac{1}{B-1}\sum_{b=1}^{B}(\hat{\theta}^{*(b)} - \bar{\hat{\theta}}^*)^2}
+\]
+
+------------------------------------------------------------------------
+
+### **Propagação de Erro**
+
+Se (Y = g(X_1, \ldots, X_k)): \[ Var(Y)
+\approx \sum*{i=1}^{k}^*\left(\frac{\partial g}{\partial x_i}\right)2
+Var(X_i) +
+2\sum{i\<j}\frac{\partial g}{\partial x_i}\frac{\partial g}{\partial x_j}Cov(X_i,X_j)
+\]
+
+------------------------------------------------------------------------
+
+## 6. **Coeficiente de Variação**
+
+\[ CV = \frac{\sigma}{\mu}, \quad \widehat{CV} = \frac{s}{\bar{X}} \]
+
+### **Propriedades**
+
+Expansão assintótica (Normal): \[ \widehat{CV} \approx CV +
+\frac{CV^3}{n} + \frac{CV}{2n} + O(n\^{-2}) \]
+
+Intervalo de confiança (McKay): \[ IC(CV) =
+\frac{\widehat{CV}}{\sqrt{1 \pm z_{\alpha/2}\sqrt{\hat{v}}}},
+\quad \hat{v} = \frac{1 + 2\widehat{CV}^2}{n-1} \]
+
+Teste: \[ Z =
+\frac{\widehat{CV} - CV_0}{\sqrt{\frac{CV_0^2 + 0.5}{n-1}}} \]
+
+------------------------------------------------------------------------
+
+### **Limitações**
+
+1.  (\mu \approx 0 \Rightarrow CV \to \infty)\
+2.  Não apropriado para valores negativos\
+3.  Alternativa: (I_Q = \dfrac{IQR}{Q_3+Q_1})
+
+------------------------------------------------------------------------
 
 ## Medidas de forma
 
 ### Assimetria
+
 ### Curtose
 
 # o que falta
-- Estatística descritiva bivariada
-    - Associação entre duas variáveis qualitativas
-        - Tabelas de distribuição conjunta de frequências
-    - Medidas de associação
-        - Estatística qui-quadrado
-        - Outras medidas de associação baseadas no qui-quadrado
-        - coeficiente de Spearman
-    - Correlação entre duas variáveis quantitativas
-        - Tabelas de distribuição conjunta de frequências
-        - Representação gráfica por meio de um diagrama de dispersão
-    - Medidas de correlação
-        - Covariância
-        - Coeficiente de correlação de Pearson
+
+-   Estatística descritiva bivariada
+    -   Associação entre duas variáveis qualitativas
+        -   Tabelas de distribuição conjunta de frequências
+    -   Medidas de associação
+        -   Estatística qui-quadrado
+        -   Outras medidas de associação baseadas no qui-quadrado
+        -   coeficiente de Spearman
+    -   Correlação entre duas variáveis quantitativas
+        -   Tabelas de distribuição conjunta de frequências
+        -   Representação gráfica por meio de um diagrama de dispersão
+    -   Medidas de correlação
+        -   Covariância
+        -   Coeficiente de correlação de Pearson
