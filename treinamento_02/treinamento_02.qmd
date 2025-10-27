@@ -4815,224 +4815,241 @@ Uma outra medida de amplitude ou intervalo da qual já falamos é o Intervalo In
 
 ### Desvio-médio
 
+O desvio médio (ou desvio absoluto médio) mede o valor médio das distâncias absolutas dos dados em relação a um ponto de referência ($c$), que, geralmente, é uma medida de tendência central, como a média ($\bar{X}$) ou a mediana ($Md$), embora o primeiro seja o mais comumente apresentado em libros introdutórios de estatística.
+
+A definição formal de desvio médio para uma amostra $X_1, X_2, \dots, X_n$ é:
+
+$DM(c) = \frac{1}{n}\sum_{i=1}^{n} |X_i - c|$
+
+onde $|X_i - c|$ representa a distância absoluta, ou seja, desconsiderando se é positiva ou negativa, entre cada observação e o ponto de referência $c$. Assim, para os desvios médios da média e mediana temos:
+
+$DM_{\bar{X}} = \frac{1}{n}\sum |X_i - \bar{X}|$
+
+$DM_{Md} = \frac{1}{n}\sum |X_i - Md|$
+
+Então o desvio médio é uma medida de dispersão (variabilidade da variável), assim como o desvio padrão ($\sigma$) e a variância ($Var(X)$). Contudo, ele tem uma interpretação mais robusta e menos sensível a valores extremos, principalmente quando usamos a mediana como posição central, pois utiliza o valor absoluto, e não o quadrado das diferenças. Além disso, ele fornece uma métrica direta, na mesma unidade dos dados, o que facilita a interpretação (por exemplo, "em média, os valores diferem do centro em 3,5 kg").
+
+Uma propriedade importante do desvio médio é que a medida que o minimiza é a mediana da distribuição:
+
+$g(c) = E[|X - c|]$
+
+Queremos encontrar $c^* = \arg\min_c g(c)$, ou seja, o valor de $c$ para o qual se tem a menor esperança do desvio médio.
+
+Note que para valores de $c$ dentro de um intervalo entre observações ($x_{(k)}, x_{(k+1)}$):
+
+$\frac{d}{dc} g(c) = P(X < c) - P(X > c)$, o que significa que a taxa imediata de variação desse esperança é igual a subtração da probabilidade da variável ser menor e maior que o valor $c$. Portanto, o ponto de mínimo ocorre onde $g'(c) = 0$, ou seja, quando $P(X < c) = P(X > c)$, e isso é a definição de mediana. Assim, $\min_c E[|X - c|]$ é atingido quando $c = Md(X)$.
+
+Isso nos indica que se nosso objetivo for resumir a dispersão média das observações utilizando a soma dos desvios absolutos, apresentando o menor desvio médio possível, a medida de centro mais adequada é a mediana, não a média.
+
+Outras propriedades do desvio médio são:
+
+1. Homogeneidade escalar - $DM(aX) = |a|DM(X)$;
+2. Invariância translacional - $DM(X + b) = DM(X)$, ou seja, deslocar os dados em $b$ unidades não alterará o desvio médio; e
+3. Subaditividade - $DM(X + Y) \le DM(X) + DM(Y)$
+
+Na prática, o desvio médio (pela mediana) acaba sendo usada como uma medida de dispersão robusta quando na presença de outliers na amostra, e também como uma alternativa ao desvio padrão quando temos uma distribuição assimétrica ou com caudas pesadas.
+
+Isso é particularmente interessante para estratégias de modelagem, uma vez que na regressão linear por OLS (*Ordinary Least Square*, mínimos quadrados ordinários) outliers podem influenciar fortemente nos parâmetros estimados, enquanto, nos modelo de regressão LAD (*Least Absolute Deviation*, mínimos desvios absolutos) ou de regressão mediana há maior resistência aos valores extremos, sendo preferido quando o erro não é bem modelado por uma distribuição normal. Formalmente,
+
+na regressão linear clássica (OLS), buscamos
+
+$\hat{\beta}_{OLS} = \arg\min_{\beta} \sum_{i=1}^n (Y_i - X_i^\top \beta)^2 \quad \Rightarrow \text{minimiza } L_2$
+
+enquanto, na regressão LAD (mínimos desvios absolutos) buscamos
+
+$\hat{\beta}_{LAD} = \arg\min_{\beta} \sum_{i=1}^n |Y_i - X_i^\top \beta| \quad \Rightarrow \text{minimiza } L_1$,
+
+assim, o resultado é que no segundo caso temos um modelo menos sensível a observações atípicas.
+
+No R, podemos obter o desvio médio da seguinte forma:
+
+```{r}
+#| label: dispersao_desvio_medio
+#| warning: false
+
+ap2 %>%
+  summarise(
+    DM_bar_x = sum(abs(w_age_t - mean(w_age_t))) / length(w_age_t), # pela média
+    DM_md = sum(abs(w_age_t - median(w_age_t))) / length(w_age_t) # pela mediana
+  ) %>%
+  kable(col.names = c("$DM_{\\bar{X}}$", "$DM_{Md}$"))
+```
+
 ### Variância
 
+A variância é uma medida de dispersão de uma variável aleatória, descrevendo quanto os valores de $X$ tendem a se afastar da média $\mu = E[X]$. Na verdade, pela forma como é calculada, ela quantifica a expectativa do quadrado dos desvios em relação à média.
+
+Formalmente, uma variância populacional é calculada como
+
+$\sigma^2 = Var(X) = E[(X - \mu)^2] = E[X^2] - (E[X])^2$,
+
+em que $\sigma^2$ é variância populacional ($Var(X)$), $\mu = E[X]$ é a média populacional e $E[X^2] - (E[X])^2$ é uma consequência da expansão dos termos na equação, ou seja,
+
+$E[(X - \mu)^2] = E[X^2 - 2\mu X + \mu^2] = E[X^2] - 2\mu E[X] + \mu^2 = E[X^2] - \mu^2$.
+
+Já para uma amostra $X_1, X_2, \ldots, X_n$, define-se a variância amostral como:
+
+$s^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2$,
+
+em que $\bar{X} = \frac{1}{n}\sum X_i$ é a média amostral e o divisor $n-1$ é chamado de Correção de Bessel, sendo responsável por eliminar o viés da estimativa de $\sigma^2$ a partir da amostra.
+
+Essa correção decorre do fato de que ao calcularmos uma variância populacional, estamos calculando
+
+$\sigma^2 = \frac{1}{N}\sum_{i=1}^{N}(X_i - \mu)^2$,
+
+entretanto, na maioria dos casos não saberemos o tamanho da população ($N$) nem a média populacional ($\mu$), e usamos a média amostral e o tamanho da amostra para estimar a variância ($s^2$). Se considerarmos uma distribuição amostral $X_1, X_2, \ldots, X_n \stackrel{iid}{\sim} Normal(\mu, \sigma^2)$, ou seja, todas as possíveis amostras que podem ser realizadas daquela população com uma amostra de tamanho $n$, definimos a variância das médias amostrais como:
+
+$Var(\bar{X}) = Var\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{\sigma^2}{n}$,
+
+e podemos desenvolver a soma dos desvios amostrais como:
+
+$\sum_{i=1}^{n}(X_i - \bar{X})^2 = \sum_{i=1}^n (X_i - \mu)^2 - n(\bar{X} - \mu)^2$
+
+em que $\sum_{i=1}^n (X_i - \mu)^2$ é a soma dos desvios em relação à verdadeira média (a populacional) e $n(\bar{X} - \mu)^2$ é a parte da variabilidade da soma dos desvios amostrais em decorrência do deslocamento da média amostral em relação à $\mu$. Avaliando a esperança dos desvios quadráticos da distribuição amostral teremos:
+
+$E[\sum (X_i - \bar{X})^2] = n\sigma^2 - nVar(\bar{X}) = n\sigma^2 - n\frac{\sigma^2}{n} = (n-1)\sigma^2$,
+
+então, dividindo por $n-1$ em ambos os lados, obtemos
+
+$E[\frac{1}{n-1}\sum (X_i - \bar{X})^2] = \sigma^2$
+
+Entre as propriedades da variância, temos que:
+
+1. A média é o valor que minimiza a esperança do erro quadrático - $\sigma^2 = \min_c E[(X - c)^2]$;
+2. a variância não é afetada por deslocamentos da variável (adição de constantes), mas é multiplicada pelo quadrado de uma constante multiplicativa - $Var(aX + b) = a^2Var(X)$;
+3. $Var(X+Y) = Var(X) + Var(Y) + 2Cov(X, Y)$ ou $Var(X+Y) = Var(X) + Var(Y)$ se $X$ e $Y$ são independentes; e
+4. a variância é uma medida sensível a outliers (usa a média que é afetada por outliers e ainda eleva ao quadrado o desvio das observações em relação à média).
+
+Uma outra propriedade da variância que é base para a ANOVA refere-se a decomposição da variância de uma variável (**Lei da Variância Total**). Ela nos informa que dado uma variável $X$ que depende de outra variável $Y$, podemos decompor a variância total de $X$ como:
+
+$Var(X) = E[Var(X|Y)] + Var(E[X|Y])$
+
+em que o primeiro termo mede a variabilidade dentro de cada nível de $Y$, enquanto o segundo termo mede a variabilidade entre as médias de cada nível de $Y$. Assim, para amostras finitas, temos como análogo a decomposição da soma dos quadrados, representada por:
+
+$\sum_{i=1}^{n}(X_i - \mu)^2 = \underbrace{\sum_{j=1}^{g}\sum_{i \in G_j}(X_i - \bar{X}_j)^2}_{\text{Variabilidade dentro dos grupos}} + \underbrace{\sum_{j=1}^{g}n_j(\bar{X}_j - \mu)^2}_{\text{Variabilidade entre as médias dos grupos}}$
+
+em que $\mu$ é a média da variável $X$, $\bar{X}_j$ é a média do grupo $j$ de $Y$ e $n_j$ é o tamanho do grupo $j$. Ou seja, isso representa a $\text{SQ}_{Total} = \text{SQ}_{Entre} + \text{SQ}_{Dentro}$ da ANOVA, o qual dividimos pelos graus de liberdade para estimar $Var_{Total} = Var_{Entre} + Var_{Dentro}$. Então, basicamente, estamos modelando a dispersão total observada na população ($Var(X)$) como a soma da heterogeneidade local ($E[Var(X|Y)]$) e da diferença sistemática entre grupos ($Var(E[X|Y])$).
+
+Por fim, quando consideramos uma distribuição amostral $X_1, X_2, \ldots, X_n \stackrel{iid}{\sim} \mathcal{N}(\mu, \sigma^2)$, verifica-se que a média amostral e variância amostral apresentam as seguintes distribuições:
+
+$\bar{X} \sim Normal\left(\mu, \frac{\sigma^2}{n}\right)$
+
+$\frac{(n-1)s^2}{\sigma^2} \sim \chi^2_{n-1}$
+
+A segunda distribuição (da variância) pode ser obtida da seguinte forma:
+
+1. primeiro padronizamos a nossa distribuição ($X_i \sim Normal(\mu, \sigma^2)$), de forma que obtemos
+
+$Z_i = \frac{X_i - \mu}{\sigma} \sim Normal(0, 1)$
+
+2. em seguida realizamos a soma dos quadrados dessa variável padronizada:
+
+$\sum_{i=1}^{n} Z_i^2 = \sum_{i=1}^{n}\left(\frac{X_i - \mu}{\sigma}\right)^2$
+
+assim, ela passa a ter uma distribuição qui-quadrado com $n$ graus de liberdade:
+
+$\sum_{i=1}^{n} Z_i^2 \sim \chi^2_n$
+
+3. como não sabemos $\mu$, esse parâmetro é estimado por $\bar{X}$ e precisamos corrigir a distribuição pelo fato de $\bar{X}$ depender dos $X_i$, então:
+
+$\frac{1}{\sigma^2}\sum_{i=1}^{n}(X_i - \bar{X})^2 \sim \chi^2_{n-1}$
+
+4. como $s^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2$, podemos isolar $\sum_{i=1}^{n}(X_i - \bar{X})^2$ e substituir na relação anterior, obtendo
+
+$\frac{(n-1)s^2}{\sigma^2} \sim \chi^2_{n-1}$
+
+Ambas distruições (sob o prossuposto de normalidade da variável) serão fundamentais mais a frente, pois são a base para o cálculo dos intervalos de confiança e da estatística t de Student, que são base para testes de hipótese paramétricos da estatística clássica.
+
+A obtenção da variância no R é bem simples:
+
+```{r}
+#| label: dispersao_var
+#| warning: false
+
+ap2 %>%
+  summarise(
+    variancia = var(w_age_t),
+    variancia_na_mao = sum((w_age_t - mean(w_age_t))^2) / (length(w_age_t) - 1),
+  ) %>%
+  kable(col.names = c("$s^2$ com `var()`", "$s^2$ calculado pela definição mat."))
+```
+
 ### Desvio-padrão
+
+Como a variância é uma medida da média dos desvios quadrados, sua interpretação pode ser difícil, então tomamos a raiz quadrada da variância (desvio padrão) para quantificar o quanto os valores de uma variável aleatória (ou amostra) se afastam, em média, da sua média.
+
+Assim, seja $X$ uma variável aleatória com média $\mu = E[X]$, o desvio-padrão populacional é definido como:
+
+$\sigma = \sqrt{E[(X - \mu)^2]} = \sqrt{\text{Var}(X)}$
+
+então, para uma amostra, o desvio-padrão amostral é
+
+$s^2 = \frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X})^2, \quad \text{e} \quad s = \sqrt{s^2}$
+
+onde $\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i$ é a média amostral. Apesar do denominador $n-1$ tornar a variância amostral um estimador não viesado da variância populacional, isso não ocorre com o desvio-padrão, uma vez que a raiz quadrada é uma operação não linear, por isso $E[s] < \sigma$. Por essa razão, principalmente em amostras pequenas, alguns manuais estatísticos se valem da relação da distribuição das variâncias amostrais ($\frac{(n-1)s^2}{\sigma^2} \sim \chi^2_{n-1}$) para obter um desvio-padrão corrigido, definido como:
+
+$s_{\text{corr}} = \frac{s}{c_4(n)}$,
+
+a qual deriva da relação $E[s] = c_4(n)\sigma$,
+
+onde
+
+$c_4(n) = \sqrt{\frac{2}{n-1}} \cdot \frac{\Gamma(n/2)}{\Gamma((n-1)/2)}$, e $\Gamma(\cdot)$ é a função Gama. De qualquer forma, esse $c_4(n)$ costuma estar tabelado em manuais estatísticos, e essa correção é particularmente útil para amostras com tamanho menor que 30, pois conforme o $n$ aumenta $s \approx s_{\text{corr}}$.
+
+Pelo Teorema Central do Limite, quando $n$ é grande, temos a seguinte distribuição assintótica para o desvio-padrão amostral $s$:
+
+$\sqrt{n}(s - \sigma) \xrightarrow{d} Normal\left(0, \frac{\mu_4 - \sigma^4}{4\sigma^2}\right)$, em que $\mu_4 = E[(X - \mu)^4]$ é o quarto momento central de $X$ (relacionado à curtose).
+
+Especificamente para uma variável $X$ normal ($X \sim Normal(\mu, \sigma^2)$) verifica-se que
+
+$\sqrt{n}(s - \sigma) \xrightarrow{d} Normal\left(0, \frac{\sigma^2}{2}\right)$, o que demonstra que a precisão da estimativa de $s$ em relação ao $\sigma$ aumenta com $\sqrt{n}$, e que o erro padrão de $s$ é aproximadamente $\sigma / \sqrt{2n}$.
+
+Assim como a variância, o desvio-padrão é altamente sensível a outliers, pois utiliza o quadrado dos desvios. Por isso, em algumas aplicações práticas, estimadores robustos são preferidos, como a MAD ou sua versão escalada para estimar $\sigma$ ($\hat{\sigma}_{MAD} = 1.4826 \cdot MAD$) quando é plausível pressupor que a variável em estudo é normal. Rousseeuw e Croux [-@rousseeuw1993alternatives] também propõem um estimador robusto alternativo para $\sigma$, o $Q_n$, o qual é definido como
+
+$Q_n = 2.2219 \cdot \{ |X_i - X_j|: i < j \}_{(k)}$,
+
+em que $|X_i - X_j|$ representa a diferença entre cada par de observação da variável ordenada e $\{ |X_i - X_j|: i < j \}_{(k)}$ significa que desse conjunto de distâncias calculadas, usaremos aquela que está na posição $k$, sendo
+
+$k = \binom{h}{2} = \frac{h!}{2!(h-2)!}, \quad h = \lfloor n/2 \rfloor + 1$.
+
+Ao multiplicar esse valor pela constante $2.2219$, garante-se que, quando $X_i \sim Normal\left(\mu,\sigma^2\right)$, o estimador $Q_n$ é aproximadamente não viesado, ou seja, $E[Q_n] \approx \sigma$. Além disso, os autores que propõem esse estimador demonstraram que ele é adequado também para distribuições assimétricas, possui um ponto de ruptura de 50% (resiste a 50% de contaminação por outliers) e possui uma eficiência em relação ao desvio-padrão na distribuição normal de 82% (precisa de aproximadamente $1/0,82 \approx 1,22$ vezes mais observações para atingir a mesma precisão do $s$ como estimador de $\sigma$ para dados de uma distribuição normal e sem outliers).
+
+no R, podemos calcular tais estimadores da seguinte forma:
+
+```{r}
+#| label: dispersao_dp
+#| warning: false
+Qn_manual <- function(x){
+  n <- length(x)
+  h <- floor(n / 2) + 1
+  k <- choose(h, 2)
+
+  diffs <- abs(outer(x, x, "-")) # todas as distâncias |xi - xj|
+  diffs <- diffs[lower.tri(diffs)] # pega somente i < j
+  Qn <- 2.2219 * sort(diffs)[k] # aplica constante e seleciona k-ésimo menor
+  return(Qn)
+}
+MonteCarlo_c4 <- function(n, M = 1e5){
+  s_vals <- replicate(M, sd(rnorm(n, mean = 0, sd = 1)))
+  mean(s_vals)
+}
+
+mad_hat <- function(x) {
+  return(1.4826 * mad(x, constant = 1))
+}
+
+ap2 %>%
+  summarise(
+    variancia = var(w_age_t),
+    variancia_na_mao = sum((w_age_t - mean(w_age_t))^2) / (length(w_age_t) - 1),
+  ) %>%
+  kable(col.names = c("$s^2$ com `var()`", "$s^2$ calculado pela definição mat."))
+```
 
 ### Erro-padrão
 
 ### Coeficiente de variação
 
-## 2. **Desvio Médio Absoluto**
-
-### **Definição Formal**
-
-Em relação a uma medida de centro (c): \[ DM(c) = \frac{1}{n}
-\sum\_{i=1}\^{n} \|X_i - c\| \]
-
-Casos especiais: \[ DM\_{\bar{X}} = \frac{1}{n}\sum \|X_i - \bar{X}\|,
-\quad DM\_{Md} = \frac{1}{n}\sum \|X_i - Md\| \]
-
-### **Propriedades Matemáticas**
-
-#### **2.1 Minimização**
-
-\[ \min\_c E\[\|X - c\|\] \text{ é atingido em } c = \text{Mediana}(X)
-\]
-
-Demonstração:\
-Seja ( g(c) = E\[\|X - c\|\] ). Para ( c \in (x\_{(k)}, x\_{(k+1)}) ):
-\[ \frac{\partial g(c)}{\partial c} = P(X \< c) - P(X \> c) \] Logo,
-(g'(c)=0) quando (P(X \< c) = P(X \> c) = \frac{1}{2}), isto é, (c =
-Md).
-
-#### **2.2 Relação com outros desvios**
-
-Para ( X \sim \mathcal{N}(\mu, \sigma\^2) ): \[ E\[\|X - \mu\|\] =
-\sigma\sqrt{\frac{2}{\pi}} \approx 0.798\sigma, \quad E\[\|X - Md\|\]
-\approx 0.806\sigma \]
-
-#### **2.3 Propriedades gerais**
-
-\[
-
-```{=tex}
-\begin{aligned}
-&\text{(1) Subaditividade: } &&DM(X+Y) \le DM(X) + DM(Y)\\
-&\text{(2) Homogeneidade: } &&DM(aX) = |a|\,DM(X)\\
-&\text{(3) Invariância translacional: } &&DM(X+b) = DM(X)
-\end{aligned}
-```
-\]
-
-------------------------------------------------------------------------
-
-## 3. **Variância**
-
-### **Definição Formal**
-
-#### **População**
-
-\[ \sigma\^2 = Var(X) = E\[(X - \mu)\^2\] = E\[X\^2\] - (E\[X\])\^2 \]
-
-#### **Amostra**
-
-\[ s\^2 = \frac{1}{n-1}\sum*{i=1}\^{n}(X_i -* \bar{X})\^2 =
-\frac{1}{n-1}\left(\sum{i=1}\^{n} X_i\^2 - n\bar{X}\^2\right) \]
-
-------------------------------------------------------------------------
-
-### **Correção de Bessel**
-
-Se ( X_i \stackrel{iid}{\sim} (\mu, \sigma\^2) ), então: \[ E\[s\^2\] =
-\sigma\^2 \]
-
-**Demonstração:** \[
-
-```{=tex}
-\begin{aligned}
-E\left[\sum (X_i - \bar{X})^2\right]
-&= E\left[\sum (X_i - \mu + \mu - \bar{X})^2\right]\\
-&= n\sigma^2 + nVar(\bar{X}) - 2nCov(X_i - \mu, \bar{X}-\mu) \\
-&= n\sigma^2 - \sigma^2 = (n-1)\sigma^2
-\end{aligned}
-```
-\] Portanto, (E\[s\^2\] = \frac{(n-1)\sigma^2}{n-1} = \sigma\^2).
-
-------------------------------------------------------------------------
-
-### **Decomposição da Variância**
-
-**Lei da Variância Total:** \[ Var(X) = E\[Var(X\|Y)\] + Var(E\[X\|Y\])
-\]
-
-**Decomposição ANOVA:** \[ \sum*{i=1}\^{n}(X_i -* \mu)\^2 =
-\sum{i=1}\^{n}(X_i - \bar{X})\^2 + n(\bar{X} - \mu)\^2 \]
-
-------------------------------------------------------------------------
-
-### **Propriedades Fundamentais**
-
-\[
-
-```{=tex}
-\begin{aligned}
-&Var(aX + b) = a^2 Var(X)\\
-&Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y)\\
-&\text{Se } X,Y \text{ independentes: } Var(X+Y) = Var(X)+Var(Y)
-\end{aligned}
-```
-\]
-
-\[ P(\|X - \mu\| \ge k\sigma) \le \frac{1}{k^2}
-\quad \text{(Desigualdade de Chebyshev)} \]
-
-\[ \sigma\^2 = \min\_c E\[(X - c)\^2\] \]
-
-------------------------------------------------------------------------
-
-### **Distribuição da Variância Amostral**
-
-Se ( X_i \stackrel{iid}{\sim} \mathcal{N}(\mu, \sigma\^2) ): \[
-\frac{(n-1)s^2}{\sigma^2} \sim \chi\^2\_{n-1} \]
-
-Consequências: \[ E\[s\^2\]=\sigma\^2,
-\quad Var(s\^2)=\frac{2\sigma^4}{n-1}, \quad s\^2 \perp \bar{X} \]
-
-Assintoticamente: \[ \sqrt{n}(s\^2 - \sigma\^2) \xrightarrow{d}
-\mathcal{N}(0, \mu\_4 - \sigma\^4) \]
-
-onde (\mu\_4 = E\[(X - \mu)\^4\]).
-
-------------------------------------------------------------------------
-
-## 4. **Desvio-Padrão**
-
-\[ \sigma = \sqrt{\sigma^2}, \quad s = \sqrt{s^2} \]
-
-#### **Viés do Desvio-Padrão**
-
-\[ E\[s\] = \sigma , c_4(n), \quad c_4(n) = \sqrt{\frac{2}{n-1}}
-\cdot \frac{\Gamma(n/2)}{\Gamma((n-1)/2)} \] Correção: \[ s\_{corr} =
-\frac{s}{c_4(n)} \]
-
-Assintoticamente: \[ \sqrt{n}(s - \sigma) \xrightarrow{d}
-\mathcal{N}\left(0, \frac{\mu_4 - \sigma^4}{4\sigma^2}\right) \] Para
-Normal: (\sqrt{n}(s - \sigma) \xrightarrow{d} \mathcal{N}(0,
-\sigma\^2/2)).
-
-------------------------------------------------------------------------
-
-### **Estimadores Robustos**
-
-\[ MAD = \text{mediana}(\|X_i - \text{mediana}(X)\|),
-\quad \hat{\sigma}\_{MAD} = 1.4826 \cdot MAD \]
-
-\[ Q_n = 2.2219 \cdot { \|X_i - X_j\|; i \< j }\_{(k)}, \quad k =
-\binom{h}{2}, , h = \lfloor n/2 \rfloor + 1 \]
-
-------------------------------------------------------------------------
-
-## 5. **Erro-Padrão**
-
-\[ SE(\hat{\theta}) = \sqrt{Var(\hat{\theta})} \]
-
-### **Para a média**
-
-\[ SE(\bar{X}) =
-
-```{=tex}
-\begin{cases}
-\dfrac{\sigma}{\sqrt{n}}, & \text{se } \sigma \text{ conhecido} \\
-\dfrac{s}{\sqrt{n}}, & \text{se } \sigma \text{ desconhecido}
-\end{cases}
-```
-\]
-
-Método delta: \[ \text{Se } \sqrt{n}(T_n - \theta) \xrightarrow{d}
-\mathcal{N}(0, v\^2), \Rightarrow SE(T_n) \approx \frac{v}{\sqrt{n}} \]
-
-Bootstrap: \[ SE\_{boot}(\hat{\theta}) =
-\sqrt{\frac{1}{B-1}\sum_{b=1}^{B}(\hat{\theta}^{*(b)} - \bar{\hat{\theta}}^*)^2}
-\]
-
-------------------------------------------------------------------------
-
-### **Propagação de Erro**
-
-Se (Y = g(X_1, \ldots, X_k)): \[ Var(Y)
-\approx \sum*{i=1}^{k}^*\left(\frac{\partial g}{\partial x_i}\right)2
-Var(X_i) +
-2\sum{i\<j}\frac{\partial g}{\partial x_i}\frac{\partial g}{\partial x_j}Cov(X_i,X_j)
-\]
-
-------------------------------------------------------------------------
-
-## 6. **Coeficiente de Variação**
-
-\[ CV = \frac{\sigma}{\mu}, \quad \widehat{CV} = \frac{s}{\bar{X}} \]
-
-### **Propriedades**
-
-Expansão assintótica (Normal): \[ \widehat{CV} \approx CV +
-\frac{CV^3}{n} + \frac{CV}{2n} + O(n\^{-2}) \]
-
-Intervalo de confiança (McKay): \[ IC(CV) =
-\frac{\widehat{CV}}{\sqrt{1 \pm z_{\alpha/2}\sqrt{\hat{v}}}},
-\quad \hat{v} = \frac{1 + 2\widehat{CV}^2}{n-1} \]
-
-Teste: \[ Z =
-\frac{\widehat{CV} - CV_0}{\sqrt{\frac{CV_0^2 + 0.5}{n-1}}} \]
-
-------------------------------------------------------------------------
-
-### **Limitações**
-
-1.  (\mu \approx 0 \Rightarrow CV \to \infty)\
-2.  Não apropriado para valores negativos\
-3.  Alternativa: (I_Q = \dfrac{IQR}{Q_3+Q_1})
-
-------------------------------------------------------------------------
 
 ## Medidas de forma
 
