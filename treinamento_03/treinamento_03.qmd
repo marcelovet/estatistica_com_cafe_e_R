@@ -1,0 +1,92 @@
+---
+title: "Café com estatística e R"
+subtitle: "Treinamento 2 - estatística descritiva: parte 2"
+date: last-modified
+author:
+  - name: Marcelo Teixeira Paiva
+    orcid: 0000-0001-6334-073X
+    email: marcelo_thelin@hotmail.com
+    affiliation: 
+      - name: CRMV-MG
+        city: Belo Horizonte
+        state: MG
+        country: Brazil
+        url: portal.crmvmg.gov.br
+abstract: > 
+  Relatório do segundo treinamento onde foi apresentado como importar dados e manipulá-los no R, bem como as principais estatísticas descritivas univariadas e multivariadas.
+keywords:
+  - statistical analysis
+license: "CC BY-NC"
+copyright: 
+  holder: Marcelo Paiva
+  year: 2025
+citation: 
+  container-title: "Café com estatística e R: Treinamento 2 - Importação e manipulação de dados no R e estatística descritiva, parte 1"
+  volume: 1
+  issue: 1
+funding: "The author received no specific funding for this work."
+lang: pt-BR
+bibliography: referencias.bib
+toc: true
+toc-depth: 5
+toc-expand: true
+toc-title: "Índice"
+number-sections: true
+format:
+  html:
+    code-fold: true
+    code-summary: "Mostrar código"
+    code-tools: true
+    highlight-style: ayu-mirage
+    code-line-numbers: true
+    theme:
+      light: journal
+      dark: superhero
+    fontsize: 1.1em
+    linestretch: 1.7
+    max-width: 1800px
+    margin: 1rem
+  pdf: 
+    documentclass: report
+    lof: true
+    lot: true
+    geometry:
+      - top=30mm
+      - left=20mm
+      - heightrounded
+    colorlinks: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+```{r}
+#| label: setup
+#| warning: false
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+library(tidyverse)
+library(gridExtra)
+library(tidyverse)
+library(kableExtra)
+
+```
+
+# Estatística descritiva bivariada
+
+# o que apresentarei
+
+-   Estatística descritiva bivariada
+    -   Associação entre duas variáveis qualitativas
+        -   Tabelas de distribuição conjunta de frequências
+    -   Medidas de associação
+        -   Estatística qui-quadrado
+        -   Outras medidas de associação baseadas no qui-quadrado
+        -   coeficiente de Spearman
+    -   Correlação entre duas variáveis quantitativas
+        -   Tabelas de distribuição conjunta de frequências
+        -   Representação gráfica por meio de um diagrama de dispersão
+    -   Medidas de correlação
+        -   Covariância
+        -   Coeficiente de correlação de Pearson

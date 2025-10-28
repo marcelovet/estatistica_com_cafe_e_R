@@ -5029,46 +5029,473 @@ Qn_manual <- function(x){
   Qn <- 2.2219 * sort(diffs)[k] # aplica constante e seleciona k-ésimo menor
   return(Qn)
 }
-MonteCarlo_c4 <- function(n, M = 1e5){
-  s_vals <- replicate(M, sd(rnorm(n, mean = 0, sd = 1)))
-  mean(s_vals)
+c4 <- function(n) {
+  return(sqrt(2 / (n - 1)) * exp(lgamma(n / 2) - lgamma((n - 1) / 2)))
 }
 
 mad_hat <- function(x) {
   return(1.4826 * mad(x, constant = 1))
 }
 
-ap2 %>%
+set.seed(123)
+pop <- tibble(
+  peso = rnorm(1000000, mean=25, sd=3)
+)
+
+pop %>%
   summarise(
-    variancia = var(w_age_t),
-    variancia_na_mao = sum((w_age_t - mean(w_age_t))^2) / (length(w_age_t) - 1),
+    populacao = as.character(n()),
+    media = sum(peso) / length(peso),
+    dp = sqrt(sum((peso - media)^2) / length(peso)),
   ) %>%
-  kable(col.names = c("$s^2$ com `var()`", "$s^2$ calculado pela definição mat."))
+  kable(col.names = c("Populção", "$\\mu$", "$\\sigma$"))
+
+n_grande <- pop %>%
+  slice_sample(n = 385) %>%
+  summarise(
+    amostra = n(),
+    dp_s = sd(peso),
+    dp_mad = mad_hat(peso),
+    dp_corr = sd(peso) / c4(length(pop$peso)),
+    qn = Qn_manual(peso)
+  )
+
+n_pequeno <- pop %>%
+  slice_sample(n = 25) %>%
+  summarise(
+    amostra = n(),
+    dp_s = sd(peso),
+    dp_mad = mad_hat(peso),
+    dp_corr = sd(peso) / c4(length(pop$peso)),
+    qn = Qn_manual(peso)
+  )
+
+
+kable(bind_rows(n_grande, n_pequeno), col.names = c("$n$", "$s$ com `sd()`", "$\\hat{\\sigma}_{MAD}$", "$s_{corr}$", "$Q_n$"))
 ```
 
 ### Erro-padrão
 
+O erro padrão mede a variabilidade de um estimador amostral (por exemplo, a média amostral) em relação ao parâmetro populacional verdadeiro. Formalmente, se $\hat{\theta}$ é um estimador de um parâmetro $\theta$, o erro padrão é definido como o desvio-padrão da distribuição amostral do estimador:
+
+$SE(\hat{\theta}) = \sqrt{Var(\hat{\theta})}$
+
+Portanto, o erro padrão não mede erro de medição individual, mas sim a incerteza associada à estimativa de um parâmetro com base em uma amostra finita.
+
+Então para a média amostral, se temos $X_1, X_2, \ldots, X_n$ amostras independentes e identicamente distribuídas (i.i.d.), de uma população normal com média $\mu$ e variância $\sigma^2$, sabe-se que a distribuição amostral das médias amostrais ($\bar{X} = \frac{1}{n}\sum_{i=1}^{n} X_i$) terá:
+
+$E[\bar{X}] = \mu, \quad Var(\bar{X}) = \frac{\sigma^2}{n}$.
+
+Então, o erro padrão da média é:
+
+$SE(\bar{X}) = \sqrt{Var(\bar{X})} = \frac{\sigma}{\sqrt{n}}$.
+
+Como na prática o $\sigma$ é desconhecido, usamos a variância amostral $s^2$:
+
+$\widehat{SE}(\bar{X}) = \frac{s}{\sqrt{n}}$.
+
+Como podemos perceber pela definição do erro-padrão, ele diminui conforme $n$ aumenta, uma vez que isso implica em mais informação e menos incerteza sobre a nossa população. Assim, um $SE$ pequeno indica estimativas mais precisas (menos dispersas entre diferentes amostras), enquanto, um $SE$ grande indica maior variabilidade da estimativa, ou seja, a média amostral pode flutuar consideravelmente entre amostras. Um ponto importante que deve ser considerado sobre o $SE$ é que ele pressupõe amostras i.i.d., o que basicamente significa amostragem aleatória e independência entre observações. Se houver autocorrelação (como nas séries temporais) ou amostras dependentes (como em desenhos amostrais de medidas repetidas), o erro-padrão costuma ser subestimado e precisa ser corrigido.
+
+Na prática o $SE$ será a base para calcularmos os intervalos de confiança e testes de hipótese relativos à média quando abordarmos os testes de hipóteses. Supondo normalidade (ou amostras grandes, pelo Teorema Central do Limite), o intervalo de confiança será calculado como:
+
+$IC_{(1-\alpha)}(\mu) = \bar{X} \pm z_{1-\alpha/2} \times SE(\bar{X})$, ou,
+
+$IC_{(1-\alpha)}(\mu) = \bar{X} \pm t_{1-\alpha/2, \, n-1} \times SE(\bar{X})$,
+
+quando a amostra é pequena (menor que 30) uma vez que a distribuição t de Student atua como um fator de correção adicional para a incerteza atribuída ao estimar $\sigma$ por $s$. Assim, o erro padrão atua como o “raio de incerteza” multiplicado pelo quantil da distribuição normal (ou t-Student), resultando na margem de erro do intervalo de confiança.
+
+Além disso, o erro padrão também será aplicado à regressão linear na estimativa de erro padrão dos coeficientes do modelo, testes t de significância de cada coeficiente e respectivos intervalos de confiança. No modelo linear clássico, em que temos $Y = X\beta + \varepsilon$, com $\varepsilon \sim N(0, \sigma^2 I)$, ou seja, erros com média zero e homocedásticos, o estimador dos coeficientes é $\hat{\beta} = (X'X)^{-1} X'Y$. A variância amostral dos coeficientes é $Var(\hat{\beta}) = \sigma^2 (X'X)^{-1}$. Então, o erro padrão de cada coeficiente $\hat{\beta}_j$ é a raiz quadrada do respectivo elemento da diagonal dessa matriz:
+
+$SE(\hat{\beta}_j) = \sqrt{\widehat{\sigma}^2 [(X'X)^{-1}]_{jj}}$.
+
+Veja como podemos obter o $SE$ no R e como ele se comporta conforme o $n$ aumenta:
+
+```{r}
+#| label: dispersao_ep
+#| warning: false
+
+# erro padrão estimado de uma amostra
+sd(ap2$w_age_t) / sqrt(length(ap2$w_age_t))
+
+
+# Demonstração da variação de SE conforme o n
+set.seed(123)
+# parâmetros populacionais
+mu <- 10
+sigma <- 2
+
+# tamanhos amostrais (nossos n)
+n_seq <- seq(5, 200, by = 5)
+
+# repetições para cada n (para obter uma distribuição amostral)
+B <- 10000
+
+se_emp <- numeric(length(n_seq)) # empiríco (dp das medias amostrais)
+se_teo <- numeric(length(n_seq)) # teorico (sigma / raiz de n)
+
+for (i in seq_along(n_seq)) {
+  n <- n_seq[i]
+  
+  # gerar B amostras e calcular média de cada uma
+  means <- replicate(B, mean(rnorm(n, mean = mu, sd = sigma)))
+  
+  # erro padrão empírico
+  se_emp[i] <- sd(means)
+  
+  # erro padrão teórico
+  se_teo[i] <- sigma / sqrt(n)
+}
+```
+
+```{r}
+#| label: dispersao_ep_grafico
+#| warning: false
+#| fig-cap: "Variação do SE conforme o tamanho da amostra"
+
+tibble(
+  n = n_seq,
+  se_emp = se_emp,
+  se_teo = se_teo,
+) %>%
+  ggplot(aes(x = n, y = se_teo)) +
+  geom_line(color = "black", linewidth = 3, alpha = .3) +
+  geom_point(aes(y = se_emp), color = "blue", size = 2) +
+  geom_line(color = "blue", linetype = "dashed") +
+  labs(
+    y = "Erro Padrão da Média",
+    x = "Tamanho da Amostra (n)",
+    title = "Erro Padrão Empírico vs Teórico da Média"
+  ) + tema
+```
+
 ### Coeficiente de variação
 
+O coeficiente de variação (CV) calcula a variação dos dados em relação à média. Quanto menor for o seu valor, em tese mais homogêneos serão os dados, ou seja, menor será a dispersão em torno da média. Pode ser calculado como:
+
+$CV = \frac{s}{\bar{X}} \times 100 \quad (\%)$
+
+Em geral, adota-se a regra de que se $CV \leq 30\%$, então, os dados são considerados razoavelmente homogêneos, lembrando que esse valor é uma convenção e não um critério estatístico formal. Mas, como demonstrado no treinamento anterior, essa medida pode ser fortemente influenciada por transformações das variáveis, então deve-se tomar muito cuidado e não considerar que a variável possui características de uma distribuição normal baseado nessa métrica. Além disso, o CV só é válido para médias positivas e diferentes de zero, sendo um valor não confiável quando temos uma distribuição assimétrica ou com valores negativos.
 
 ## Medidas de forma
 
+Medidas de forma nos informam sobre a concentração dos dados em relação à média, ou seja, a forma da distribuição, e são conceituadas como assimetria (*skewness*) e curtose (*kurtosis*).
+
+Para uma variável aleatória $X$ com média $\mu = E[X]$ e desvio padrão $\sigma = \sqrt{Var(X)}$, o um momento central de ordem k é definido como:
+
+$\mu_k = E[(X - \mu)^k]$, e
+
+o momento padronizado é
+
+$\gamma_k = \frac{E[(X - \mu)^k]}{\sigma^k}$.
+
+Para esses momentos, define-se $\gamma_1$ como grau de assimetria e $\gamma_2$ como grau de curtose.
+
 ### Assimetria
+
+A assimetria populacional é definida como:
+
+$\gamma_1 = \frac{\mu_3}{\sigma^3} = \frac{E[(X - \mu)^3]}{\sigma^3}$.
+
+$\gamma_1$ é uma medida adimensional e expressa o comportamento da cauda da distribuição, de forma que:
+
+- $\gamma_1 > 0$ indica uma assimetria positiva, ou seja, uma cauda direita alongada,
+- $\gamma_1 < 0$ indica assimetria negativa, ou seja, uma cauda esquerda alongada, e
+- $\gamma_1 = 0$ representa uma distribuição perfeitamente simétrica.
+
+O termo $(X - \mu)^3$ da definição da assimetria amplifica diferenças ao redor da média, assim,  valores maiores que $\mu$ contribuem positivamente para o valor final, enquanto valores menores que $\mu$ contribuem negativamente. Já o uso da terceira potência elimina a simetria que a variância teria, tornando o sinal *informativo* da direção para o qual ocorre a assimetria.
+
+A magnitude de $|\gamma_1|$ é usada para avaliar a intensidade da assimetria:
+
+- leve se $|\gamma_1| < 0,5$
+- moderada se $0,5 \leq |\gamma_1| \leq 1$
+- forte se $|\gamma_1| > 1$
+
+Na prática estimamos a assimetria como
+
+$g_1' = \frac{m_3}{m_2^{3/2}}$,
+
+onde
+
+$m_k = \frac{1}{n} \sum_{i=1}^{n}(X_i - \bar{X})^k$.
+
+Ou utilizamos o estimador corregido (Fisher), não viesado assintoticamente, o qual é definido como:
+
+$g_1 = \frac{n}{(n-1)(n-2)} \sum_{i=1}^{n}\left(\frac{X_i - \bar{X}}{s}\right)^3$.
+
+Além dessa avaliação pela magnitude da assimetria, existe um teste de hipótese (teste de assimetria) para identificar se existem evidências de assimetria da distribuição. Nele consideramos que a hipótese nula ($H_0$) é que a distribuição populacional é simétrica ao redor de um ponto (normalmente a média), de modo que nossa hipótese alternativa é que a distribuição não é simétrica ao redor desse ponto.
+
+Se uma variável $X$ é simétrica em torno de um ponto $c$, então:
+
+$f_X(c + x) = f_X(c - x), \quad \forall x \in \mathbb{R}$,
+
+onde $f_X(x)$ é a função densidade (ou de probabilidade, se discreta). Ou seja, o lado direito à $c$ da distruição é um espelho do lado esquerodo, de modo que $P(X > c + d) = P(X < c - d)$. Esse é exatamente o comportamento da distribuição normal para o $c = \mu$. Então, para realizar o teste considerando uma distribuição simétrica em torno da média (distribuição normal), calculamos o $g_1$ corrigido de Fisher e sob a condição de $H_0$ esperamos:
+
+$E[g_1] = 0, \quad Var(g_1) \approx \frac{6}{n}$,
+
+portanto, a estatística padronizada de $g_1$ é:
+
+$Z = \frac{g_1}{\sqrt{6/n}}$.
+
+Para $n \ge 50$, $Z \sim Normal(0,1)$, então se $|Z| > z_{\alpha/2}$ (por exemplo, $z_{0.025}=1.96$ para 5%), rejeitamos a hipótese nula e consideramos que há evidências de assimetria da distribuição populacional.
+
+No R a medida de assimetria pode ser obtida pela função `skewness()` do pacote `moments`:
+
+```{r}
+#| label: forma_assimetria
+#| warning: false
+instala_se_nao_existe("moments")
+
+require(moments)
+
+# assimetria estimada de uma amostra
+skewness(ap2$w_age_t)
+
+
+# Simulação de distribuições com diferentes formas
+set.seed(123)
+n <- 100000
+
+# Assimetria negativa: distribuição Beta(5, 2)
+assim_neg <- rbeta(n, 5, 2)
+
+# Assimetria praticamente nula: Normal(0,1)
+assim_neutra <- rnorm(n, 0, 1)
+
+# Assimetria positiva: Qui-quadrado(3)
+assim_pos <- rchisq(n, df = 3)
+
+dados_assim <- tibble(
+  valor = c(
+    assim_neg,
+    assim_neutra,
+    assim_pos
+  ),
+  tipo = factor(
+    rep(c("Negativa", "Simétrica", "Positiva"), each = n),
+    levels = c("Negativa", "Simétrica", "Positiva")
+  ),
+  dist = factor(
+    rep(c("Beta(5, 2)", "Normal(0,1)", "Qui-quadrado(3)"), each = n),
+    levels = c("Beta(5, 2)", "Normal(0,1)", "Qui-quadrado(3)")
+  )
+)
+
+res_assim <- dados_assim %>% 
+  group_by(tipo) %>% 
+  summarise(across(valor, function(x) round(skewness(x), 2)))
+
+res_assim
+
+```
+
+```{r}
+#| label: forma_assimetria_grafico
+#| warning: false
+#| fig-cap: "Comparação dos diferentes tipos de assimetria"
+
+dados_assim %>%
+  ggplot(aes(x = valor, fill = tipo)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~dist, scales = "free", ncol = 1) +
+  labs(
+    title = "Comparação de Assimetria",
+    subtitle = "Distribuições com diferentes graus e direções de skewness",
+    x = "Valor",
+    y = "Densidade"
+  ) +
+  tema +
+  theme(legend.position = "none")
+```
 
 ### Curtose
 
-# o que falta
+A curtose mede quanto peso está nas caudas e no centro, o que graficamente representa o grau de achatamento de uma distribuição de frequências, o que indica a concentração das probabilidades ao redor da média. A curtose populacional é definida como:
 
--   Estatística descritiva bivariada
-    -   Associação entre duas variáveis qualitativas
-        -   Tabelas de distribuição conjunta de frequências
-    -   Medidas de associação
-        -   Estatística qui-quadrado
-        -   Outras medidas de associação baseadas no qui-quadrado
-        -   coeficiente de Spearman
-    -   Correlação entre duas variáveis quantitativas
-        -   Tabelas de distribuição conjunta de frequências
-        -   Representação gráfica por meio de um diagrama de dispersão
-    -   Medidas de correlação
-        -   Covariância
-        -   Coeficiente de correlação de Pearson
+$\gamma_2 = \frac{\mu_4}{\sigma^4} - 3 = E\left[\left(\frac{X - \mu}{\sigma}\right)^4\right] - 3$.
+
+A subtração de 3 torna $\gamma_2 = 0$ para uma distribuição Normal (padrão de referência). Assim, para:
+
+- $\gamma_2 > 0$ temos uma distribuição leptocúrtica, de caudas pesadas, com grande concentração central e caudas longas,
+- $\gamma_2 = 0$ temos uma distribuição mesocúrtica de forma semelhante à normal, e, para
+- $\gamma_2 < 0$ temos uma distribuição platicúrtica, de caudas leves, uma distribuição mais achatada e com menor concentração central.
+
+Em relação aos estimadores de curtose, temos a versão não corrigida definida como:
+
+$g_2' = \frac{m_4}{m_2^2} - 3$,
+
+e a versão corrigida de Fisher:
+
+$g_2 = \frac{n(n+1)}{(n-1)(n-2)(n-3)}\sum \left(\frac{X_i - \bar{X}}{s}\right)^4 - \frac{3(n-1)^2}{(n-2)(n-3)}$.
+
+Assim como na assimetria, temos um teste de hipótese para a curtose normal. Nela definimos a hipótese nula ($H_0$) de que $\gamma_2 = 0$, de modo que, sob a condição de uma distribuição normal, temos uma estatística padronizada na forma:
+
+$Z = \frac{g_2}{\sqrt{24/n}} \sim N(0,1)$.
+
+Assim, se $|Z| > z_{\alpha/2}$, rejeitamos a hipótese nula e consideramos que há evidências de que a curtose da distribuição em estudo não é de uma normal ($\gamma_2 \neq 0$).
+
+No R a medida de assimetria pode ser obtida pela função `kurtosis()` do pacote `moments`:
+
+```{r}
+#| label: forma_curtose
+#| warning: false
+
+# curtose estimada de uma amostra
+kurtosis(ap2$w_age_t)
+
+
+# Simulação de distribuições com diferentes formas
+set.seed(123)
+n <- 100000
+
+# Curtose platicúrtica: Uniforme(0,1)
+curt_plat <- runif(n, 0, 1)
+
+# Curtose mesocúrtica: Normal(0,1)
+curt_meso <- rnorm(n, 0, 1)
+
+# Curtose leptocúrtica: t-Student com poucos graus de liberdade (caudas pesadas)
+curt_lepto <- rt(n, df = 3)
+
+dados_curt <- tibble(
+  valor = c(
+    curt_plat,
+    curt_meso,
+    curt_lepto
+  ),
+  tipo = factor(
+    rep(c("Platicúrtica", "Mesocúrtica", "Leptocúrtica"), each = n),
+    levels = c("Platicúrtica", "Mesocúrtica", "Leptocúrtica")
+  ),
+  dist = factor(
+    rep(c("Uniforme(0,1)", "Normal(0,1)", "t(3)"), each = n),
+    levels = c("Uniforme(0,1)", "Normal(0,1)", "t(3)")
+  )
+)
+
+res_curt <- dados_curt %>% 
+  group_by(tipo) %>% 
+  summarise(across(valor, function(x) kurtosis(x) - 3))
+
+res_curt
+
+```
+
+```{r}
+#| label: forma_curtose_grafico
+#| warning: false
+#| fig-cap: "Comparação dos diferentes tipos de assimetria"
+
+dados_curt %>%
+  ggplot(aes(x = valor, fill = tipo)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~dist, scales = "free", ncol = 1) +
+  labs(
+    title = "Comparação de Curtose",
+    subtitle = "Distribuições com caudas leves (platicúrtica), normais e pesadas (leptocúrtica)",
+    x = "Valor",
+    y = "Densidade"
+  ) +
+  tema +
+  theme(legend.position = "none")
+```
+
+### Teste combinado de normalidade para assimetria e curtose
+
+Além dos testes em separado para assimetria e curtose, existe um teste que utiliza das duas métricas denominado teste de Jarque-Bera (JB). Nesse teste, definimos as seguintes hipóteses:
+
+$H_0$: A amostra provém de uma distribuição Normal ($N(\mu, \sigma^2)$),
+$H_1$: A amostra não é Normal (assimétrica ou com curtose diferente da normal).
+
+A ideia é que se a distribuição subjacente da amostra é normal os coeficientes de assimetria e curtose serão iguais a zero. Assim, o teste Jarque–Bera mede justamente o quanto as estimativas amostrais desses coeficientes se afastam dos valores teóricos esperados sob a normalidade. Assim, calculados os estimadores $g_1$ (assimetria amostral) e $g_2$ (curtose amostral), definimos a estatística JB como:
+
+$JB = n \left( \frac{g_1^2}{6} + \frac{g_2^2}{24} \right)$,
+
+em que $n$ é o tamanho amostral. Sob a hipótese nula e para amostras grandes (teorema central do limite),
+
+$JB \sim \chi^2_2$, ou seja, essa medida segue uma distribuição qui-quadrado com 2 graus de liberdade (devido aos dois parâmetros analisados, simetria e curtose). Se $JB > \chi^2_{(1-\alpha, 2)}$ rejeitamos $H_0$, ou seja, há evidências de que a distribuição não é normal.
+
+No R, o pacote `tseries` de análise de séries temporais implementa esse teste com a função `jarque.bera.test()` e retorna um p-valor do teste (nesse caso rejeitamos $H_0$ se $p < 0,05$):
+
+```{r}
+#| label: teste_normalidade_forma
+#| warning: false
+
+instala_se_nao_existe("tseries")
+
+set.seed(123)
+x1 <- rnorm(200, 0, 1)
+x2 <- rexp(200, 1)
+
+test_norm <- tseries::jarque.bera.test(x1)
+test_exp <- tseries::jarque.bera.test(x2)
+
+tibble(
+  dist = c("Normal(0,1)", "Exponencial(1)"),
+  jb = c(
+    test_norm$statistic,
+    test_exp$statistic
+  ),
+  p = c(
+    test_norm$p.value,
+    test_exp$p.value
+  )
+) %>%
+  kable(col.names = c("Distribuição", "JB", "p-valor"))
+```
+
+### Desigualdade Fundamental de Pearson
+
+A Desigualdade Fundamental de Pearson (ou relação entre momentos de terceira e quarta ordem) é uma propriedade matemática que impõe limites entre a assimetria e a curtose de qualquer distribuição cujos momentos sejam finitos. Ela garante que assimetria e curtose são vinculados por restrições derivadas da positividade da variância e da forma da distribuição.
+
+Seja $X$ uma variável aleatória, seus momentos padronizados serão definidos como $\beta_1 = \frac{\mu_3^2}{\mu_2^3}$ e $\beta_2 = \frac{\mu_4}{\mu_2^2}$. Pearson demonstrou que, para qualquer distribuição real com momentos até a quarta ordem finitos, $\beta_2 \ge \beta_1 + 1$.
+
+Em termos de assimetria e curtose, temos:
+
+$\gamma_2 = \beta_2 - 3, \qquad \gamma_1 = \frac{\mu_3}{\sigma^3}$, então,
+
+substituindo na desigualdade anterior, obtemos $\gamma_2 \ge \gamma_1^2 - 2$.
+
+Essa desigualdade define uma região viável em relação ao $\gamma_1$ e $\gamma_2$ para o qual a combinação desses valores corresponde a uma distribuição real, de modo que, por exemplo, nenhuma distribuição real pode ter $\gamma_2 < -2$. Isso implica que, para uma distribuição real, quanto mais assimetria ($|\gamma_1|$ grande) maior deve ser a curtose (caudas mais pesadas ou pico mais proeminente), portanto, não existem distribuições muito assimétricas e que sejam também fortemente achatadas.
+
+```{r}
+#| label: forma_desigualdade_pearson
+#| warning: false
+#| fig-cap: "Posição da assimetria e curtose de distribuições reais em relação à desigualdade de Pearson"
+
+set.seed(123)
+
+dists <- tibble(
+  nome = c("Normal", "Uniforme", "Exponencial", "Chi-quadrado(3)"),
+  dados = list(rnorm(1e5), runif(1e5), rexp(1e5), rchisq(1e5, df=3))
+) %>%
+  mutate(
+    skew = map_dbl(dados, skewness),
+    kurt = map_dbl(dados, kurtosis) - 3
+  )
+
+# Curva do limite teórico
+gamma1_grid <- seq(-4, 4, by = 0.1)
+limite <- tibble(
+  gamma1 = gamma1_grid,
+  gamma2 = gamma1_grid^2 - 2
+)
+
+ggplot() +
+  geom_line(
+    data = limite,
+    aes(x = gamma1, y = gamma2),
+    color = "red", size = 1.1, linetype = "dashed"
+  ) +
+  geom_point(
+    data = dists,
+    aes(x = skew, y = kurt, color = nome),
+    size = 4
+  ) +
+  labs(
+    title = "Desigualdade Fundamental de Pearson",
+    subtitle = expression(gamma[2] >= gamma[1]^2 - 2),
+    x = expression("Assimetria ( " ~ gamma[1] ~ " )"),
+    y = expression("Excesso de Curtose ( " ~ gamma[2] ~ " )")
+  ) +
+  tema
+```
