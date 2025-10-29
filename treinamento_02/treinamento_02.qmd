@@ -1273,7 +1273,7 @@ da seguinte forma para estatísticas univariadas:
 
 ```{mermaid}
 %%| label: fig1_diagrama_analises_univ_tipo
-%%| fig-cap: "Estatísticas descritivas univariadas para variáveis qualitativas. Fonte: adaptado de Favaro *et al*. (2017)"
+%%| fig-cap: "Estatísticas descritivas univariadas para variáveis qualitativas. Fonte: adaptado de Fávero *et al*. [-@favero2017manual]."
 
 flowchart TD
     A[Tipo de Variável]
@@ -1291,47 +1291,43 @@ flowchart TD
 
 ```{mermaid}
 %%| label: fig2_diagrama_analises_univ_tipo
-%%| fig-cap: "Estatísticas descritivas univariadas para variáveis quantitativas (tabelas e medidas-resumo). Fonte: adaptado de Favaro *et al*. (2017)"
+%%| fig-cap: "Estatísticas descritivas univariadas para variáveis quantitativas (tabelas e medidas-resumo). Fonte: adaptado de Fávero *et al*. [-@favero2017manual]. A moda é uma exceção de medida de posição que também pode ser calculada para dados qualitativos."
 
 flowchart TD
   classDef groupBox fill:#f2f7ff;
   
-  A[Tipo de<br>Variável]
+  A["Tipo de<br>Variável"]
   C[Quantitativa]
-  A--> C
-  C --> M[Medidas‑resumo]
+  A --> C
+  C --> M[Medidas-resumo]
   C --> T[Tabelas] --> T1[Distribuição de frequências]
   M --> P["Posição ou<br>Localização"]
   M --> D["Dispersão ou<br>Variabilidade"]
   M --> F[Forma]
 
-  %% Posição/Localização: coluna vertical
-  subgraph POS[" "]
+  subgraph posicao[" "]
     direction TB
-    P0[Tendência<br>Central]
+    P0["Tendência<br>Central"]
     P1[Média]
     P2["Moda*"]
     P3[Mediana]
 
-    %% Empilhar verticalmente sem setas “hierárquicas”
     P0 --- P1
     P1 --- P2
     P2 --- P3
   end
 
-  %% Conectar o rótulo principal a este grupo
   P --> P0
 
-  %% Dispersão (mantém horizontal, só como contexto)
-  subgraph DISP[" "]
+  subgraph dispersao[" "]
     direction TB
-    D0[Dispersão ou<br>Variabilidade]
+    D0["Dispersão ou<br>Variabilidade"]
     D1[Amplitude]
-    D2[Desvio‑médio]
-    D3[Variância]
-    D4[Desvio‑padrão]
-    D5[Erro‑padrão]
-    D6[Coef. variação]
+    D2[Desvio-médio]
+    D3[Variância]
+    D4[Desvio-padrão]
+    D5[Erro-padrão]
+    D6["Coef. variação"]
     D0 --- D1
     D1 --- D2
     D2 --- D3
@@ -1341,7 +1337,7 @@ flowchart TD
   end
   D --> D0
 
-  subgraph FORMA[" "]
+  subgraph forma[" "]
     direction TB
     F0[Forma]
     F1[Assimetria]
@@ -1351,12 +1347,12 @@ flowchart TD
   end
   F --> F0
 
-  class POS,DISP,FORMA groupBox
+  class posicao,dispersao,forma groupBox
 ```
 
 ```{mermaid}
 %%| label: fig3_diagrama_analises_univ_tipo
-%%| fig-cap: "Estatísticas descritivas univariadas para variáveis quantitativas (gráficos). Fonte: adaptado de Favaro *et al*. (2017)"
+%%| fig-cap: "Estatísticas descritivas univariadas para variáveis quantitativas (gráficos). Fonte: adaptado de Fávero *et al*. [-@favero2017manual]."
 
 flowchart TD
     A[Tipo de Variável]
@@ -1394,7 +1390,7 @@ No caso de variáveis contínuas, para criarmos tabelas de frequências
 delas, primeiro criamos classes representado intervalos de valores,
 depois contamos o número de observações em cada intervalo. O número de
 classes e o intervalo de cada classe é arbitrário, entretanto, Bussab e
-Morettin (2011) sugerem o seguinte algoritmo para construção da tabela:
+Morettin [-@bussab2017estatistica] sugerem o seguinte algoritmo para construção da tabela:
 
 1.  Ordenar os dados do menor ao maior;
 2.  Calcular o número de classes ($k$) por
@@ -1563,7 +1559,7 @@ Analysis](https://ggplot2-book.org/) é o que você procura.
 
 ### Criação de gráficos no `ggplot2`
 
-O ggplot2 implementa os conceitos da [*Grammar of
+O ggplot2 implementa os conceitos do [*Grammar of
 Graphics*](https://link.springer.com/book/10.1007/0-387-28695-0) de
 Leland Wilkinson, onde gráficos são construídos através de **camadas
 semânticas**, as quais são combinadas de forma modular e sistemática.
@@ -1580,8 +1576,8 @@ mínima:
 
 ``` r
 ggplot(
-  data = <DATA>,            # 1. Dados (fonte da informação para o gráfico)
-  mapping = aes(<MAPPINGS>) # 2. Mapeamentos estéticos (quais variáveis serão usadas e onde)
+  data = <DADOS>,            # 1. Dados (fonte da informação para o gráfico)
+  mapping = aes(<MAPEAMENTOS>) # 2. Mapeamentos estéticos (quais variáveis serão usadas e onde)
   ) +
   <GEOM_FUNCTION>()         # 3. Geometria (o que será desenhado)
 ```
@@ -1827,8 +1823,8 @@ p_scales <- ggplot(dados, aes(x, y, color = tamanho)) +
     labels = c("pequeno", "grande", "muito grande")
   ) +
   scale_y_continuous(
-    name = "sqrt(Y)",
-    transform = "sqrt"
+    name = "log(Y)",
+    transform = "log"
   )
 
 p_scales
@@ -2251,7 +2247,7 @@ ggplot(ap2) +
 
 ggplot(ap2) +
   geom_bar(aes(age_t), fill = "#476F84FF", color = "black") +
-  scale_x_continuous(breaks = 1:6) +
+  scale_x_continuous(n.breaks = 6) +
   labs(
     title = "Frequência absoluta das idades dos porcos na transferência do desmame para a unidade de acabamento",
     x = "Idade (dias)",
@@ -2265,7 +2261,7 @@ ggplot(ap2) +
     fill = "#476F84FF",
     color = "black"
   ) +
-  scale_x_continuous(breaks = 1:6) +
+  scale_x_continuous(n.breaks = 6) +
   scale_y_continuous(
     labels = scales::label_percent(),
     breaks = scales::breaks_width(width = .05),
@@ -2289,9 +2285,9 @@ ggplot(ap2) +
 #| warning: false
 #| layout-ncol: 1
 
-classes_k <- round(1 + 3.322 * log10(length(ap2$dwg_fin)))
-breaks <- floor(seq(min(ap2$dwg_fin), max(ap2$dwg_fin), length.out = classes_k + 1))
-breaks[length(breaks)] <- ceiling(max(ap2$dwg_fin))
+k_breaks <- cria_classes_continua(ap2$dwg_fin, "sturges")
+classes_k <- k_breaks[["k"]]
+breaks <- k_breaks[["breaks"]]
 
 frequencias_dwg_fin <- ap2 %>%
   mutate(
@@ -2392,15 +2388,15 @@ para avaliar as principais causas de problemas em linhas de produção.
 
 mortalidade_producao <- tibble(
   causa = c(
-    "Mortalidade neonatal",
-    "Pneumonia",
-    "Diarreia",
-    "Problemas de parto",
     "Esmagamento",
-    "Síndrome MMA",
-    "Defeitos congênitos",
+    "Diarreia neonatal",
+    "Doenças respiratórias",
+    "Infecções genito-urinárias",
+    "Úlcera gástrica",
+    "Doenças locomotoras",
+    "Complicações no parto",
     "Canibalismo",
-    "Problemas locomotores",
+    "Estresse térmico",
     "Outras causas"
   ),
   frequencia = c(
@@ -3042,7 +3038,7 @@ ggplot(ap2) +
   labs(
     title = expression("Histograma de" ~ F[i] ~ "usando" ~ k == sqrt(n)),
     x = "Peso do porco à transferência do desmame para a unidade de terminação (kg)",
-    y = expression("Frequência absoluta (" ~ F[i] ~ "%)")
+    y = expression("Frequência absoluta (" ~ F[i] ~ ")")
   )
 
 breaks <- cria_classes_continua(ap2$w_age_t, "sturges")[["breaks"]]
@@ -3061,7 +3057,7 @@ ggplot(ap2) +
   labs(
     title = expression("Histograma de" ~ F[i] ~ "usando" ~ k == 1 + 1.33 %*% log[10](n) ~ "(Equação de Sturges)"),
     x = "Peso do porco à transferência do desmame para a unidade de terminação (kg)",
-    y = expression("Frequência absoluta (" ~ F[i] ~ "%)")
+    y = expression("Frequência absoluta (" ~ F[i] ~ ")")
   )
 
 ggplot(ap2) +
@@ -3102,7 +3098,6 @@ ggplot(ap2) +
     x = "Peso do porco à transferência do desmame para a unidade de terminação (kg)",
     y = expression("Densidade (" ~ F[i] / n %*% h[i] ~ ")")
   )
-
 ```
 
 Gráficos de histograma também costumam ser associados a estimativas
@@ -3722,7 +3717,7 @@ ap2 %>%
 
 A mediana ($Md$) é uma medida de posição do centro da distribuição dos
 dados ordenados de forma crescente, de modo que
-$P(X \leq Md) \geq \frac{1}{2}$ e $P(X \geq m) \geq \frac{1}{2}$.
+$P(X \leq Md) \geq \frac{1}{2}$ e $P(X \geq Md) \geq \frac{1}{2}$.
 
 Seja $X_{(1)} \leq X_{(2)} \leq ... \leq X_{(n)}$ a nossa variável
 ordenada de forma crescente, definimos $Md$ como
