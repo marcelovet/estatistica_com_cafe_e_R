@@ -64,11 +64,18 @@ editor:
 #| label: setup
 #| warning: false
 
+instala_se_nao_existe <- function(nome_do_pacote){
+  if(nome_do_pacote %in% rownames(installed.packages())) return()
+  install.packages(nome_do_pacote, quiet = TRUE)
+  return()
+}
+instala_se_nao_existe("vcd")
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 library(tidyverse)
 library(gridExtra)
 library(tidyverse)
+library(kableExtra)
 library(kableExtra)
 
 beef_ultra <- haven::read_dta(
@@ -86,6 +93,31 @@ beef_ultra <- haven::read_dta(
       sex,
       "Fêmea" = "female",
       "Macho" = "steer"
+    ),
+  )
+
+
+calf <- haven::read_dta(
+  "../datasets/stata/calf.dta",
+  encoding = "UTF-8"
+  ) %>%
+  as_factor() %>%
+  mutate(
+    attd = fct_recode(
+      attd,
+      "Alerta" = "bright",
+      "Deprimido" = "depressed",
+      "Comatoso" = "comatose",
+    ),
+    sex = fct_recode(
+      sex,
+      "Fêmea" = "female",
+      "Macho" = "male"
+    ),
+    sepsis = fct_recode(
+      sepsis,
+      "Não" = "no",
+      "Sim" = "yes"
     ),
   )
 ```
@@ -208,7 +240,7 @@ addmargins(
 
 ```
 
-## Apresentando a distribuição conjunta de frequências como gráficos
+## Apresentando a distribuição conjunta de frequências com gráficos
 
 Para analisar a distribuição em conjunto de duas variáveis podemos usar gráficos de barras agrupadas ou empilhadas, gráficos de mosaico e mapas de calor.
 
@@ -364,12 +396,337 @@ p2
 p3
 ```
 
+No gráfico de mosaico cada célula da tabela de contingência é representada por um retângulo, em que a largura e altura representam as frequências conjuntas e marginais. Para contruí-lo usaremos o pacote `vcd`. O interessante desse gráfico é que nele ainda podemos preencher os retângulos (combinação de cada nível em $X$ com cada nível de $Y$) com os resíduos de Pearson, uma medida relativo ao desvio da frequência de uma célula em relação à frequência esperada na situação de independência entre as variáveis. Além disso, ele permite avaliar distribuições conjuntas de mais de duas variáveis.
+
+```{r}
+#| label: grafico_mosaico
+#| warning: false
+#| fig-cap: "Distribuição conjunta de frequências por gráfico de mosaico"
+require(vcd)
+
+# para salvar precisamos usar os metodos do R base
+# png("mosaico.png", width = 900, height = 700, res = 120)
+mosaic(
+  formula=~ attd + sepsis,
+  data = calf,
+  shade = TRUE,
+  legend = TRUE,
+  legend_args = list(
+    text = "Resíduos\nde Pearson"
+  ),
+  main = "Atitude X Sepse",
+  sub = "Fonte: Lofstedt J, Dohoo IR, Duizer G. \nModelo para prever septicemia em bezerros diarreicos. J Vet Intern Med. 1999; 13: 81-8.",
+  labeling = labeling_values,
+  labeling_args = list(
+    set_varnames = c(
+      sepsis = "Sepse",
+      attd = "Atitude"
+    ),
+    gp_varnames = gpar(fontsize = 12, fontface = "plain"),
+    offset_varnames = c(.8, 0, 0, 1.0)
+  ),
+  main_gp = gpar(fontsize = 13, fontface = "bold"),
+  sub_gp = gpar(fontsize = 8)
+)
+# dev.off()
+```
+
+
+```{r}
+#| label: grafico_mosaico_2
+#| warning: false
+#| fig-cap: "Distribuição conjunta de frequências por gráfico de mosaico para mais que duas variáveis"
+mosaic(
+  formula=~ attd + sepsis + sex,
+  data = calf,
+  shade = TRUE,
+  legend = TRUE,
+  legend_args = list(
+    text = "Resíduos\nde Pearson"
+  ),
+  main = "Atitude X Sexo X Sepse",
+  sub = "Fonte: Lofstedt J, Dohoo IR, Duizer G. \nModelo para prever septicemia em bezerros diarreicos. J Vet Intern Med. 1999; 13: 81-8.",
+  labeling = labeling_values,
+  labeling_args = list(
+    set_varnames = c(
+      sepsis = "Sepse",
+      attd = "Atitude",
+      sex = "Sexo"
+    ),
+    gp_varnames = gpar(fontsize = 12, fontface = "plain"),
+    offset_varnames = c(.5, 1, 0, .6),
+    offset_labels = c(left = 0, top = 0, right = .3, bottom = 0),
+    rot_labels = c(left = 90, top = 0, right = 0, bottom = 0)
+  ),
+  main_gp = gpar(fontsize = 13, fontface = "bold"),
+  sub_gp = gpar(fontsize = 8),
+  spacing = spacing_increase(start = 0.4, rate = 1.2)
+)
+```
+
+Mapas de calor apresentam as frequências conforme a intensidade de cor.
+
+```{r}
+#| label: grafico_mapa_calor
+#| warning: false
+#| fig-cap: "Distribuição conjunta de frequências por mapa de calor"
+calf %>%
+  drop_na(attd) %>%
+  count(attd, sepsis) %>%
+  mutate(prop = n / sum(n) * 100) %>%
+  arrange(sepsis) %>%
+  ggplot(aes(y = attd, x = sepsis, fill = prop)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(
+    low = "lightblue",
+    high = "darkblue"
+  ) +
+  labs(
+    y = "Atitude",
+    x = "Sepse",
+    fill = "Freq. relativa (%)"
+  ) +
+  theme_minimal()
+```
+
+## Medidas de associação
+
+Medidas de associação buscam obter uma medida que represente o grau de independência entre variáveis qualitativas.
+
+### Estatística qui-quadrado ($\chi^2$)
+
+A estatística qui-quadrado ($\chi^2$) mede o grau da diferença entre as frequências observadas e frequências esperadas. Ela foi desenvolvida por Karl Pearson (1900), sendo uma das principais ferramentas de inferência estatística para dados categóricos.
+
+Considerando duas variáveis qualitativas $X$ e $Y$, a forma geral do $\chi^2$ é definida como:
+
+$$
+\chi^2 = \sum_{i=1}^r \sum_{s=1}^j \frac{(O_{is} - E_{is})^2}{E_{is}}
+$$
+
+em que:
+
+- $O_{is}$ é frequência observada na célula $(i,s)$ (nosso $n_{is}$)
+- $E_{is}$ = frequência esperada sob $H_0$ (normalmente, de que $X$ e $Y$ são independentes)
+- $i$ e $s$ são as categorias de $X$ e $Y$, respectivamente, tal que $i=1,2,...,r$ e $s=1,2,...,j$.
+
+A estatística $\chi^2$ é normalmente usada em três contextos:
+
+1. **Teste de aderência (goodness-of-fit):** avaliar se uma amostra segue uma distribuição teórica específica, por exemplo, para testar se dados seguem distribuição de Poisson;
+2. **Teste de independência:** avaliar se duas variáveis categóricas são independentes, por exemplo, se a presença de uma característica está associada a presença uma doença.
+3. **Teste de homogeneidade:** avaliar se as distribuições de categorias são iguais em diferentes populações.
+
+Para calcular a $E_{is}$, devemos primeiro definir a hipótese nula ($H_0$), que no caso da avaliação de associação entre duas variáveis categóricas será de que ambas são independentes. Nessa situação teremos:
+
+$$
+H_0: p_{is} = p_{i.} \times p_{.s}
+$$
+
+em que:
+
+- $p_{is}=P(X=X_i, Y=Y_s)$;
+- $p_{i.}=P(X=X_i)$ e $p_{.s}=P(Y=Y_s)$; de modo que,
+- $P(X=X_i, Y=Y_s)=P(X=X_i) \times P(Y=Y_s)$.
+
+Ou seja, a probabilidade de uma observação apresentar a característica $i$ de $X$ e $s$ de $Y$ é igual ao produto das probabilidades da variável apresentar cada uma dessas características ($p_{i.}$ e $p_{.s}$). Note que para a situação de dependência entre elas teríamos: 
+
+$P(X=X_i, Y=Y_s)=P(X=X_i | Y=Y_s) \times P(Y=Y_s)$
+
+ou $P(X=X_i, Y=Y_s)=P(Y=Y_s | X=X_i) \times P(X=X_i)$.
+
+Considerando que o vetor de contagens dos elementos em $i$ e $s$ ($n_{is}$) segue uma distribuição multinomial:
+
+$$
+\mathbf{n} = (n_{11}, n_{12}, ..., n_{rj}) \sim \text{Multinomial}(n, \mathbf{p})
+$$
+
+então, sob $H_0$, os estimadores de máxima verossimilhança (EMV) das probabilidades marginais são:
+
+$$
+\hat{p}_{i.} = \frac{n_{i.}}{n}, \quad \hat{p}_{.s} = \frac{n_{.s}}{n}
+$$
+
+então:
+
+$$
+\begin{equation}
+\begin{split}
+E_{is} & = n \times \hat{p}_{is} = n \times \hat{p}_{i.} \times \hat{p}_{.s}\\
+       & = n \times \frac{n_{i.} \times n_{.s}}{n^2}\\
+       & = \frac{n_{i.} \times n_{.s}}{n}
+\end{split}
+\end{equation}
+$$
+
+Observe que na métrica do qui-quadrado, caso os $E_{is}=O_{is}$, então $\chi^2=0$, ou seja, quanto maior o desvio entre as frequências observadas e esperadas, maior será o $\chi^2$, portanto, há mais indícios para refutar $H_0$ (independência entre as variáveis).
+
+Sob $H_0$ e condições de regularidade (grande amostra, independência das observações) o $\chi^2$ converge uma distribuição qui-quadrado com $df = (r - 1)(j - 1)$ graus de liberdade, ou seja, $\chi^2 \xrightarrow{d} \chi^2_{(r-1)(j-1)}$. Então, podemos testar a hipótese de independência das variáveis por:
+
+$$
+p = P(\chi^2_{df} \geq \chi^2_{\text{observado}})
+$$
+
+em que $p$ é probabilidade de obter um $\chi^2_{df}$ maior ou igual àquele calculado de nossos dados. Se $p$ for menor que um limite de aceitabilidade definido em nossa pesquisa, por exemplo, 5%, consideramos que há evidências para refutar a hipótese nula (de que as variáveis são independentes). Entretanto, para utilizar desse teste, algumas condições devem ser respeitadas (condições fundamentais de Cochran):
+
+- $E_{is} \geq 1$ para todas as células;
+- pelo menos 80% das células com $E_{is} \geq 5$;
+- observações independentes.
+
+Caso essas condições sejam violadas, podemos agrupar categorias para aumentar o $n_{is}$ ou podemos utilizar o teste exato de Fisher.
+
+Então, a partir do $\chi^2$, estamos observando o comportamento geral de desvio da nossa hipótese nula de independência das variáveis. Entretanto, seria interessante poder avaliar qual a importância de cada célula nesse resultado, ou seja, qual foi o impacto de cada par $(i, s)$ no nosso resultado. Para isso podemos calcular os resíduos de Pearson:
+
+- **Resíduo de Pearson padronizado:** $r_{is} = \frac{O_{is} - E_{is}}{\sqrt{E_{is}}}$, ou,
+- **Resíduo ajustado (resíduo de Haberman):** $d_{is} = \frac{O_{is} - E_{is}}{\sqrt{E_{is}(1 - \frac{n_{i.}}{n})(1 - \frac{n_{.s}}{n})}}$
+
+Sob $H_0$, o resíduo padronizado $d_{is} \sim N(0,1)$, por isso, consideramos significativos os desvios maiores que 2 ($p \approx 0.05$) e extremos os devios maiores que 3 ($p \approx 0.002$). No caso dos resíduos de Pearson padronizados, a variância depende das restrições marginais, logo, ele não segue exatamente uma $Normal(0, 1)$, por isso não há um ponto de corte universal preciso.
+
+No R, a função `chisq.test` permite realizar o teste $\chi^2$ de independência das variáveis e em seus resultados podemos obter a estatística $\chi^2$, os resíduos e o valor-p sob a hipótese $H_0$:
+
+```{r}
+#| label: teste_chi_r_1
+#| warning: false
+#| tab.cap: "Resíduos padronizados de Pearson da estatística \\(\\chi^2\\) para a tabela de contingência de Atitude X Sepse"
+teste <- chisq.test(xtabs(~ attd + sepsis, data = calf))
+
+# avaliando se alguma E_is foi menor que 5
+# any(teste$expected < 5)
+
+residuos_padronizados <- teste$residuals
+residuos_ajustados <- teste$stdres
+
+resultado_test_texto <- paste0(
+  "<span style='white-space:nowrap'>\\(\\chi^2 = ",
+  round(teste$statistic, 3),
+  "\\),
+  \\(df = ", teste$parameter, "\\),
+  \\(valor-p = ", round(teste$p.value, 5), "\\)</span>"
+)
+kable(residuos_padronizados) %>%
+  add_header_above(c(" " = 1, "Sepse" = 2)) %>%
+  pack_rows(index = c("Atitude" = 3)) %>%
+  footnote(
+    general = resultado_test_texto,
+    general_title = "",
+    escape = FALSE
+  )
+```
+
+```{r}
+#| label: teste_chi_r_2
+#| warning: false
+#| tab.cap: "Resíduos ajustados (\\(d_{is}\\)) da estatística \\(\\chi^2\\) para a tabela de contingência de Atitude × Sepse"
+kable(residuos_ajustados) %>%
+  add_header_above(c(" " = 1, "Sepse" = 2)) %>%
+  pack_rows(index = c("Atitude" = 3)) %>%
+  footnote(
+    general = resultado_test_texto,
+    general_title = "",
+    escape = FALSE
+  )
+```
+
+O gráfico de mosaico apresentado anteriormente por padrão (quando usado o argumento `shade = TRUE`) usa os resíduos padronizados de Pearson para apresentar as contribuições de cada célula para a estatística final. Mas com os resultados do `chisq.test` podemos alterar esse comportamento:
+
+```{r}
+#| label: grafico_mosaico_chisq
+#| warning: false
+#| fig-cap: "Resultado do teste \\( \\chi^2 \\) de independência entre as variáveis Atitude e Sepse."
+mosaic(
+  formula=~ attd + sepsis,
+  data = calf,
+  residuals = residuos_ajustados,
+  shade = TRUE,
+  gp_args = list(p.value = teste$p.value, level = .95),
+  legend = TRUE,
+  legend_args = list(
+    text = "Resíduos\najustados"
+  ),
+  main = "Atitude X Sepse",
+  sub = "Fonte: Lofstedt J, Dohoo IR, Duizer G. \nModelo para prever septicemia em bezerros diarreicos. J Vet Intern Med. 1999; 13: 81-8.",
+  labeling = labeling_values,
+  labeling_args = list(
+    set_varnames = c(
+      sepsis = "Sepse",
+      attd = "Atitude"
+    ),
+    gp_varnames = gpar(fontsize = 12, fontface = "plain"),
+    offset_varnames = c(.5, 1, 0, .6),
+    offset_labels = c(left = 0, top = 0, right = .3, bottom = 0),
+    rot_labels = c(left = 90, top = 0, right = 0, bottom = 0)
+  ),
+  main_gp = gpar(fontsize = 13, fontface = "bold"),
+  sub_gp = gpar(fontsize = 8),
+  spacing = spacing_increase(start = 0.4, rate = 1.2)
+)
+```
+
+### Medidas de associação derivadas do $\chi^2$
+
+Enquanto o teste $\chi^2$ informa se há associação entre variáveis categóricas, as medidas de associação derivadas indicam o quão forte é essa associação. A estatística $\chi^2$ cresce com o tamanho amostral $n$ e o grau de desvio entre observados e esperados. Por isso, não conseguimos medir a força de associação diretamente dele (o tamanho da amostra influencia no valor).
+
+As medidas derivadas, então, padronizam o valor de $\chi^2$ pelo tamanho da amostra e pela dimensionalidade da tabela, convertendo-o em um índice de associação que varia aproximadamente entre 0 e 1.
+
+#### Coeficiente $\phi$
+
+Para tabelas 2×2, o coeficiente $\phi$ é definido como:
+
+$\phi = \sqrt{\frac{\chi^2}{n}}$
+
+sendo $n$ o total de observações. Nessa situação $0 \leq \phi \leq 1$ e pode ser interpretado como:
+
+- $\phi = 0$: nenhuma associação (independência perfeita)  
+- $\phi = 1$: associação perfeita (ocorrências concentradas em duas células)
+
+Assim, em tabelas 2×2, o $\phi$ seria o equivalente ao coeficiente de correlação de Pearson, só que aplicado em variáveis dicotômicas (codificadas como 0/1). Cohen [-@cohen1988power] propôs os seguintes pontos de corte para avaliar o $phi$:
+
+| Magnitude | $\phi$ | Interpretação |
+|------------:|---------------:|----------------|
+| Pequena | 0,1 | associação fraca |
+| Média | 0,3 | associação moderada |
+| Grande | 0,5 | associação forte |
+
+Essas referências foram derivadas de estudos psicologia e ciências comportamentais, nos quais os efeitos costumam ser pequenos, então isso deve ser levado em consideração quando aplicamos a outras áreas.
+
+Além disso, é importante observar que pela definição de $\phi$, em uma tabela 2X2 (com um grau de liberdade), $\chi^2 = n\phi^2$, então, quanto maior a amostra ($n$), menor a força de associação necessária para obter um $\chi^2$ significativo. Resumindo, significância ($p$) $\neq$ força da associação ($\phi$).
+
+#### V de Cramér
+
+Quando a tabela não é 2×2, o coeficiente $\phi$ não é mais limitado por 1, o que o torna sua avaliação confusa. Cramér [-@cramer1946v] para solucionar esse problema generalizou o $\phi$ para tabelas $r \times j$ ajustando pela menor dimensão da tabela. Assim, definimos o V de Cramér como:
+
+$V = \sqrt{ \frac{\chi^2}{n \times (k - 1)} }$
+
+em que $k = \min(r, j)$ é a menor dimensão entre as linhas e colunas da tabela de contingência. Isso faz com que essa medida fique restrita ao intervalo $0 \leq V \leq 1$ e podemos interpretá-la da mesma forma que o $\phi$ (0 para independência, 0,1 para efeito fraco, 0,3 para moderado, 0,5 para grande e 1 para associação perfeita).
+
+#### Coeficiente de contingência de Pearson (C)
+
+Proposto por Pearson, o $C$ é uma forma alternativa de medir a força de associação a partir da suavização da magnitude do $\chi^2$. Ele é definido como:
+
+$C = \sqrt{\frac{\chi^2}{\chi^2 + n}}$
+
+Assim como as outras medidas, o $C$ tem como mínimo 0, porém, o limite superior é definido pelas dimensões da tabela. Especificamente, ele varia no intervalo:
+
+$0 \leq C \leq \sqrt{\frac{k-1}{k}}$
+
+em que $k = \min(r, j)$. Isso implica que para conseguirmos comparar duas medidas de C ($C_1$ e $C_2$), ambas devem ser derivadas de tabelas de mesma dimensionalidade.
+
+No R, essas três medidas podem ser obtidas com a função `assocstats` do pacote `vcd` (note que para tabelas que não são 2X2, a função não calcula $\phi$):
+
+```{r}
+#| label: medidas_assoc
+#| warning: false
+vcd::assocstats(xtabs(
+  formula=~ attd + sepsis,
+  data = calf
+))
+```
+
+### Extensões e variantes da estatística $\chi^2$
+
+### Coeficiente de Spearman
 
 # o que apresentarei
 
 -   Estatística descritiva bivariada
-    -   Associação entre duas variáveis qualitativas
-        -   Tabelas de distribuição conjunta de frequências
     -   Medidas de associação
         -   Estatística qui-quadrado
         -   Outras medidas de associação baseadas no qui-quadrado
